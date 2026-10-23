@@ -24,14 +24,14 @@ final class TicketsController extends ApiController
 
             $input = ApiResponse::input();
             if ($method === 'POST') {
-                if (!in_array($role, ['Docente', 'Tecnico'], true)) {
+                if ($role !== 'Docente') {
                     ApiResponse::send(403, 'error', 'El Administrador solo puede consultar tickets.');
                 }
                 $titulo = $this->requiredString($input, 'titulo', 150);
                 $descripcion = $this->requiredString($input, 'descripcion', 5000);
-                $fechaLimite = $this->requiredString($input, 'fechaLimite', 10);
+                $fechaLimite = date('Y-m-d', strtotime('+7 days'));
                 $idLaboratorio = filter_var($input['idLaboratorio'] ?? null, FILTER_VALIDATE_INT);
-                $prioridad = (string) ($input['prioridad'] ?? 'Media');
+                $prioridad = 'Media';
                 if (!$idLaboratorio || !in_array($prioridad, ['Baja', 'Media', 'Alta'], true) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaLimite) || $fechaLimite < date('Y-m-d')) {
                     ApiResponse::send(422, 'error', 'Los datos del ticket no son válidos.');
                 }
@@ -44,12 +44,18 @@ final class TicketsController extends ApiController
                     ApiResponse::send(403, 'error', 'Solo el Técnico puede gestionar incidencias.');
                 }
                 $id = $this->positiveId('idTicket', $input);
-                if (isset($input['accion']) && $input['accion'] === 'estado') {
-                    $estado = (string) ($input['estado'] ?? '');
-                    if (!in_array($estado, ['En Proceso', 'Resuelto', 'Cancelado', 'Pendiente'], true)) {
-                        ApiResponse::send(422, 'error', 'Estado no válido.');
-                    }
-                    $updated = $model->cambiarEstado($id, $estado);
+                if (isset($input['accion'])) {
+                    $accion = (string)$input['accion'];
+                    if ($accion === 'revisar') {
+                        $prioridad = (string)($input['prioridad'] ?? '');
+                        $fechaLimite = (string)($input['fechaLimite'] ?? '');
+                        if (!in_array($prioridad, ['Baja','Media','Alta'], true) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaLimite)) ApiResponse::send(422, 'error', 'Indica una prioridad y fecha límite válidas.');
+                        $updated = $model->revisarTicket($id, $prioridad, $fechaLimite);
+                    } elseif ($accion === 'iniciar') $updated = $model->cambiarEstado($id, 'En Proceso');
+                    elseif ($accion === 'esperar') $updated = $model->cambiarEstado($id, 'En espera');
+                    elseif ($accion === 'completar') $updated = $model->cambiarEstado($id, 'Resuelto');
+                    elseif ($accion === 'cancelar') $updated = $model->cambiarEstado($id, 'Cancelado');
+                    else ApiResponse::send(422, 'error', 'Acción no válida.');
                 } else {
                     $titulo = $this->requiredString($input, 'titulo', 150);
                     $descripcion = $this->requiredString($input, 'descripcion', 5000);

@@ -38,7 +38,7 @@
     <section class="bienvenida">
 
         <h1>
-            Panel Principal
+            <?= $esDocente ? "¡Bienvenido/a a JOJOLOS!" : "Panel Principal" ?>
         </h1>
 
         <div class="identidad-usuario" aria-label="Datos de sesión">
@@ -46,7 +46,7 @@
             <p><strong>Rol:</strong> <?= htmlspecialchars((string) (($_SESSION["rol"] ?? "") === "Tecnico" ? "Técnico" : ($_SESSION["rol"] ?? "Sin rol")), ENT_QUOTES, "UTF-8") ?></p>
         </div>
 
-        <p>
+        <p class="descripcion-plataforma">
             JOJOLOS es una plataforma diseñada para centralizar
             la gestión de incidencias, solicitudes y préstamos
             de equipos dentro de los laboratorios informáticos.

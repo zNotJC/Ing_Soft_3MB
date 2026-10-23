@@ -63,7 +63,7 @@ class AccesoDatosTickets
             INSERT INTO ticket
                 (titulo, descripcion, fechaLimite, cedulaSolicitante, idLaboratorio, prioridad, estado)
             VALUES
-                (:titulo, :descripcion, :fechaLimite, :cedulaSolicitante, :idLaboratorio, :prioridad, 'Pendiente')
+                (:titulo, :descripcion, :fechaLimite, :cedulaSolicitante, :idLaboratorio, :prioridad, 'En espera')
         ";
         $consulta = $this->conexion->prepare($sql);
         $consulta->execute([
@@ -74,6 +74,14 @@ class AccesoDatosTickets
             'idLaboratorio' => $idLaboratorio,
             'prioridad' => $prioridad
         ]);
+    }
+
+
+    public function revisarTicket(int $idTicket, string $prioridad, string $fechaLimite): bool
+    {
+        $q = $this->conexion->prepare("UPDATE ticket SET prioridad=:prioridad, fechaLimite=:fecha WHERE idTicket=:id AND estado='En espera'");
+        $q->execute(['prioridad'=>$prioridad, 'fecha'=>$fechaLimite, 'id'=>$idTicket]);
+        return $q->rowCount() > 0;
     }
 
     public function modificarTicket(
@@ -119,7 +127,7 @@ class AccesoDatosTickets
 
     public function cambiarEstado(int $idTicket, string $estado): bool
     {
-        $estados = ['Pendiente', 'En Proceso', 'Resuelto', 'Cancelado'];
+        $estados = ['En espera', 'Pendiente', 'En Proceso', 'Resuelto', 'Cancelado'];
         if (!in_array($estado, $estados, true)) {
             return false;
         }

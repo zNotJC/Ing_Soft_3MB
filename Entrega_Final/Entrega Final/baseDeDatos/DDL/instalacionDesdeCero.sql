@@ -1,0 +1,112 @@
+CREATE DATABASE IF NOT EXISTS jojolos CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE jojolos;
+
+CREATE TABLE usuario (
+  cedula CHAR(8) NOT NULL,
+  usuario VARCHAR(20) NOT NULL UNIQUE,
+  correo VARCHAR(120) NOT NULL UNIQUE,
+  claveHash VARCHAR(255) NOT NULL,
+  activo BOOLEAN NOT NULL DEFAULT TRUE,
+  sesionActiva BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (cedula)
+) ENGINE=InnoDB;
+
+CREATE TABLE administrador (
+  cedula CHAR(8) NOT NULL PRIMARY KEY,
+  CONSTRAINT fk_administrador_usuario FOREIGN KEY (cedula) REFERENCES usuario(cedula)
+) ENGINE=InnoDB;
+CREATE TABLE docente (
+  cedula CHAR(8) NOT NULL PRIMARY KEY,
+  CONSTRAINT fk_docente_usuario FOREIGN KEY (cedula) REFERENCES usuario(cedula)
+) ENGINE=InnoDB;
+CREATE TABLE tecnico (
+  cedula CHAR(8) NOT NULL PRIMARY KEY,
+  CONSTRAINT fk_tecnico_usuario FOREIGN KEY (cedula) REFERENCES usuario(cedula)
+) ENGINE=InnoDB;
+CREATE TABLE acceso_sistema (
+  idAcceso INT AUTO_INCREMENT PRIMARY KEY,
+  cedulaUsuario CHAR(8) NOT NULL,
+  rol VARCHAR(20) NOT NULL,
+  fechaHora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_acceso_usuario FOREIGN KEY (cedulaUsuario) REFERENCES usuario(cedula),
+  CONSTRAINT chk_acceso_rol CHECK (rol IN ('Administrador','Docente','Tecnico'))
+) ENGINE=InnoDB;
+
+CREATE TABLE laboratorio (
+  idLaboratorio INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(50) NOT NULL UNIQUE,
+  estado VARCHAR(30) NOT NULL DEFAULT 'Disponible',
+  CONSTRAINT chk_laboratorio_estado CHECK (estado IN ('Disponible','No disponible'))
+) ENGINE=InnoDB;
+CREATE TABLE equipo (
+  idEquipo INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL,
+  idLaboratorio INT NULL,
+  tipo VARCHAR(50) NOT NULL DEFAULT 'Ordenadores',
+  estado VARCHAR(30) NOT NULL DEFAULT 'Disponible',
+  CONSTRAINT fk_equipo_laboratorio FOREIGN KEY (idLaboratorio) REFERENCES laboratorio(idLaboratorio) ON DELETE SET NULL,
+  CONSTRAINT chk_equipo_estado CHECK (estado IN ('Disponible','No disponible','Roto','En uso'))
+) ENGINE=InnoDB;
+
+CREATE TABLE ticket (
+  idTicket INT AUTO_INCREMENT PRIMARY KEY,
+  titulo VARCHAR(150) NOT NULL,
+  descripcion TEXT NOT NULL,
+  fechaRegistro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  fechaLimite DATE NOT NULL,
+  cedulaSolicitante CHAR(8) NOT NULL,
+  idLaboratorio INT NOT NULL,
+  prioridad VARCHAR(20) NOT NULL DEFAULT 'Media',
+  estado VARCHAR(20) NOT NULL DEFAULT 'Pendiente',
+  CONSTRAINT fk_ticket_solicitante FOREIGN KEY (cedulaSolicitante) REFERENCES usuario(cedula),
+  CONSTRAINT fk_ticket_laboratorio FOREIGN KEY (idLaboratorio) REFERENCES laboratorio(idLaboratorio),
+  CONSTRAINT chk_ticket_prioridad CHECK (prioridad IN ('Baja','Media','Alta')),
+  CONSTRAINT chk_ticket_estado CHECK (estado IN ('Pendiente','En Proceso','Resuelto','Cancelado'))
+) ENGINE=InnoDB;
+
+CREATE TABLE solicitud (
+  idSolicitud INT AUTO_INCREMENT PRIMARY KEY,
+  cedulaUsuario CHAR(8) NOT NULL,
+  tipoSolicitud VARCHAR(30) NOT NULL,
+  descripcion VARCHAR(500) NOT NULL,
+  cantidad INT NOT NULL DEFAULT 1,
+  equipo VARCHAR(100) NULL,
+  fechaSolicitud DATE NOT NULL,
+  fechaNecesaria DATE NULL,
+  estado VARCHAR(20) NOT NULL DEFAULT 'Pendiente',
+  respuesta VARCHAR(500) NULL,
+  CONSTRAINT fk_solicitud_usuario FOREIGN KEY (cedulaUsuario) REFERENCES usuario(cedula),
+  CONSTRAINT chk_solicitud_tipo CHECK (tipoSolicitud IN ('Laboratorio','Reparación')),
+  CONSTRAINT chk_solicitud_cantidad CHECK (cantidad > 0),
+  CONSTRAINT chk_solicitud_estado CHECK (estado IN ('Pendiente','Aprobada','Rechazada','Cancelada'))
+) ENGINE=InnoDB;
+
+CREATE TABLE prestamo (
+  idPrestamo INT AUTO_INCREMENT PRIMARY KEY,
+  idEquipo INT NOT NULL,
+  cedulaUsuario CHAR(8) NOT NULL,
+  fechaPrestamo DATE NOT NULL,
+  fechaDevolucion DATE NOT NULL,
+  estado VARCHAR(20) NOT NULL DEFAULT 'Pendiente',
+  prioridad VARCHAR(20) NOT NULL DEFAULT 'Media',
+  CONSTRAINT fk_prestamo_equipo FOREIGN KEY (idEquipo) REFERENCES equipo(idEquipo),
+  CONSTRAINT fk_prestamo_usuario FOREIGN KEY (cedulaUsuario) REFERENCES usuario(cedula),
+  CONSTRAINT chk_prestamo_estado CHECK (estado IN ('Pendiente','Activo','Cancelado','Devuelto')),
+  CONSTRAINT chk_prestamo_prioridad CHECK (prioridad IN ('Baja','Media','Alta'))
+) ENGINE=InnoDB;
+
+
+-- Usuario administrador por defecto
+INSERT INTO usuario (cedula, usuario, correo, claveHash, activo, sesionActiva)
+VALUES (
+    '69696969',
+    'admin',
+    'admin@jojolos.com',
+    '$2y$12$XyQysBpYeGQUN72zWqjBle1Q49xF0XilV.U55COSQ/iPLK1qoIb2.',
+    1,
+    0
+);
+
+-- Asignar rol de administrador
+INSERT INTO administrador (cedula)
+VALUES ('69696969');

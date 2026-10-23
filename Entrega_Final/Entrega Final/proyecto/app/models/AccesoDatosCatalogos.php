@@ -16,19 +16,19 @@ class AccesoDatosCatalogos
         )->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function crearLaboratorio(string $nombre): int
+    public function crearLaboratorio(string $nombre, string $estado = 'Disponible'): int
     {
-        $consulta = $this->conexion->prepare('INSERT INTO laboratorio (nombre) VALUES (:nombre)');
-        $consulta->execute(['nombre' => $nombre]);
+        $consulta = $this->conexion->prepare('INSERT INTO laboratorio (nombre, estado) VALUES (:nombre, :estado)');
+        $consulta->execute(['nombre' => $nombre, 'estado' => $estado]);
         return (int) $this->conexion->lastInsertId();
     }
 
-    public function modificarLaboratorio(int $id, string $nombre): bool
+    public function modificarLaboratorio(int $id, string $nombre, string $estado = 'Disponible'): bool
     {
         $consulta = $this->conexion->prepare(
-            'UPDATE laboratorio SET nombre = :nombre WHERE idLaboratorio = :id'
+            'UPDATE laboratorio SET nombre = :nombre, estado = :estado WHERE idLaboratorio = :id'
         );
-        $consulta->execute(['id' => $id, 'nombre' => $nombre]);
+        $consulta->execute(['id' => $id, 'nombre' => $nombre, 'estado' => $estado]);
         return $consulta->rowCount() > 0;
     }
 
