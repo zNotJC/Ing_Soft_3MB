@@ -94,6 +94,14 @@ async function cargarTickets() {
             throw new Error(resultado.message || "No se pudieron cargar los tickets.");
         }
         ticketsPorId.clear();
+        const selectorLaboratorioNuevo = document.getElementById("idLaboratorio");
+        if (selectorLaboratorioNuevo && Array.isArray(resultado.data.laboratorios)) {
+            const opciones = [new Option("Seleccione", "")];
+            resultado.data.laboratorios.forEach(laboratorio => {
+                opciones.push(new Option(laboratorio.nombre, laboratorio.idLaboratorio));
+            });
+            selectorLaboratorioNuevo.replaceChildren(...opciones);
+        }
         const fragmento = document.createDocumentFragment();
         if (resultado.data.tickets.length === 0) {
             const fila = document.createElement("tr");

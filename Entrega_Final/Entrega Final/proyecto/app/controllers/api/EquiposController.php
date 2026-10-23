@@ -11,7 +11,7 @@ final class EquiposController extends ApiController
     public function handle(): void
     {
         $method=$_SERVER['REQUEST_METHOD']??'GET';
-        $role=$this->requireRole(['Administrador','Tecnico','Docente']);
+        $role=$this->requireRole(['Administrador','Tecnico']);
         [$connector,$connection]=$this->connect();
         try {
             $equipos=new AccesoDatosEquipos($connection); $labs=new AccesoDatosCatalogos($connection);
@@ -32,8 +32,8 @@ final class EquiposController extends ApiController
             }
             if($method==='DELETE') { $id=$this->positiveId('idEquipo',$input); if(!$equipos->eliminar($id)) ApiResponse::send(409,'error','No se puede eliminar un equipo con préstamos asociados.'); ApiResponse::send(200,'success','Equipo eliminado.',['idEquipo'=>$id]); }
             $this->methodNotAllowed(['GET','POST','PUT','DELETE']);
-        } catch(PDOException $error) { error_log($error->getMessage()); ApiResponse::send(409,'error','No se pudo guardar el registro. Comprueba si está repetido o tiene relaciones.'); }
-        catch(Throwable $error) { error_log($error->getMessage()); ApiResponse::send(500,'error','No se pudo completar la operación de inventario.'); }
+        } catch(PDOException $error) { error_log('[API inventario] ' . $error->getMessage()); ApiResponse::send(409,'error','No se pudo guardar o consultar el inventario. Comprueba la base de datos, los laboratorios existentes y los registros duplicados.'); }
+        catch(Throwable $error) { error_log('[API inventario] ' . $error->getMessage()); ApiResponse::send(500,'error','No se pudo completar la operación de inventario.'); }
         finally { $connector->desconectar(); }
     }
 }

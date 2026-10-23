@@ -83,8 +83,8 @@ final class PrestamosController extends ApiController
 
             $this->methodNotAllowed(['GET', 'POST', 'PUT', 'DELETE']);
         } catch (Throwable $error) {
-            error_log($error->getMessage());
-            ApiResponse::send(500, 'error', 'No se pudo completar la operación de préstamos.');
+            error_log('[API prestamos] ' . $error->getMessage());
+            ApiResponse::send(500, 'error', 'No se pudo completar la operación de préstamos. Comprueba las columnas de prestamo, equipo y usuario.');
         } finally {
             $connector->desconectar();
         }

@@ -123,15 +123,7 @@
                                 Seleccione
                             </option>
 
-                            <?php foreach ($laboratorios as $laboratorio): ?>
-
-                                <option
-                                    value="<?= htmlspecialchars($laboratorio["idLaboratorio"]) ?>"
-                                >
-                                    <?= htmlspecialchars($laboratorio["nombre"]) ?>
-                                </option>
-
-                            <?php endforeach; ?>
+                            <option value="">Cargando laboratorios...</option>
 
                         </select>
 
@@ -162,15 +154,9 @@
                                 Seleccione
                             </option>
 
-                            <?php foreach ($prioridades as $prioridad): ?>
-
-                                <option
-                                    value="<?= htmlspecialchars($prioridad["nombre"]) ?>"
-                                >
-                                    <?= htmlspecialchars($prioridad["nombre"]) ?>
-                                </option>
-
-                            <?php endforeach; ?>
+                            <option value="Baja">Baja</option>
+                            <option value="Media" selected>Media</option>
+                            <option value="Alta">Alta</option>
 
                         </select>
 

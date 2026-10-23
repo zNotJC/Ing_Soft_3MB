@@ -42,7 +42,7 @@
         </h1>
 
         <p>
-            El Docente solicita préstamos, el Técnico los gestiona y el Administrador solo los consulta.
+            <?php if ($esDocente): ?>Solicita un préstamo seleccionando el tipo de dispositivo y uno de los equipos disponibles.<?php elseif ($esTecnico): ?>Gestiona los préstamos, sus estados y las devoluciones.<?php else: ?>Consulta los préstamos registrados.<?php endif; ?>
         </p>
 
         <?php if ($esDocente): ?>

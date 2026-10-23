@@ -80,8 +80,8 @@ final class TicketsController extends ApiController
 
             $this->methodNotAllowed(['GET', 'POST', 'PUT', 'DELETE']);
         } catch (Throwable $error) {
-            error_log($error->getMessage());
-            ApiResponse::send(500, 'error', 'No se pudo completar la operación de tickets.');
+            error_log('[API tickets] ' . $error->getMessage());
+            ApiResponse::send(500, 'error', 'No se pudo completar la operación de tickets. Comprueba las columnas de ticket, laboratorio y usuario.');
         } finally {
             $connector->desconectar();
         }

@@ -8,8 +8,8 @@ class AccesoDatosEquipos
 
     public function listar(): array
     {
-        $sql = "SELECT e.idEquipo, e.nombre, e.idLaboratorio, l.nombre AS laboratorio, e.tipo, e.estado
-                FROM equipo e INNER JOIN laboratorio l ON l.idLaboratorio=e.idLaboratorio
+        $sql = "SELECT e.idEquipo, e.nombre, e.idLaboratorio, COALESCE(l.nombre, 'Sin laboratorio asignado') AS laboratorio, e.tipo, e.estado
+                FROM equipo e LEFT JOIN laboratorio l ON l.idLaboratorio=e.idLaboratorio
                 ORDER BY e.tipo, e.nombre";
         return $this->conexion->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }

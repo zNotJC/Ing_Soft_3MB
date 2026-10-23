@@ -49,12 +49,14 @@ function aplicarFiltros() {
 
 async function cargarHistorial() {
     try {
-        const respuesta = await fetch("api/historial.php", { headers: { Accept: "application/json" } });
-        const resultado = await respuesta.json();
-        if (!respuesta.ok || resultado.status !== "success" || !Array.isArray(resultado.data)) {
+        const respuesta = await fetch("api/historial.php", { headers: { Accept: "application/json" }, cache: "no-store" });
+        const texto = await respuesta.text();
+        let resultado;
+        try { resultado = JSON.parse(texto); } catch { throw new Error(`Respuesta inválida del servidor (HTTP ${respuesta.status}).`); }
+        if (!respuesta.ok || resultado.status !== "success" || !Array.isArray(resultado.data?.historial)) {
             throw new Error(resultado.message || "No se pudo cargar el historial.");
         }
-        renderizarHistorial(resultado.data);
+        renderizarHistorial(resultado.data.historial);
         aplicarFiltros();
     } catch (error) {
         console.error(error);

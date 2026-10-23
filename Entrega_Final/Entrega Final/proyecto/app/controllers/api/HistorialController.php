@@ -14,10 +14,10 @@ final class HistorialController extends ApiController
         [$connector, $connection] = $this->connect();
         try {
             $model = new AccesoDatosHistorial($connection);
-            ApiResponse::send(200, 'success', 'Historial consultado correctamente.', $model->obtenerHistorial());
+            ApiResponse::send(200, 'success', 'Historial consultado correctamente.', ['historial' => $model->obtenerHistorial()]);
         } catch (Throwable $error) {
-            error_log($error->getMessage());
-            ApiResponse::send(500, 'error', 'No se pudo cargar el historial.');
+            error_log('[API historial] ' . $error->getMessage());
+            ApiResponse::send(500, 'error', 'No se pudo cargar el historial. Comprueba el esquema de las tablas ticket, solicitud y prestamo.');
         } finally {
             $connector->desconectar();
         }
