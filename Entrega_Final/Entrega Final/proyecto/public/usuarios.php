@@ -5,4 +5,4 @@ if (empty($_SESSION['cedula']) || empty($_SESSION['administrador'])) {
     header('Location: index.php?error=permisos');
     exit;
 }
-require __DIR__ . '/../app/views/usuarios.html';
+require __DIR__ . '/../app/vistas/usuarios.html';

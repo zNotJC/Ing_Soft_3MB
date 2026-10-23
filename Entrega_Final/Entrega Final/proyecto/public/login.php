@@ -1,3 +1,3 @@
 <?php
 
-require_once __DIR__ . '/../app/controllers/procesarLogin.php';
+require_once __DIR__ . '/../app/controladores/procesarLogin.php';

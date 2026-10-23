@@ -1,5 +1,5 @@
 <?php
 
-require_once __DIR__ . "/../app/controllers/procesarAltaSolicitud.php";
+require_once __DIR__ . "/../app/controladores/procesarAltaSolicitud.php";
 
 ?>

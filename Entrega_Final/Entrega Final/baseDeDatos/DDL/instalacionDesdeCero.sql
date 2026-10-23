@@ -36,7 +36,7 @@ CREATE TABLE laboratorio (
   idLaboratorio INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(50) NOT NULL UNIQUE,
   estado VARCHAR(30) NOT NULL DEFAULT 'Disponible',
-  CONSTRAINT chk_laboratorio_estado CHECK (estado IN ('Disponible','No disponible'))
+  CONSTRAINT chk_laboratorio_estado CHECK (estado IN ('Disponible','En uso'))
 ) ENGINE=InnoDB;
 CREATE TABLE equipo (
   idEquipo INT AUTO_INCREMENT PRIMARY KEY,
@@ -45,7 +45,7 @@ CREATE TABLE equipo (
   tipo VARCHAR(50) NOT NULL DEFAULT 'Ordenadores',
   estado VARCHAR(30) NOT NULL DEFAULT 'Disponible',
   CONSTRAINT fk_equipo_laboratorio FOREIGN KEY (idLaboratorio) REFERENCES laboratorio(idLaboratorio) ON DELETE SET NULL,
-  CONSTRAINT chk_equipo_estado CHECK (estado IN ('Disponible','No disponible','Roto','En uso'))
+  CONSTRAINT chk_equipo_estado CHECK (estado IN ('Disponible','En uso','Roto'))
 ) ENGINE=InnoDB;
 
 CREATE TABLE ticket (
@@ -56,7 +56,7 @@ CREATE TABLE ticket (
   fechaLimite DATE NULL,
   cedulaSolicitante CHAR(8) NOT NULL,
   idLaboratorio INT NOT NULL,
-  idEquipo INT NULL,
+  idEquipo INT NOT NULL,
   prioridad VARCHAR(20) NOT NULL DEFAULT '-',
   estado VARCHAR(20) NOT NULL DEFAULT 'En espera',
   CONSTRAINT fk_ticket_solicitante FOREIGN KEY (cedulaSolicitante) REFERENCES usuario(cedula),
@@ -73,11 +73,17 @@ CREATE TABLE solicitud (
   descripcion VARCHAR(500) NOT NULL,
   cantidad INT NOT NULL DEFAULT 1,
   equipo VARCHAR(100) NULL,
-  fechaSolicitud DATE NOT NULL,
+  idLaboratorio INT NULL,
+  idEquipo INT NULL,
+  fechaSolicitud DATE NOT NULL DEFAULT (CURRENT_DATE),
   fechaNecesaria DATE NULL,
+  fechaInicio DATE NULL,
+  fechaFin DATE NULL,
   estado VARCHAR(20) NOT NULL DEFAULT 'En espera',
   respuesta VARCHAR(500) NULL,
   CONSTRAINT fk_solicitud_usuario FOREIGN KEY (cedulaUsuario) REFERENCES usuario(cedula),
+  CONSTRAINT fk_solicitud_laboratorio FOREIGN KEY (idLaboratorio) REFERENCES laboratorio(idLaboratorio),
+  CONSTRAINT fk_solicitud_equipo FOREIGN KEY (idEquipo) REFERENCES equipo(idEquipo),
   CONSTRAINT chk_solicitud_tipo CHECK (tipoSolicitud IN ('Laboratorio','Reparación')),
   CONSTRAINT chk_solicitud_cantidad CHECK (cantidad > 0),
   CONSTRAINT chk_solicitud_estado CHECK (estado IN ('En espera','Pendiente','Aprobada','Rechazada','Cancelada','Denegada'))
@@ -86,29 +92,36 @@ CREATE TABLE solicitud (
 CREATE TABLE prestamo (
   idPrestamo INT AUTO_INCREMENT PRIMARY KEY,
   idEquipo INT NOT NULL,
+  idLaboratorio INT NULL,
   cedulaUsuario CHAR(8) NOT NULL,
   fechaPrestamo DATE NOT NULL,
   fechaDevolucion DATE NOT NULL,
   estado VARCHAR(20) NOT NULL DEFAULT 'En espera',
   prioridad VARCHAR(20) NOT NULL DEFAULT '-',
   CONSTRAINT fk_prestamo_equipo FOREIGN KEY (idEquipo) REFERENCES equipo(idEquipo),
+  CONSTRAINT fk_prestamo_laboratorio FOREIGN KEY (idLaboratorio) REFERENCES laboratorio(idLaboratorio),
   CONSTRAINT fk_prestamo_usuario FOREIGN KEY (cedulaUsuario) REFERENCES usuario(cedula),
-  CONSTRAINT chk_prestamo_estado CHECK (estado IN ('En espera','Pendiente','Activo','Cancelado','Devuelto','Denegado')),
+  CONSTRAINT chk_prestamo_estado CHECK (estado IN ('En espera','Pendiente','Aceptado','Activo','Cancelado','Devuelto','Denegado')),
+
   CONSTRAINT chk_prestamo_prioridad CHECK (prioridad IN ('-','Baja','Media','Alta'))
 ) ENGINE=InnoDB;
 
 
--- Usuario administrador por defecto
-INSERT INTO usuario (cedula, usuario, correo, claveHash, activo, sesionActiva)
-VALUES (
-    '69696969',
-    'admin',
-    'admin@jojolos.com',
-    '$2y$12$XyQysBpYeGQUN72zWqjBle1Q49xF0XilV.U55COSQ/iPLK1qoIb2.',
-    1,
-    0
-);
 
--- Asignar rol de administrador
-INSERT INTO administrador (cedula)
-VALUES ('69696969');
+-- Usuarios iniciales para los tres roles (contraseña: clave123)
+INSERT INTO usuario (cedula, usuario, correo, claveHash, activo, sesionActiva) VALUES
+('69696969', 'admin', 'admin@jojolos.com', '$2y$12$dkc5b8xthsFX/kdQ2zBXcONZKFG/0Gm4O94tGEVYTYgPwcT9XFYlK', 1, 0),
+('65656565', 'técnico', 'tecnico@jojolos.com', '$2y$12$dkc5b8xthsFX/kdQ2zBXcONZKFG/0Gm4O94tGEVYTYgPwcT9XFYlK', 1, 0),
+('63636363', 'docente', 'docente@jojolos.com', '$2y$12$dkc5b8xthsFX/kdQ2zBXcONZKFG/0Gm4O94tGEVYTYgPwcT9XFYlK', 1, 0);
+
+INSERT INTO administrador (cedula) VALUES ('69696969');
+INSERT INTO tecnico (cedula) VALUES ('65656565');
+INSERT INTO docente (cedula) VALUES ('63636363');
+
+-- Laboratorio y equipos iniciales disponibles
+INSERT INTO laboratorio (nombre, estado) VALUES ('Laboratorio 1', 'Disponible');
+INSERT INTO equipo (nombre, idLaboratorio, tipo, estado) VALUES
+('PC1', 1, 'Ordenadores', 'Disponible'),
+('Periférico 1', 1, 'Periféricos', 'Disponible'),
+('Televisor 1', 1, 'Televisores', 'Disponible'),
+('Aire acondicionado 1', 1, 'Aires Acondicionados', 'Disponible');

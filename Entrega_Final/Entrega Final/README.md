@@ -1,42 +1,37 @@
 # JOJOLOS — Sistema de Gestión de Laboratorios
 
-## Estructura del proyecto
+Versión de trabajo: **v1.21**.
 
-- `baseDeDatos/DDL/`: definición de tablas e instalación desde cero.
-- `baseDeDatos/DML/`: inserciones y operaciones de modificación de datos de prueba.
-- `baseDeDatos/DQL/`: consultas SQL de recuperación de información.
-- `docs/`: documentación de apoyo y materiales de la tercera entrega.
-- `proyecto/app/config/`: conexión y configuración de la aplicación.
-- `proyecto/app/controllers/`: controladores PHP, incluidos los endpoints de la API.
-- `proyecto/app/models/`: acceso a datos y modelos.
-- `proyecto/app/core/`: clases comunes para respuestas y control de API.
-- `proyecto/app/routes/`: rutas de la API.
-- `proyecto/app/views/`: vistas renderizadas por PHP.
-- `proyecto/public/`: entrada web, recursos CSS/JavaScript y endpoints públicos de API.
+## Estructura principal
+
+- `baseDeDatos/`: scripts DDL, DML y DQL.
+- `documentacion/`: documentación técnica consolidada.
+- `proyecto/`: aplicación PHP, API, vistas, modelos, controladores y recursos públicos.
 
 ## Instalación desde cero
 
 1. Crear una base de datos vacía en MySQL.
 2. Ejecutar `baseDeDatos/DDL/instalacionDesdeCero.sql`.
-3. Configurar las variables de conexión en `proyecto/.env` (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASS`).
-4. Verificar que PHP tenga habilitadas las extensiones PDO y PDO MySQL.
-5. Instalar dependencias con Composer si no se distribuye `vendor/` en el entorno.
-6. Configurar el servidor web para servir `proyecto/public/`. Si se accede por la carpeta `proyecto`, `proyecto/index.php` redirige a `public/index.php`.
+3. Configurar la conexión en `proyecto/.env`.
+4. Configurar el servidor web para apuntar a `proyecto/public`.
+5. Iniciar sesión con una de las cuentas iniciales.
 
-## Cuenta inicial
+### Cuentas iniciales
 
-- Usuario: `admin`
-- Cédula: `69696969`
-- Contraseña inicial: `clave123`
+| Rol | Cédula | Usuario | Contraseña |
+|---|---|---|---|
+| Administrador | `69696969` | `admin` | `clave123` |
+| Técnico | `65656565` | `técnico` | `clave123` |
+| Docente | `63636363` | `docente` | `clave123` |
 
-Cambiar la contraseña tras el primer ingreso. Esta cuenta se inserta por el script de instalación desde cero.
+## Historial de versiones documentales
 
-## Estados de trabajo
+- v1.2: estructura inicial del proyecto.
+- v1.13: documentación de consultas y persistencia.
+- v1.14: documentación de API REST.
+- v1.18: revisión de flujos de tickets y préstamos.
+- v1.19: ajustes de validación y filtros.
+- v1.20: organización inicial de la documentación.
+- **v1.21: ajustes de estados, cuentas iniciales, idioma/tema y organización de capas.**
 
-- Tickets, solicitudes y préstamos nuevos se registran como `En espera`.
-- La prioridad inicial de tickets y préstamos es `-` hasta que el Técnico la establezca durante la revisión.
-- Las transiciones disponibles dependen del rol y de las validaciones del endpoint correspondiente.
-
-## API
-
-Los endpoints se encuentran en `proyecto/public/api/` y responden JSON con `status`, `message` y `data`. Los métodos HTTP utilizados para operaciones CRUD son GET, POST, PUT y DELETE según el recurso.
+La documentación completa se encuentra en `DOCUMENTACION_JOJOLOS.md`.

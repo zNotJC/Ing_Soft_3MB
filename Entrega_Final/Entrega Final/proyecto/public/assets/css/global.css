@@ -215,3 +215,20 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 @media (min-width: 1200px) { .site-header .navbar-nav { flex-wrap: nowrap; } }
 
 .modal-ticket[hidden], [hidden] { display: none !important; }
+
+
+/* Preferencias de accesibilidad y tema */
+.controles-preferencias {
+  position: fixed; z-index: 2000; top: 12px; right: 12px;
+  display: flex; gap: 8px; padding: 6px; border-radius: 12px;
+  background: rgba(255,255,255,.94); box-shadow: 0 2px 12px rgba(0,0,0,.18);
+}
+.btn-preferencia { border: 1px solid #6c757d; border-radius: 8px; padding: 7px 10px; cursor: pointer; background: #fff; color: #212529; }
+.tema-oscuro { background: #121820 !important; color: #e9eef5 !important; }
+.tema-oscuro main, .tema-oscuro section, .tema-oscuro article, .tema-oscuro .modal-contenido,
+.tema-oscuro .table, .tema-oscuro .card { background-color: #1d2733 !important; color: #e9eef5 !important; }
+.tema-oscuro input, .tema-oscuro select, .tema-oscuro textarea { background: #253242 !important; color: #fff !important; border-color: #586779 !important; }
+.tema-oscuro a { color: #9cc5ff; }
+.tema-oscuro .controles-preferencias { background: #202a36; }
+.tema-oscuro .btn-preferencia { background: #253242; color: #fff; border-color: #8a9aad; }
+@media (max-width: 600px) { .controles-preferencias { top: 6px; right: 6px; } .btn-preferencia { padding: 5px 7px; font-size: .8rem; } }

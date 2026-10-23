@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../../app/bootstrap.php';
-require_once __DIR__ . '/../../app/core/ApiResponse.php';
-require_once __DIR__ . '/../../app/models/ConectorPDO.php';
+require_once __DIR__ . '/../../app/nucleo/ApiResponse.php';
+require_once __DIR__ . '/../../app/modelos/ConectorPDO.php';
 if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
 if (empty($_SESSION['cedula']) || (($_SESSION['rol'] ?? '') !== 'Administrador')) {
     ApiResponse::send(403, 'error', 'Solo el Administrador puede consultar el diagnóstico de esquema.');

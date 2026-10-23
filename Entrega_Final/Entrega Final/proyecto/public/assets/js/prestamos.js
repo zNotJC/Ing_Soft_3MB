@@ -41,7 +41,7 @@ function renderizar(prestamos) {
             if (!p.prioridad || p.prioridad === '-') acciones.append(boton('Revisar préstamo', 'btn btn-sm btn-primary', 'revisar', p.idPrestamo));
             else acciones.append(boton('Aceptar', 'btn btn-sm btn-success', 'aceptar', p.idPrestamo), boton('Denegar', 'btn btn-sm btn-danger', 'denegar', p.idPrestamo));
         }
-        if (esTecnico && p.estado === 'Activo') acciones.append(boton('Registrar devolución', 'btn btn-sm btn-secondary', 'devolver', p.idPrestamo));
+        if (esTecnico && ['Aceptado', 'Activo'].includes(p.estado)) acciones.append(boton('Registrar devolución', 'btn btn-sm btn-secondary', 'devolver', p.idPrestamo));
         if (esTecnico && ['En espera', 'Pendiente'].includes(p.estado)) acciones.append(boton('Cancelar', 'btn btn-sm btn-danger', 'cancelar', p.idPrestamo));
         tr.append(acciones); tabla.append(tr);
     });
