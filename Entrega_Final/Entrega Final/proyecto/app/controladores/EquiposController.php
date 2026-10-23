@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/../../nucleo/ApiController.php';
-require_once __DIR__ . '/../../modelos/AccesoDatosEquipos.php';
-require_once __DIR__ . '/../../modelos/AccesoDatosCatalogos.php';
+require_once __DIR__ . '/../nucleo/ApiController.php';
+require_once __DIR__ . '/../modelos/AccesoDatosEquipos.php';
+require_once __DIR__ . '/../modelos/AccesoDatosCatalogos.php';
 
 final class EquiposController extends ApiController
 {
@@ -15,7 +15,7 @@ final class EquiposController extends ApiController
         [$connector,$connection]=$this->connect();
         try {
             $equipos=new AccesoDatosEquipos($connection); $labs=new AccesoDatosCatalogos($connection);
-            if ($method==='GET') ApiResponse::send(200,'success','Inventario consultado correctamente.',['equipos'=>$equipos->listar(),'laboratorios'=>$equipos->laboratorios(),'tipos'=>self::TIPOS,'estados'=>self::ESTADOS]);
+            if ($method==='GET') ApiResponse::send(200,'success','Inventario consultado correctamente.',['equipos'=>$equipos->listar(),'laboratorios'=>$equipos->laboratorios(),'laboratoriosDisponibles'=>$equipos->laboratoriosDisponibles(),'tipos'=>self::TIPOS,'estados'=>self::ESTADOS]);
             if ($role!=='Administrador') ApiResponse::send(403,'error','Solo el Administrador puede modificar el inventario.');
             $input=ApiResponse::input(); $tipoInventario=(string)($input['tipoInventario']??'Equipo');
             if ($tipoInventario==='Laboratorio') {

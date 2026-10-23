@@ -1,7 +1,8 @@
 <?php
 
-require_once __DIR__ . '/../../nucleo/ApiController.php';
-require_once __DIR__ . '/../../modelos/AccesoDatosSolicitudes.php';
+require_once __DIR__ . '/../nucleo/ApiController.php';
+require_once __DIR__ . '/../modelos/AccesoDatosSolicitudes.php';
+require_once __DIR__ . '/../modelos/AccesoDatosEquipos.php';
 
 final class SolicitudesController extends ApiController
 {
@@ -23,15 +24,21 @@ final class SolicitudesController extends ApiController
                 }
                 $tipo = $this->requiredString($input, 'tipoSolicitud', 30);
                 $descripcion = $this->requiredString($input, 'descripcion', 500);
-                $cantidad = filter_var($input['cantidad'] ?? 1, FILTER_VALIDATE_INT);
                 $equipo = trim((string) ($input['equipo'] ?? '')) ?: null;
                 $fechaSolicitud = (string) ($input['fechaSolicitud'] ?? date('Y-m-d'));
                 $fechaNecesaria = trim((string) ($input['fechaNecesaria'] ?? '')) ?: null;
                 $tipos = ['Laboratorio', 'Reparación'];
-                if (!in_array($tipo, $tipos, true) || !$cantidad || $cantidad < 1 || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaSolicitud)) {
+                if (!in_array($tipo, $tipos, true) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaSolicitud)) {
                     ApiResponse::send(422, 'error', 'Los datos de la solicitud no son válidos.');
                 }
-                $model->crearSolicitud((string) $_SESSION['cedula'], $tipo, $descripcion, (int) $cantidad, $equipo, $fechaSolicitud, $fechaNecesaria);
+                if ($tipo === 'Laboratorio' && (!$fechaNecesaria || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaNecesaria) || $fechaNecesaria < date('Y-m-d'))) {
+                    ApiResponse::send(422, 'error', 'Indica un día válido para solicitar el laboratorio.');
+                }
+                if ($tipo === 'Laboratorio') {
+                    $inventario = new AccesoDatosEquipos($connection);
+                    if (!$equipo || !$inventario->laboratorioDisponiblePorNombre($equipo)) ApiResponse::send(422, 'error', 'Selecciona un laboratorio disponible.');
+                }
+                $model->crearSolicitud((string) $_SESSION['cedula'], $tipo, $descripcion, $equipo, $fechaSolicitud, $fechaNecesaria);
                 ApiResponse::send(201, 'success', 'Solicitud registrada correctamente.', ['idSolicitud' => (int) $connection->lastInsertId()]);
             }
             if ($method === 'PUT') {
@@ -46,13 +53,16 @@ final class SolicitudesController extends ApiController
                 } elseif ($role === 'Docente') {
                     $tipo = $this->requiredString($input, 'tipoSolicitud', 30);
                     $descripcion = $this->requiredString($input, 'descripcion', 500);
-                    $cantidad = filter_var($input['cantidad'] ?? null, FILTER_VALIDATE_INT);
                     $equipo = trim((string) ($input['equipo'] ?? '')) ?: null;
                     $fechaNecesaria = trim((string) ($input['fechaNecesaria'] ?? '')) ?: null;
-                    if (!$cantidad || $cantidad < 1) {
-                        ApiResponse::send(422, 'error', 'La cantidad debe ser mayor que cero.');
+                    if ($tipo === 'Laboratorio' && (!$fechaNecesaria || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaNecesaria) || $fechaNecesaria < date('Y-m-d'))) {
+                        ApiResponse::send(422, 'error', 'Indica un día válido para solicitar el laboratorio.');
                     }
-                    $updated = $model->modificarSolicitud($id, $tipo, $descripcion, (int) $cantidad, $equipo, $fechaNecesaria, (string) $_SESSION['cedula']);
+                    if ($tipo === 'Laboratorio') {
+                        $inventario = new AccesoDatosEquipos($connection);
+                        if (!$equipo || !$inventario->laboratorioDisponiblePorNombre($equipo)) ApiResponse::send(422, 'error', 'Selecciona un laboratorio disponible.');
+                    }
+                    $updated = $model->modificarSolicitud($id, $tipo, $descripcion, $equipo, $fechaNecesaria, (string) $_SESSION['cedula']);
                 } else {
                     ApiResponse::send(403, 'error', 'El Administrador no gestiona solicitudes.');
                 }

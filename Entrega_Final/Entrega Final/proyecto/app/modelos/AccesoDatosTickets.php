@@ -20,15 +20,10 @@ class AccesoDatosTickets
                 t.titulo,
                 t.descripcion,
                 t.fechaRegistro,
-                t.fechaLimite,
+                t.fechaLimite AS fechaAtencion,
                 l.nombre AS laboratorio,
                 t.prioridad,
-                CASE
-                    WHEN t.estado NOT IN ('Resuelto', 'Cancelado')
-                         AND t.fechaLimite < CURDATE()
-                    THEN 'Vencido'
-                    ELSE t.estado
-                END AS estado,
+                t.estado AS estado,
                 u.usuario AS solicitante
             FROM ticket AS t
             INNER JOIN usuario AS u ON u.cedula = t.cedulaSolicitante
@@ -42,7 +37,7 @@ class AccesoDatosTickets
     public function obtenerLaboratorios(): array
     {
         return $this->conexion->query(
-            "SELECT idLaboratorio, nombre FROM laboratorio ORDER BY nombre"
+            "SELECT idLaboratorio, nombre FROM laboratorio WHERE estado = 'Disponible' ORDER BY nombre"
         )->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -63,7 +58,6 @@ class AccesoDatosTickets
     public function crearTicket(
         string $titulo,
         string $descripcion,
-        ?string $fechaLimite,
         string $cedulaSolicitante,
         int $idLaboratorio,
         string $prioridad,
@@ -80,6 +74,11 @@ class AccesoDatosTickets
         if (!$idEquipo || (int)$verificar->fetchColumn() !== 1) {
             throw new InvalidArgumentException('Selecciona un equipo registrado en el laboratorio elegido.');
         }
+        $verificarLaboratorio = $this->conexion->prepare("SELECT COUNT(*) FROM laboratorio WHERE idLaboratorio = :idLaboratorio AND estado = 'Disponible'");
+        $verificarLaboratorio->execute(['idLaboratorio' => $idLaboratorio]);
+        if ((int)$verificarLaboratorio->fetchColumn() !== 1) {
+            throw new InvalidArgumentException('El laboratorio seleccionado no está disponible.');
+        }
         $consulta = $this->conexion->prepare($sql);
         $consulta->execute([
             'titulo' => $titulo,
@@ -91,10 +90,17 @@ class AccesoDatosTickets
     }
 
 
-    public function revisarTicket(int $idTicket, string $prioridad, string $fechaLimite): bool
+    public function aceptarTicket(int $idTicket, string $prioridad): bool
     {
-        $q = $this->conexion->prepare("UPDATE ticket SET prioridad=:prioridad, fechaLimite=:fecha WHERE idTicket=:id AND estado='En espera'");
-        $q->execute(['prioridad'=>$prioridad, 'fecha'=>$fechaLimite, 'id'=>$idTicket]);
+        $q = $this->conexion->prepare("UPDATE ticket SET prioridad=:prioridad, fechaLimite=CURDATE(), estado='En Proceso' WHERE idTicket=:id AND estado IN ('En espera','Pendiente')");
+        $q->execute(['prioridad'=>$prioridad, 'id'=>$idTicket]);
+        return $q->rowCount() > 0;
+    }
+
+    public function denegarTicket(int $idTicket, string $prioridad): bool
+    {
+        $q = $this->conexion->prepare("UPDATE ticket SET prioridad=:prioridad, estado='Denegado' WHERE idTicket=:id AND estado IN ('En espera','Pendiente')");
+        $q->execute(['prioridad'=>$prioridad, 'id'=>$idTicket]);
         return $q->rowCount() > 0;
     }
 

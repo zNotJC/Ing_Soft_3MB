@@ -155,6 +155,21 @@
 
     <?php if ($esTecnico): ?>
 
+        <dialog id="dialogRevisionPrestamo">
+            <h2>Revisar préstamo</h2>
+            <p><strong>Equipo:</strong> <span id="revisionPrestamoEquipo"></span></p>
+            <p><strong>Solicitante:</strong> <span id="revisionPrestamoSolicitante"></span></p>
+            <label for="revisionPrestamoPrioridad">Prioridad</label>
+            <select id="revisionPrestamoPrioridad" required>
+                <option value="">Seleccione</option>
+                <option value="Baja">Baja</option>
+                <option value="Media">Media</option>
+                <option value="Alta">Alta</option>
+            </select>
+            <button type="button" id="guardarRevisionPrestamo">Guardar prioridad</button>
+            <button type="button" id="cerrarRevisionPrestamo">Cerrar</button>
+        </dialog>
+
         <div
             id="modalModificarPrestamo"
             class="modal-ticket"

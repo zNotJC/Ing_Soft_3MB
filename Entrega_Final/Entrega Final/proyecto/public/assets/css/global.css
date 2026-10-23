@@ -295,3 +295,20 @@ body.tema-oscuro .alert-danger { background-color: #542b35; color: #ffe4e8; bord
 body.tema-oscuro .alert-warning { background-color: #4b3a1e; color: #fff0c2; border-color: #80642d; }
 body.tema-oscuro .alert-success { background-color: #1e4739; color: #d8f8e9; border-color: #34795e; }
 body.tema-oscuro .alert-info { background-color: #193b50; color: #d8f1ff; border-color: #2e6688; }
+
+/* Superficies comunes para que los paneles mantengan el mismo contraste en ambos temas. */
+:root { --panel-bg: #fff; --panel-fg: #172033; --panel-border: #d8dee8; }
+body.tema-oscuro { --panel-bg: #1f2937; --panel-fg: #f3f4f6; --panel-border: #475569; }
+.modal-contenido, dialog, .card, form { background-color: var(--panel-bg); color: var(--panel-fg); border-color: var(--panel-border); }
+.modal-contenido :is(h1,h2,h3,p,label,strong), dialog :is(h1,h2,h3,p,label,strong) { color: var(--panel-fg); }
+dialog#dialogTicket, dialog#dialogRevisionTicket, dialog#dialogRevisionPrestamo {
+  position: fixed; inset: 0; margin: auto; width: min(680px, calc(100vw - 32px));
+  max-width: 680px; max-height: min(85vh, 760px); overflow: auto;
+  border: 1px solid var(--panel-border); border-radius: 14px; padding: 28px;
+  box-shadow: 0 18px 60px rgba(0,0,0,.35); color: var(--panel-fg);
+}
+dialog#dialogRevisionTicket, dialog#dialogRevisionPrestamo { width: min(560px, calc(100vw - 32px)); }
+dialog#dialogTicket::backdrop, dialog#dialogRevisionTicket::backdrop, dialog#dialogRevisionPrestamo::backdrop { background: rgba(0,0,0,.58); }
+dialog#dialogRevisionTicket button, dialog#dialogRevisionPrestamo button { margin: .35rem .35rem .1rem 0; }
+body.tema-oscuro .modal-contenido { background-color: var(--panel-bg); color: var(--panel-fg); }
+@media (max-width: 576px) { dialog#dialogTicket, dialog#dialogRevisionTicket, dialog#dialogRevisionPrestamo { padding: 20px; } }

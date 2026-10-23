@@ -18,7 +18,6 @@ class AccesoDatosSolicitudes
                 u.usuario AS nombre,
                 s.tipoSolicitud,
                 s.descripcion,
-                s.cantidad,
                 s.equipo,
                 s.fechaSolicitud,
                 s.fechaNecesaria,
@@ -47,7 +46,6 @@ class AccesoDatosSolicitudes
                 cedulaUsuario,
                 tipoSolicitud,
                 descripcion,
-                cantidad,
                 equipo,
                 fechaSolicitud,
                 fechaNecesaria,
@@ -74,7 +72,6 @@ class AccesoDatosSolicitudes
         string $cedulaUsuario,
         string $tipoSolicitud,
         string $descripcion,
-        int $cantidad,
         ?string $equipo,
         string $fechaSolicitud,
         ?string $fechaNecesaria
@@ -97,7 +94,7 @@ class AccesoDatosSolicitudes
                 :cedulaUsuario,
                 :tipoSolicitud,
                 :descripcion,
-                :cantidad,
+                1,
                 :equipo,
                 :fechaSolicitud,
                 :fechaNecesaria,
@@ -112,7 +109,6 @@ class AccesoDatosSolicitudes
             "cedulaUsuario" => $cedulaUsuario,
             "tipoSolicitud" => $tipoSolicitud,
             "descripcion" => $descripcion,
-            "cantidad" => $cantidad,
             "equipo" => $equipo,
             "fechaSolicitud" => $fechaSolicitud,
             "fechaNecesaria" => $fechaNecesaria
@@ -123,7 +119,6 @@ class AccesoDatosSolicitudes
         int $idSolicitud,
         string $tipoSolicitud,
         string $descripcion,
-        int $cantidad,
         ?string $equipo,
         ?string $fechaNecesaria,
         ?string $cedulaUsuario = null
@@ -134,7 +129,7 @@ class AccesoDatosSolicitudes
             SET
                 tipoSolicitud = :tipoSolicitud,
                 descripcion = :descripcion,
-                cantidad = :cantidad,
+                cantidad = 1,
                 equipo = :equipo,
                 fechaNecesaria = :fechaNecesaria
             WHERE idSolicitud = :idSolicitud
@@ -149,7 +144,6 @@ class AccesoDatosSolicitudes
             "idSolicitud" => $idSolicitud,
             "tipoSolicitud" => $tipoSolicitud,
             "descripcion" => $descripcion,
-            "cantidad" => $cantidad,
             "equipo" => $equipo,
             "fechaNecesaria" => $fechaNecesaria
         ] + ($cedulaUsuario !== null ? ["cedulaUsuario" => $cedulaUsuario] : []));

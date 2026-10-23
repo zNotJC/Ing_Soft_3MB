@@ -1,12 +1,16 @@
 # JOJOLOS — Sistema de Gestión de Laboratorios
 
-Versión de trabajo: **v1.22**.
+Versión de trabajo: **v1.24**.
+
+Este directorio es una copia de trabajo independiente; las carpetas v1.22 y v1.23 se conservan sin cambios.
+
+Consulta [CORRECCIONES_v1.24.md](CORRECCIONES_v1.24.md) para el detalle de los cambios de esta versión.
 
 ## Estructura principal
 
 - `baseDeDatos/`: scripts DDL, DML y DQL.
-- `documentacion/`: documentación técnica consolidada.
-- `proyecto/`: aplicación PHP, API, vistas, modelos, controladores y recursos públicos.
+- `docs/` y `DOCUMENTACION_JOJOLOS.md`: documentación técnica consolidada.
+- `proyecto/`: backend PHP bajo `app/` y recursos públicos bajo `public/`; `public/index.html` es el login y `public/index.php` es el punto de entrada.
 
 ## Instalación desde cero
 
@@ -33,5 +37,12 @@ Versión de trabajo: **v1.22**.
 - v1.19: ajustes de validación y filtros.
 - v1.20: organización inicial de la documentación.
 - **v1.22: ajustes de estados, cuentas iniciales, idioma/tema y organización de capas.**
+- **v1.24: mejoras de traducción, paneles, solicitudes, disponibilidad de laboratorios y flujos de revisión.**
 
 La documentación completa se encuentra en `DOCUMENTACION_JOJOLOS.md`.
+# JOJOLOS_PREFINAL_v1.24
+
+Esta es la copia de trabajo para la versión 1.24. Conserva las versiones anteriores por separado.
+
+Consulta [CORRECCIONES_v1.24.md](CORRECCIONES_v1.24.md) para ver los cambios y las comprobaciones.
+

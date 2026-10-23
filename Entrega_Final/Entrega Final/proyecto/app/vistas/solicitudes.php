@@ -120,7 +120,7 @@
                             <select id="laboratorioSolicitud" class="form-select"><option value="">Seleccione un laboratorio</option></select>
                         </div>
                         <div class="mt-3" id="grupoReparacionSolicitud" hidden>
-                            <label for="tipoEquipoSolicitud">Tipo de equipo</label>
+                            <label for="tipoEquipoSolicitud">Tipo de equipo (opcional)</label>
                             <select id="tipoEquipoSolicitud" class="form-select"><option value="">Seleccione un tipo</option><option>Ordenadores</option><option>Periféricos</option><option>Televisores</option><option>Aires Acondicionados</option></select>
                             <label for="equipoSolicitud" class="mt-2">Equipo a reparar</label>
                             <select id="equipoSolicitud" class="form-select"><option value="">Seleccione un equipo</option></select>
@@ -143,29 +143,12 @@
 
                     </div>
 
-                    <div>
-
-                        <label for="cantidad">
-                            Cantidad
-                        </label>
-
-                        <input
-                            type="number"
-                            id="cantidad"
-                            name="cantidad"
-                            min="1"
-                            value="1"
-                            required
-                        >
-
-                    </div>
-
                     <input type="hidden" id="equipo" name="equipo" value="">
 
-                    <div>
+                    <div id="grupoFechaNecesaria" hidden>
 
-                        <label for="fechaNecesaria">
-                            Fecha Necesaria
+                        <label for="fechaNecesaria" id="etiquetaFechaNecesaria">
+                            Día solicitado
                         </label>
 
                         <input
@@ -257,38 +240,22 @@
 
                     </div>
 
-                    <div>
-
-                        <label for="modificarCantidad">
-                            Cantidad
-                        </label>
-
-                        <input
-                            type="number"
-                            id="modificarCantidad"
-                            name="cantidad"
-                            min="1"
-                            required
-                        >
-
-                    </div>
-
                     <div class="mt-3" id="grupoLaboratorioModificarSolicitud" hidden>
                         <label for="laboratorioModificarSolicitud">Laboratorio</label>
                         <select id="laboratorioModificarSolicitud" class="form-select"><option value="">Seleccione un laboratorio</option></select>
                     </div>
                     <div class="mt-3" id="grupoReparacionModificarSolicitud" hidden>
-                        <label for="tipoEquipoModificarSolicitud">Tipo de equipo</label>
+                        <label for="tipoEquipoModificarSolicitud">Tipo de equipo (opcional)</label>
                         <select id="tipoEquipoModificarSolicitud" class="form-select"><option value="">Seleccione un tipo</option><option>Ordenadores</option><option>Periféricos</option><option>Televisores</option><option>Aires Acondicionados</option></select>
                         <label for="equipoModificarSolicitud" class="mt-2">Equipo</label>
                         <select id="equipoModificarSolicitud" class="form-select"><option value="">Seleccione un equipo</option></select>
                     </div>
                     <input type="hidden" id="modificarEquipo" name="equipo" value="">
 
-                    <div>
+                    <div id="grupoModificarFechaNecesaria" hidden>
 
-                        <label for="modificarFechaNecesaria">
-                            Fecha Necesaria
+                        <label for="modificarFechaNecesaria" id="etiquetaModificarFechaNecesaria">
+                            Día solicitado
                         </label>
 
                         <input
@@ -387,10 +354,6 @@
                     </th>
 
                     <th>
-                        Cantidad
-                    </th>
-
-                    <th>
                         Equipo/Recurso
                     </th>
 
@@ -399,7 +362,7 @@
                     </th>
 
                     <th>
-                        Fecha Necesaria
+                        Día solicitado
                     </th>
 
                     <th>
@@ -421,7 +384,7 @@
             <tbody id="tablaSolicitudes">
 
                 <tr id="cargandoSolicitudes">
-                    <td colspan="11">
+                    <td colspan="10">
                         Cargando solicitudes...
                     </td>
                 </tr>

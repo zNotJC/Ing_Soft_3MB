@@ -8,7 +8,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 
 function redirigirInicioSesion(string $error): never
 {
-    header('Location: index.php?error=' . rawurlencode($error));
+    header('Location: index.html?error=' . rawurlencode($error));
     exit;
 }
 
@@ -57,7 +57,7 @@ try {
     $accesoDatosUsuario->registrarAcceso($usuario->getCedula(), $_SESSION['rol']);
     $conectorPDO->desconectar();
 
-    header('Location: dashboard.php');
+    header('Location: paginas/dashboard.html');
     exit;
 } catch (PDOException $error) {
     error_log('Error de base de datos en el inicio de sesión: ' . $error->getMessage());

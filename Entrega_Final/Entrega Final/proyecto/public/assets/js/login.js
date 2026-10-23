@@ -1,76 +1,17 @@
-const formulario = document.getElementById("loginForm");
-
-formulario.addEventListener("submit", function (e) {
-
-    e.preventDefault();
-
-    const usuario = document.getElementById("usuario").value.trim();
-    const contrasena = document.getElementById("contrasena").value;
-
-    const usuarios =
-        JSON.parse(localStorage.getItem("usuarios")) || [];
-
-    const usuarioEncontrado = usuarios.find(
-        (u) =>
-            u.usuario === usuario &&
-            u.contrasena === contrasena &&
-            u.activo !== false
-    );
-
-    if (!usuarioEncontrado) {
-
-        alert(
-            "Usuario o contraseña incorrectos. Verifique los datos e intente nuevamente."
-        );
-
-        return;
-    }
-
-    console.log("LOGIN EJECUTADO");
-
-    const fechaAcceso =
-        new Date().toLocaleString();
-
-        localStorage.setItem(
-            "usuarioActivo",
-            JSON.stringify({
-                usuario: usuarioEncontrado.usuario,
-                rol: usuarioEncontrado.rol,
-                fechaAcceso: fechaAcceso
-            })
-        );
-
-        let historialAccesos =
-        JSON.parse(
-            localStorage.getItem("historialAccesos")
-        ) || [];
-        
-        console.log(
-            "Antes de agregar:",
-            historialAccesos.length
-        );
-
-        historialAccesos.push({
-
-            usuario: usuarioEncontrado.usuario,
-
-            rol: usuarioEncontrado.rol,
-
-            fechaAcceso: fechaAcceso
-
-        });
-
-        console.log(
-            "Después de agregar:",
-            historialAccesos.length
-        );
-
-        localStorage.setItem(
-            "historialAccesos",
-            JSON.stringify(historialAccesos)
-        );
-
-        window.location.href =
-        "dashboard.html";
-
-});
+(() => {
+  const mensajes = {
+    credenciales: 'La cédula o la contraseña son incorrectas.',
+    inactivo: 'El usuario se encuentra inactivo.',
+    sinroles: 'El usuario no tiene un rol asignado.',
+    acceso: 'Acceso no válido.',
+    permisos: 'Inicia sesión para continuar.',
+    bd: 'No se pudo completar el inicio de sesión. Verifica la conexión y la actualización de la base de datos.',
+    esquema: 'No se pudo completar el inicio de sesión. Verifica la conexión y la actualización de la base de datos.'
+  };
+  const error = new URLSearchParams(location.search).get('error');
+  const alerta = document.getElementById('loginError');
+  if (error && mensajes[error] && alerta) {
+    alerta.textContent = mensajes[error];
+    alerta.hidden = false;
+  }
+})();

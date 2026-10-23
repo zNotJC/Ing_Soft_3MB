@@ -3,9 +3,11 @@ const btnNuevo = document.getElementById('btnNuevoPrestamo');
 const cerrar = document.getElementById('cerrarModal');
 const form = document.getElementById('formPrestamo');
 const tabla = document.getElementById('tablaPrestamos');
+const dialogRevision = document.getElementById('dialogRevisionPrestamo');
 const esTecnico = document.body.dataset.esTecnico === 'true';
 const porId = new Map();
 let equipos = [];
+let prestamoEnRevision = null;
 
 function celda(valor) { const td = document.createElement('td'); td.textContent = valor ?? ''; return td; }
 function boton(texto, clase, accion, id) { const b = document.createElement('button'); b.type = 'button'; b.textContent = texto; b.className = clase; b.dataset.accionPrestamo = accion; b.dataset.idPrestamo = id; return b; }
@@ -35,6 +37,10 @@ function renderizar(prestamos) {
     prestamos.forEach(p => {
         porId.set(String(p.idPrestamo), p);
         const tr = document.createElement('tr');
+        tr.dataset.estadoOriginal = p.estado || '';
+        tr.dataset.nombreOriginal = p.nombre || '';
+        tr.dataset.equipoOriginal = p.equipo || '';
+        tr.dataset.cedulaOriginal = p.cedula || '';
         [p.idPrestamo, p.equipo, p.tipoEquipo, p.nombre, p.cedula, p.fechaPrestamo, p.fechaDevolucion, p.estado, p.prioridad].forEach(v => tr.append(celda(v)));
         const acciones = celda('');
         if (esTecnico && ['En espera', 'Pendiente'].includes(p.estado)) {
@@ -50,12 +56,19 @@ function renderizar(prestamos) {
 async function api(metodo, datos) {
     const opciones = { method: metodo, headers: { Accept: 'application/json' } };
     if (datos) { opciones.headers['Content-Type'] = 'application/json'; opciones.body = JSON.stringify(datos); }
-    const respuesta = await fetch('api/prestamos.php', { ...opciones, cache: 'no-store' });
+    const respuesta = await fetch('../index.php?api=prestamos', { ...opciones, cache: 'no-store' });
     let json; try { json = await respuesta.json(); } catch { throw new Error(`Respuesta inválida del servidor (HTTP ${respuesta.status}).`); }
     if (!respuesta.ok || json.status !== 'success') throw new Error(json.message || 'No se pudo completar la operación.');
     return json.data;
 }
 async function cargar() { try { const datos = await api('GET'); renderEquipos(datos.equipos || []); renderizar(datos.prestamos || []); } catch (e) { console.error(e); mensaje(e.message); } }
+function abrirRevisionPrestamo(prestamo) {
+    prestamoEnRevision = prestamo;
+    document.getElementById('revisionPrestamoEquipo').textContent = `${prestamo.equipo} (${prestamo.tipoEquipo})`;
+    document.getElementById('revisionPrestamoSolicitante').textContent = prestamo.nombre;
+    document.getElementById('revisionPrestamoPrioridad').value = '';
+    dialogRevision?.showModal();
+}
 function filtrarPrestamos() {
     const estado = document.getElementById('filtroEstado')?.value || '';
     const nombre = document.getElementById('filtroNombre')?.value || '';
@@ -63,7 +76,7 @@ function filtrarPrestamos() {
     const cedula = document.getElementById('filtroCedula')?.value || '';
     tabla.querySelectorAll('tr').forEach(tr => {
         if (tr.children.length < 9) return;
-        tr.hidden = Boolean((estado && tr.children[7].textContent !== estado) || (nombre && tr.children[3].textContent !== nombre) || (equipo && tr.children[1].textContent !== equipo) || (cedula && tr.children[4].textContent !== cedula));
+        tr.hidden = Boolean((estado && tr.dataset.estadoOriginal !== estado) || (nombre && tr.dataset.nombreOriginal !== nombre) || (equipo && tr.dataset.equipoOriginal !== equipo) || (cedula && tr.dataset.cedulaOriginal !== cedula));
     });
 }
 btnNuevo?.addEventListener('click', () => { form?.reset(); poblarEquipos(document.getElementById('idEquipo'), document.getElementById('tipoEquipoPrestamo')?.value || ''); if (modal) modal.hidden = false; });
@@ -75,12 +88,9 @@ tabla?.addEventListener('click', async e => {
     const idPrestamo = Number(b.dataset.idPrestamo), accion = b.dataset.accionPrestamo;
     try {
         if (accion === 'revisar') {
-            const prioridad = prompt('Selecciona prioridad: Baja, Media o Alta');
-            if (prioridad === null) return;
-            const normalizada = prioridad.trim().toLowerCase();
-            const valor = ({ baja: 'Baja', media: 'Media', alta: 'Alta' })[normalizada];
-            if (!valor) { alert('La prioridad debe ser Baja, Media o Alta.'); return; }
-            await api('PUT', { idPrestamo, accion: 'revisar', prioridad: valor });
+            const prestamo = porId.get(String(idPrestamo));
+            if (prestamo) abrirRevisionPrestamo(prestamo);
+            return;
         } else {
             if (accion === 'cancelar' && !confirm('¿Deseas cancelar este préstamo?')) return;
             if (accion === 'denegar' && !confirm('¿Deseas denegar este préstamo?')) return;
@@ -89,5 +99,15 @@ tabla?.addEventListener('click', async e => {
         await cargar();
     } catch (err) { alert(err.message); }
 });
+document.getElementById('guardarRevisionPrestamo')?.addEventListener('click', async () => {
+    const botonRevision = document.getElementById('guardarRevisionPrestamo');
+    const fila = botonRevision?.closest('dialog');
+    const prestamo = prestamoEnRevision;
+    const prioridad = document.getElementById('revisionPrestamoPrioridad')?.value;
+    if (!prestamo || !prioridad) { alert('Selecciona una prioridad.'); return; }
+    try { await api('PUT', { idPrestamo: Number(prestamo.idPrestamo), accion: 'revisar', prioridad }); fila?.close(); prestamoEnRevision = null; await cargar(); }
+    catch (error) { alert(error.message); }
+});
+document.getElementById('cerrarRevisionPrestamo')?.addEventListener('click', () => { dialogRevision?.close(); prestamoEnRevision = null; });
 ['filtroEstado', 'filtroNombre', 'filtroEquipo', 'filtroCedula'].forEach(id => document.getElementById(id)?.addEventListener('change', filtrarPrestamos));
 cargar();

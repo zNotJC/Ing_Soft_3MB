@@ -230,10 +230,9 @@
                 <option value="">Seleccione</option>
                 <option value="Baja">Baja</option><option value="Media">Media</option><option value="Alta">Alta</option>
             </select>
-            <label for="revisionFechaLimite">Fecha límite</label>
-            <input type="date" id="revisionFechaLimite" required>
-            <button type="button" id="btnIniciarTicket">Iniciar</button>
+            <button type="button" id="btnAceptarTicket">Aceptar ticket</button>
             <button type="button" id="btnEsperarTicket">Esperar</button>
+            <button type="button" id="btnDenegarTicket">Denegar</button>
             <button type="button" id="cerrarRevisionTicket">Cerrar</button>
         </dialog>
 
@@ -282,8 +281,8 @@
             </p>
 
             <p>
-                <strong>Fecha límite:</strong>
-                <span id="detalleFechaLimite"></span>
+                <strong>Fecha de atención:</strong>
+                <span id="detalleFechaAtencion"></span>
             </p>
 
             <button

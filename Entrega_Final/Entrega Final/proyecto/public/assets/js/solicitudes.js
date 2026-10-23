@@ -21,6 +21,8 @@ if (btnNuevaSolicitud) {
                 formulario.reset();
             }
 
+            if (typeof actualizarTipoSolicitud === "function") actualizarTipoSolicitud();
+
             modalSolicitud.hidden = false;
 
         }
@@ -72,7 +74,6 @@ function abrirModalModificarSolicitud(
     idSolicitud,
     tipoSolicitud,
     descripcion,
-    cantidad,
     equipo,
     fechaNecesaria
 ) {
@@ -88,10 +89,6 @@ function abrirModalModificarSolicitud(
     document.getElementById(
         "modificarDescripcion"
     ).value = descripcion;
-
-    document.getElementById(
-        "modificarCantidad"
-    ).value = cantidad;
 
     document.getElementById("modificarEquipo").value = equipo || "";
     if (tipoSolicitudModificar) {
@@ -255,7 +252,7 @@ if (formularioRespuesta) {
 }
 
 async function enviarSolicitud(metodo, datos) {
-    const respuesta = await fetch("api/solicitudes.php", {
+    const respuesta = await fetch("../index.php?api=solicitudes", {
         method: metodo,
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(datos)
@@ -348,16 +345,21 @@ function crearBotonSolicitud(texto, clase, accion, id, tipoRespuesta = "") {
 function construirFilaSolicitud(solicitud) {
     solicitudesPorId.set(String(solicitud.idSolicitud), solicitud);
     const fila = document.createElement("tr");
-    [solicitud.idSolicitud, solicitud.fechaSolicitud, solicitud.tipoSolicitud, solicitud.descripcion, solicitud.cantidad, solicitud.equipo, solicitud.nombre, solicitud.fechaNecesaria, solicitud.estado, solicitud.respuesta].forEach(valor => fila.appendChild(crearCeldaSolicitud(valor)));
+    fila.dataset.estadoOriginal = solicitud.estado || "";
+    fila.dataset.tipoOriginal = solicitud.tipoSolicitud || "";
+    fila.dataset.fechaOriginal = String(solicitud.fechaSolicitud || '').slice(0, 10);
+    fila.dataset.usuarioOriginal = solicitud.nombre || "";
+    fila.dataset.equipoOriginal = solicitud.equipo || "";
+    [solicitud.idSolicitud, solicitud.fechaSolicitud, solicitud.tipoSolicitud, solicitud.descripcion, solicitud.equipo, solicitud.nombre, solicitud.fechaNecesaria, solicitud.estado, solicitud.respuesta].forEach(valor => fila.appendChild(crearCeldaSolicitud(valor)));
     const acciones = document.createElement("td");
     acciones.className = "acciones";
     const esDocente = document.body.dataset.esDocente === "true";
     const esTecnico = document.body.dataset.esTecnico === "true";
-    if (esDocente && solicitud.estado === "Pendiente") {
+    if (esDocente && ["Pendiente", "En espera"].includes(solicitud.estado)) {
         acciones.appendChild(crearBotonSolicitud("Modificar", "btn-modificar", "modificar", solicitud.idSolicitud));
         acciones.appendChild(crearBotonSolicitud("Cancelar", "btn-cancelar", "cancelar", solicitud.idSolicitud));
     }
-    if (esTecnico && solicitud.estado === "Pendiente") {
+    if (esTecnico && ["Pendiente", "En espera"].includes(solicitud.estado)) {
         acciones.appendChild(crearBotonSolicitud("Aprobar", "btn-aprobar", "respuesta", solicitud.idSolicitud, "aprobar"));
         acciones.appendChild(crearBotonSolicitud("Rechazar", "btn-rechazar", "respuesta", solicitud.idSolicitud, "rechazar"));
     }
@@ -416,30 +418,11 @@ function aplicarFiltros() {
         }
 
 
-        const textoFecha =
-            fila.children[1]
-                .textContent
-                .trim();
-
-        const textoTipo =
-            fila.children[2]
-                .textContent
-                .toLowerCase();
-
-        const textoEquipo =
-            fila.children[5]
-                .textContent
-                .toLowerCase();
-
-        const textoUsuario =
-            fila.children[6]
-                .textContent
-                .toLowerCase();
-
-        const textoEstado =
-            fila.children[8]
-                .textContent
-                .toLowerCase();
+        const textoFecha = fila.dataset.fechaOriginal || '';
+        const textoTipo = (fila.dataset.tipoOriginal || '').toLowerCase();
+        const textoEquipo = (fila.dataset.equipoOriginal || '').toLowerCase();
+        const textoUsuario = (fila.dataset.usuarioOriginal || '').toLowerCase();
+        const textoEstado = (fila.dataset.estadoOriginal || '').toLowerCase();
 
 
         const coincideEstado =
@@ -501,7 +484,6 @@ if (tabla) {
                         solicitud.idSolicitud,
                         solicitud.tipoSolicitud,
                         solicitud.descripcion,
-                        solicitud.cantidad,
                         solicitud.equipo,
                         solicitud.fechaNecesaria
                     );
@@ -589,7 +571,7 @@ if (cerrarSesionBtn) {
         function () {
 
             window.location.href =
-                "cerrarSesion.php";
+                "../index.php?accion=logout";
 
         }
     );
@@ -600,14 +582,14 @@ if (cerrarSesionBtn) {
 async function cargarSolicitudes() {
     if (!tabla) return;
     try {
-        const respuesta = await fetch("api/solicitudes.php", { headers: { Accept: "application/json" } });
+        const respuesta = await fetch("../index.php?api=solicitudes", { headers: { Accept: "application/json" } });
         const resultado = await respuesta.json();
         const solicitudes = resultado.data;
         if (!respuesta.ok || resultado.status !== "success" || !Array.isArray(solicitudes)) throw new Error(resultado.message || `No se pudo cargar la lista de solicitudes (HTTP ${respuesta.status}).`);
         if (solicitudes.length === 0) {
             const fila = document.createElement("tr");
             const celda = crearCeldaSolicitud("No hay solicitudes registradas.");
-            celda.colSpan = 11;
+            celda.colSpan = 10;
             fila.appendChild(celda);
             tabla.replaceChildren(fila);
             return;
@@ -620,7 +602,7 @@ async function cargarSolicitudes() {
         console.error(error);
         const fila = document.createElement("tr");
         const celda = crearCeldaSolicitud(error.message || "No se pudieron cargar las solicitudes.");
-        celda.colSpan = 11;
+        celda.colSpan = 10;
         fila.appendChild(celda);
         tabla.replaceChildren(fila);
     }
@@ -643,12 +625,12 @@ const selectorEquipoModificar = document.getElementById('equipoModificarSolicitu
 let inventarioSolicitudes = {laboratorios: [], equipos: []};
 async function cargarOpcionesSolicitud() {
     try {
-        const r = await fetch('api/equipos.php', {headers:{Accept:'application/json'}, cache:'no-store'});
+        const r = await fetch('../index.php?api=equipos', {headers:{Accept:'application/json'}, cache:'no-store'});
         const j = await r.json();
         if (!r.ok || j.status !== 'success') throw new Error(j.message || 'No se pudo cargar el inventario.');
         inventarioSolicitudes = j.data;
-        if (selectorLaboratorioSolicitud) { selectorLaboratorioSolicitud.replaceChildren(new Option('Seleccione un laboratorio','')); (j.data.laboratorios || []).forEach(l => selectorLaboratorioSolicitud.add(new Option(l.nombre,l.nombre))); }
-        if (selectorLabModificar) { selectorLabModificar.replaceChildren(new Option('Seleccione un laboratorio','')); (j.data.laboratorios || []).forEach(l => selectorLabModificar.add(new Option(l.nombre,l.nombre))); }
+        if (selectorLaboratorioSolicitud) { selectorLaboratorioSolicitud.replaceChildren(new Option('Seleccione un laboratorio','')); (j.data.laboratoriosDisponibles || []).forEach(l => selectorLaboratorioSolicitud.add(new Option(l.nombre,l.nombre))); }
+        if (selectorLabModificar) { selectorLabModificar.replaceChildren(new Option('Seleccione un laboratorio','')); (j.data.laboratoriosDisponibles || []).forEach(l => selectorLabModificar.add(new Option(l.nombre,l.nombre))); }
         actualizarTipoSolicitud();
     } catch (e) { console.error(e); }
 }
@@ -657,16 +639,22 @@ function actualizarTipoSolicitud() {
     if (grupoLaboratorio) grupoLaboratorio.hidden = tipo !== 'Laboratorio';
     if (grupoReparacion) grupoReparacion.hidden = tipo !== 'Reparación';
     if (selectorLaboratorioSolicitud) selectorLaboratorioSolicitud.required = tipo === 'Laboratorio';
-    if (selectorTipoEquipoSolicitud) selectorTipoEquipoSolicitud.required = tipo === 'Reparación';
+    if (selectorTipoEquipoSolicitud) selectorTipoEquipoSolicitud.required = false;
     if (selectorEquipoSolicitud) selectorEquipoSolicitud.required = tipo === 'Reparación';
+    const fecha = document.getElementById('fechaNecesaria');
+    if (fecha) { fecha.required = tipo === 'Laboratorio'; if (tipo !== 'Laboratorio') fecha.value = ''; }
+    const grupoFecha = document.getElementById('grupoFechaNecesaria');
+    if (grupoFecha) grupoFecha.hidden = tipo !== 'Laboratorio';
+    const etiquetaFecha = document.getElementById('etiquetaFechaNecesaria');
+    if (etiquetaFecha) etiquetaFecha.textContent = tipo === 'Laboratorio' ? 'Día solicitado para el laboratorio' : 'Día solicitado (opcional)';
     actualizarEquiposSolicitud();
 }
 function actualizarEquiposSolicitud() {
-    const poblar=(select,tipo)=>{if(!select)return;select.replaceChildren(new Option('Seleccione un equipo',''));(inventarioSolicitudes.equipos||[]).filter(e=>e.tipo===tipo&&e.estado==='Disponible').forEach(e=>select.add(new Option(e.nombre,e.nombre)));};
+    const poblar=(select,tipo)=>{if(!select)return;select.replaceChildren(new Option('Seleccione un equipo',''));(inventarioSolicitudes.equipos||[]).filter(e=>(!tipo||e.tipo===tipo)&&e.estado==='Disponible').forEach(e=>select.add(new Option(`${e.nombre} (${e.tipo})`,e.nombre)));};
     poblar(selectorEquipoSolicitud,selectorTipoEquipoSolicitud?.value||'');
     poblar(selectorEquipoModificar,tipoEquipoModificar?.value||'');
 }
-function actualizarTipoModificar(){const tipo=tipoSolicitudModificar?.value||'';if(grupoLabModificar)grupoLabModificar.hidden=tipo!=='Laboratorio';if(grupoRepModificar)grupoRepModificar.hidden=tipo!=='Reparación';if(selectorLabModificar)selectorLabModificar.required=tipo==='Laboratorio';if(tipoEquipoModificar)tipoEquipoModificar.required=tipo==='Reparación';if(selectorEquipoModificar)selectorEquipoModificar.required=tipo==='Reparación';actualizarEquiposSolicitud();}
+function actualizarTipoModificar(){const tipo=tipoSolicitudModificar?.value||'';if(grupoLabModificar)grupoLabModificar.hidden=tipo!=='Laboratorio';if(grupoRepModificar)grupoRepModificar.hidden=tipo!=='Reparación';if(selectorLabModificar)selectorLabModificar.required=tipo==='Laboratorio';if(tipoEquipoModificar)tipoEquipoModificar.required=false;if(selectorEquipoModificar)selectorEquipoModificar.required=tipo==='Reparación';const fecha=document.getElementById('modificarFechaNecesaria');if(fecha){fecha.required=tipo==='Laboratorio';if(tipo!=='Laboratorio')fecha.value='';}const grupoFecha=document.getElementById('grupoModificarFechaNecesaria');if(grupoFecha)grupoFecha.hidden=tipo!=='Laboratorio';const etiqueta=document.getElementById('etiquetaModificarFechaNecesaria');if(etiqueta)etiqueta.textContent='Día solicitado para el laboratorio';actualizarEquiposSolicitud();}
 tipoSolicitudSelector?.addEventListener('change', actualizarTipoSolicitud);
 selectorTipoEquipoSolicitud?.addEventListener('change', actualizarEquiposSolicitud);
 tipoSolicitudModificar?.addEventListener('change', actualizarTipoModificar);

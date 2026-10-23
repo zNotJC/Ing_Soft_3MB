@@ -1,8 +1,8 @@
 <?php
 
-require_once __DIR__ . '/../../nucleo/ApiController.php';
-require_once __DIR__ . '/../../modelos/AccesoDatosDashboard.php';
-require_once __DIR__ . '/../../modelos/AccesoDatosUsuario.php';
+require_once __DIR__ . '/../nucleo/ApiController.php';
+require_once __DIR__ . '/../modelos/AccesoDatosDashboard.php';
+require_once __DIR__ . '/../modelos/AccesoDatosUsuario.php';
 
 final class DashboardController extends ApiController
 {

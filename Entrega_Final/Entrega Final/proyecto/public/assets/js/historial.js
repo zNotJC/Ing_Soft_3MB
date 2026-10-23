@@ -30,6 +30,10 @@ function renderizarHistorial(registros) {
     const fragmento = document.createDocumentFragment();
     registros.forEach(registro => {
         const fila = document.createElement("tr");
+        fila.dataset.tipoOriginal = registro.tipo || "";
+        fila.dataset.estadoOriginal = registro.estado || "";
+        fila.dataset.usuarioOriginal = registro.usuario || "";
+        fila.dataset.fechaOriginal = String(registro.fecha || '').slice(0, 10);
         [registro.id, registro.tipo, registro.detalle, registro.usuario, registro.estado, String(registro.fecha || '').slice(0, 10)].forEach(valor => fila.appendChild(crearCelda(valor)));
         fragmento.appendChild(fila);
     });
@@ -43,17 +47,17 @@ function aplicarFiltros() {
     const fecha = filtroFecha.value;
     tabla.querySelectorAll("tr").forEach(fila => {
         if (fila.children.length < 6) return;
-        const coincide = (!tipo || fila.children[1].textContent.trim().toLowerCase() === tipo) &&
-            (!estado || fila.children[4].textContent.trim().toLowerCase() === estado) &&
-            (!usuario || fila.children[3].textContent.trim().toLowerCase().includes(usuario)) &&
-            (!fecha || fila.children[5].textContent.trim().startsWith(fecha));
+        const coincide = (!tipo || fila.dataset.tipoOriginal.toLowerCase() === tipo) &&
+            (!estado || fila.dataset.estadoOriginal.toLowerCase() === estado) &&
+            (!usuario || fila.dataset.usuarioOriginal.toLowerCase().includes(usuario)) &&
+            (!fecha || fila.dataset.fechaOriginal.startsWith(fecha));
         fila.hidden = !coincide;
     });
 }
 
 async function cargarHistorial() {
     try {
-        const respuesta = await fetch("api/historial.php", { headers: { Accept: "application/json" }, cache: "no-store" });
+        const respuesta = await fetch("../index.php?api=historial", { headers: { Accept: "application/json" }, cache: "no-store" });
         const texto = await respuesta.text();
         let resultado;
         try { resultado = JSON.parse(texto); } catch { throw new Error(`Respuesta inválida del servidor (HTTP ${respuesta.status}).`); }

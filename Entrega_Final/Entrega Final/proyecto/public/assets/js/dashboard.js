@@ -15,7 +15,7 @@ function mostrarEstadoTabla(tabla, mensaje, columnas) {
 async function cargarDashboard() {
     const tablaAccesos = document.getElementById("tablaAccesos");
     try {
-        const respuesta = await fetch("api/dashboard.php", { headers: { Accept: "application/json" } });
+        const respuesta = await fetch("../index.php?api=dashboard", { headers: { Accept: "application/json" } });
         const resultado = await respuesta.json();
         if (!respuesta.ok || resultado.status !== "success" || !resultado.data) {
             throw new Error(resultado.message || "No se pudo cargar el dashboard.");

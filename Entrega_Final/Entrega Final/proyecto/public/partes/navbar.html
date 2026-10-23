@@ -1,0 +1,22 @@
+<header class="site-header">
+  <nav class="navbar navbar-expand-xl" aria-label="Navegación principal">
+    <a class="navbar-brand" href="dashboard.html">JOJOLOS</a>
+    <div id="controlesPreferencias" class="controles-preferencias" aria-label="Preferencias de accesibilidad">
+      <button type="button" id="alternarIdioma" class="btn-preferencia" aria-label="Cambiar idioma">ES / EN</button>
+      <button type="button" id="alternarTema" class="btn-preferencia" aria-label="Cambiar tema">Claro / Oscuro</button>
+    </div>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false" aria-label="Abrir menú"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="menuPrincipal">
+      <ul class="navbar-nav ms-auto align-items-xl-center">
+        <li class="nav-item" data-roles="Administrador,Docente,Tecnico"><a class="nav-link" href="dashboard.html">Inicio</a></li>
+        <li class="nav-item" data-roles="Administrador"><a class="nav-link" href="usuarios.html">Gestionar usuarios</a></li>
+        <li class="nav-item" data-roles="Administrador,Tecnico"><a class="nav-link" href="inventario.html">Inventario y laboratorios</a></li>
+        <li class="nav-item" data-roles="Administrador,Docente,Tecnico"><a class="nav-link" href="tickets.html">Tickets</a></li>
+        <li class="nav-item" data-roles="Administrador,Docente,Tecnico"><a class="nav-link" href="solicitudes.html">Solicitudes</a></li>
+        <li class="nav-item" data-roles="Administrador,Docente,Tecnico"><a class="nav-link" href="prestamos.html">Préstamos</a></li>
+        <li class="nav-item" data-roles="Administrador,Docente,Tecnico"><a class="nav-link" href="historial.html">Historial</a></li>
+        <li class="nav-item nav-logout-item" data-roles="Administrador,Docente,Tecnico"><a class="btnCerrarSesion" href="../index.php?accion=logout">Cerrar sesión</a></li>
+      </ul>
+    </div>
+  </nav>
+</header>

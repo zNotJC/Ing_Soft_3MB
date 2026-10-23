@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../../nucleo/ApiController.php';
-require_once __DIR__ . '/../../modelos/AccesoDatosUsuario.php';
+require_once __DIR__ . '/../nucleo/ApiController.php';
+require_once __DIR__ . '/../modelos/AccesoDatosUsuario.php';
 
 final class UsuariosController extends ApiController
 {

@@ -39,6 +39,18 @@ class AccesoDatosEquipos
         return $this->conexion->query('SELECT idLaboratorio,nombre,estado FROM laboratorio ORDER BY nombre')->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function laboratoriosDisponibles(): array
+    {
+        return $this->conexion->query("SELECT idLaboratorio,nombre,estado FROM laboratorio WHERE estado='Disponible' ORDER BY nombre")->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function laboratorioDisponiblePorNombre(string $nombre): bool
+    {
+        $consulta = $this->conexion->prepare("SELECT COUNT(*) FROM laboratorio WHERE nombre = :nombre AND estado = 'Disponible'");
+        $consulta->execute(['nombre' => $nombre]);
+        return (int) $consulta->fetchColumn() === 1;
+    }
+
     public function equiposPorTipo(string $tipo): array
     {
         $q=$this->conexion->prepare("SELECT idEquipo,nombre,tipo,estado FROM equipo WHERE tipo=:tipo AND estado='Disponible' ORDER BY nombre");

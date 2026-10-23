@@ -63,7 +63,7 @@ async function apiUsuarios(metodo, datos = null) {
         opciones.headers["Content-Type"] = "application/json";
         opciones.body = JSON.stringify(datos);
     }
-    const respuesta = await fetch("api/usuarios.php", opciones);
+    const respuesta = await fetch("../index.php?api=usuarios", opciones);
     const resultado = await respuesta.json();
     if (!respuesta.ok || resultado.status !== "success") throw new Error(resultado.message || "No se pudo completar la operación.");
     return resultado.data;

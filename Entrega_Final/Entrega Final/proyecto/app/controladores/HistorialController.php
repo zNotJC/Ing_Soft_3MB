@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '/../../nucleo/ApiController.php';
-require_once __DIR__ . '/../../modelos/AccesoDatosHistorial.php';
+require_once __DIR__ . '/../nucleo/ApiController.php';
+require_once __DIR__ . '/../modelos/AccesoDatosHistorial.php';
 
 final class HistorialController extends ApiController
 {

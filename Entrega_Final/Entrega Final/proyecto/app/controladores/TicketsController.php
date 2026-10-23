@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '/../../nucleo/ApiController.php';
-require_once __DIR__ . '/../../modelos/AccesoDatosTickets.php';
+require_once __DIR__ . '/../nucleo/ApiController.php';
+require_once __DIR__ . '/../modelos/AccesoDatosTickets.php';
 
 final class TicketsController extends ApiController
 {
@@ -30,7 +30,6 @@ final class TicketsController extends ApiController
                 }
                 $titulo = $this->requiredString($input, 'titulo', 150);
                 $descripcion = $this->requiredString($input, 'descripcion', 5000);
-                $fechaLimite = null;
                 $idLaboratorio = filter_var($input['idLaboratorio'] ?? null, FILTER_VALIDATE_INT);
                 $idEquipo = filter_var($input['idEquipo'] ?? null, FILTER_VALIDATE_INT);
                 $idEquipo = $idEquipo ? (int) $idEquipo : null;
@@ -38,7 +37,7 @@ final class TicketsController extends ApiController
                 if (!$idLaboratorio || !$idEquipo) {
                     ApiResponse::send(422, 'error', 'Los datos del ticket no son válidos.');
                 }
-                $model->crearTicket($titulo, $descripcion, $fechaLimite, (string) $_SESSION['cedula'], (int) $idLaboratorio, $prioridad, $idEquipo);
+                $model->crearTicket($titulo, $descripcion, (string) $_SESSION['cedula'], (int) $idLaboratorio, $prioridad, $idEquipo);
                 ApiResponse::send(201, 'success', 'Ticket registrado correctamente.', ['idTicket' => (int) $connection->lastInsertId()]);
             }
 
@@ -49,18 +48,14 @@ final class TicketsController extends ApiController
                 $id = $this->positiveId('idTicket', $input);
                 if (isset($input['accion'])) {
                     $accion = (string) $input['accion'];
-                    if (in_array($accion, ['iniciar', 'esperar'], true)) {
+                    if (in_array($accion, ['aceptar', 'denegar'], true)) {
                         $prioridad = (string) ($input['prioridad'] ?? '');
-                        $fechaLimite = (string) ($input['fechaLimite'] ?? '');
-                        if (!in_array($prioridad, ['Baja', 'Media', 'Alta'], true) ||
-                            !preg_match('/^\\d{4}-\\d{2}-\\d{2}$/', $fechaLimite) ||
-                            $fechaLimite < date('Y-m-d')) {
-                            ApiResponse::send(422, 'error', 'Indica una prioridad y fecha límite válidas.');
+                        if (!in_array($prioridad, ['Baja', 'Media', 'Alta'], true)) {
+                            ApiResponse::send(422, 'error', 'Indica una prioridad válida.');
                         }
-                        $updated = $model->revisarTicket($id, $prioridad, $fechaLimite);
-                        if ($updated && $accion === 'iniciar') {
-                            $updated = $model->cambiarEstado($id, 'En Proceso');
-                        }
+                        $updated = $accion === 'aceptar'
+                            ? $model->aceptarTicket($id, $prioridad)
+                            : $model->denegarTicket($id, $prioridad);
                     } elseif ($accion === 'completar') {
                         $updated = $model->cambiarEstado($id, 'Resuelto');
                     } elseif ($accion === 'cancelar') {
@@ -69,7 +64,7 @@ final class TicketsController extends ApiController
                         ApiResponse::send(422, 'error', 'Acción no válida.');
                     }
                 } else {
-                    ApiResponse::send(403, 'error', 'Los tickets solo se gestionan mediante las acciones de revisión, inicio, resolución o cancelación.');
+                    ApiResponse::send(403, 'error', 'Los tickets solo se gestionan mediante aceptar, esperar, denegar, resolver o cancelar.');
                 }
                 if (!$updated) {
                     ApiResponse::send(404, 'error', 'No se encontró el ticket o no se pudo modificar.');
@@ -89,6 +84,8 @@ final class TicketsController extends ApiController
             }
 
             $this->methodNotAllowed(['GET', 'POST', 'PUT', 'DELETE']);
+        } catch (InvalidArgumentException $error) {
+            ApiResponse::send(422, 'error', $error->getMessage());
         } catch (Throwable $error) {
             error_log('[API tickets] ' . $error->getMessage());
             ApiResponse::send(500, 'error', 'No se pudo completar la operación de tickets. Comprueba las columnas de ticket, laboratorio y usuario.');

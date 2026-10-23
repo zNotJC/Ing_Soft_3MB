@@ -8,4 +8,4 @@ Ejecutar `baseDeDatos/DDL/instalacionDesdeCero.sql` sobre una base vacía y conf
 
 ## API
 
-Los endpoints se encuentran en `proyecto/public/api/` y utilizan los métodos HTTP correspondientes a cada operación. Las respuestas usan JSON con estado, mensaje y datos.
+Los recursos se enrutan mediante `proyecto/public/index.php?api=<recurso>`. `proyecto/app/rutas/api.php` deriva cada petición al controlador correspondiente, ubicado directamente en `proyecto/app/controladores/`. Se utilizan los métodos HTTP apropiados y respuestas JSON con estado, mensaje y datos.

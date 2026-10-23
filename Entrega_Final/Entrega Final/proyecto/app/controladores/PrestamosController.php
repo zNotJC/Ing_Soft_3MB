@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '/../../nucleo/ApiController.php';
-require_once __DIR__ . '/../../modelos/AccesoDatosPrestamos.php';
+require_once __DIR__ . '/../nucleo/ApiController.php';
+require_once __DIR__ . '/../modelos/AccesoDatosPrestamos.php';
 
 final class PrestamosController extends ApiController
 {
