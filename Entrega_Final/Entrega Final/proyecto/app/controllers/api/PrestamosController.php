@@ -8,7 +8,7 @@ final class PrestamosController extends ApiController
     public function handle(): void
     {
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-        $role = $this->requireRole(['Administrador', 'Docente']);
+        $role = $this->requireRole(['Administrador']);
         [$connector, $connection] = $this->connect();
         $model = new AccesoDatosPrestamos($connection);
 
@@ -20,7 +20,7 @@ final class PrestamosController extends ApiController
                     'estados' => $model->obtenerEstados()
                 ]);
             }
-            if (!in_array($role, ['Administrador', 'Docente'], true)) {
+            if ($role !== 'Administrador') {
                 ApiResponse::send(403, 'error', 'No tienes permisos para gestionar préstamos.');
             }
             $input = ApiResponse::input();

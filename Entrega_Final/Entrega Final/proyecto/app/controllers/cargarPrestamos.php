@@ -6,8 +6,7 @@ session_start();
 if (
     !isset($_SESSION["cedula"]) ||
     (
-        !($_SESSION["administrador"] ?? false) &&
-        !($_SESSION["docente"] ?? false)
+        !($_SESSION["administrador"] ?? false)
     )
 ) {
     header("Location: index.php");
@@ -15,6 +14,6 @@ if (
 }
 
 $esAdministrador = (bool) ($_SESSION["administrador"] ?? false);
-$esDocente = (bool) ($_SESSION["docente"] ?? false);
+$esDocente = false;
 
 require __DIR__ . "/../views/prestamos.php";

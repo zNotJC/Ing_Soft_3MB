@@ -94,13 +94,10 @@
 
                 <label for="contrasena">Contraseña</label>
 
-                <input
-                    type="password"
-                    id="contrasena"
-                    name="contrasena"
-                    required
-                    minlength="6"
-                    maxlength="30">
+                <div class="password-field">
+                    <input type="password" id="contrasena" name="contrasena" required minlength="6" maxlength="100" autocomplete="current-password">
+                    <button type="button" class="password-toggle" data-password-target="contrasena" aria-label="Mostrar contraseña" aria-pressed="false">◉</button>
+                </div>
 
                 <button type="submit">
                     Ingresar
@@ -123,6 +120,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/password-toggle.js"></script>
 
 </body>
 

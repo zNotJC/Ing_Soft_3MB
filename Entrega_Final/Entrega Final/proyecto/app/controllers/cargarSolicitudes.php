@@ -7,7 +7,6 @@ session_start();
 if (
     !isset($_SESSION["cedula"]) ||
     (
-        !($_SESSION["administrador"] ?? false) &&
         !($_SESSION["docente"] ?? false) &&
         !($_SESSION["tecnico"] ?? false)
     )

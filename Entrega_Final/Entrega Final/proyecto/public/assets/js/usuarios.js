@@ -1,8 +1,12 @@
 const formularioUsuario = document.getElementById("formUsuario");
 const tablaUsuarios = document.getElementById("tablaUsuarios");
 const mensajeUsuarios = document.getElementById("mensajeUsuarios");
+const campoCedula = document.getElementById("cedula");
+const campoContrasena = document.getElementById("contrasena");
+const ayudaContrasena = document.getElementById("ayudaContrasena");
 let usuarios = new Map();
 let modoEdicion = false;
+let cedulaOriginal = "";
 
 function celda(valor) {
     const elemento = document.createElement("td");
@@ -18,6 +22,16 @@ function mostrarMensajeTabla(mensaje) {
     tablaUsuarios.replaceChildren(fila);
 }
 
+function crearBoton(texto, clase, accion, cedula) {
+    const boton = document.createElement("button");
+    boton.type = "button";
+    boton.className = clase;
+    boton.textContent = texto;
+    boton.dataset.accionUsuario = accion;
+    boton.dataset.cedula = cedula;
+    return boton;
+}
+
 function renderizarUsuarios(lista) {
     usuarios = new Map(lista.map(usuario => [String(usuario.cedula), usuario]));
     if (!lista.length) {
@@ -27,23 +41,14 @@ function renderizarUsuarios(lista) {
     const fragmento = document.createDocumentFragment();
     lista.forEach(usuario => {
         const fila = document.createElement("tr");
-        [usuario.cedula, usuario.usuario, usuario.correo, usuario.rol, usuario.activo ? "Activo" : "Inactivo"].forEach(valor => fila.appendChild(celda(valor)));
+        [usuario.cedula, usuario.usuario, usuario.correo, usuario.rol === "Tecnico" ? "Técnico" : usuario.rol, usuario.activo ? "Activo" : "Inactivo"].forEach(valor => fila.appendChild(celda(valor)));
         const acciones = document.createElement("td");
-        const editar = document.createElement("button");
-        editar.type = "button";
-        editar.className = "btn btn-sm btn-primary me-2";
-        editar.textContent = "Modificar";
-        editar.dataset.accionUsuario = "editar";
-        editar.dataset.cedula = usuario.cedula;
-        acciones.appendChild(editar);
+        acciones.className = "acciones-tabla";
+        acciones.appendChild(crearBoton("Modificar", "btn btn-sm btn-primary", "editar", usuario.cedula));
         if (usuario.activo) {
-            const desactivar = document.createElement("button");
-            desactivar.type = "button";
-            desactivar.className = "btn btn-sm btn-danger";
-            desactivar.textContent = "Desactivar";
-            desactivar.dataset.accionUsuario = "desactivar";
-            desactivar.dataset.cedula = usuario.cedula;
-            acciones.appendChild(desactivar);
+            acciones.appendChild(crearBoton("Desactivar", "btn btn-sm btn-danger", "desactivar", usuario.cedula));
+        } else {
+            acciones.appendChild(crearBoton("Activar", "btn btn-sm btn-success", "activar", usuario.cedula));
         }
         fila.appendChild(acciones);
         fragmento.appendChild(fila);
@@ -65,21 +70,29 @@ async function apiUsuarios(metodo, datos = null) {
 
 async function cargarUsuarios() {
     try {
-        renderizarUsuarios(await apiUsuarios("GET"));
-    } catch (error) { mostrarMensajeTabla(error.message); }
+        const datos = await apiUsuarios("GET");
+        renderizarUsuarios(Array.isArray(datos) ? datos : []);
+    } catch (error) {
+        mostrarMensajeTabla(error.message);
+    }
 }
 
 formularioUsuario.addEventListener("submit", async evento => {
     evento.preventDefault();
     const datos = Object.fromEntries(new FormData(formularioUsuario).entries());
     const metodo = modoEdicion ? "PUT" : "POST";
-    if (modoEdicion && !datos.contrasena) delete datos.contrasena;
+    if (modoEdicion) {
+        datos.cedulaOriginal = cedulaOriginal;
+        if (!datos.contrasena) delete datos.contrasena;
+    }
     try {
         await apiUsuarios(metodo, datos);
-        mensajeUsuarios.textContent = modoEdicion ? "Usuario actualizado." : "Usuario creado.";
+        mensajeUsuarios.textContent = modoEdicion ? "Usuario actualizado correctamente." : "Usuario creado correctamente.";
         reiniciarFormulario();
         await cargarUsuarios();
-    } catch (error) { mensajeUsuarios.textContent = error.message; }
+    } catch (error) {
+        mensajeUsuarios.textContent = error.message;
+    }
 });
 
 tablaUsuarios.addEventListener("click", async evento => {
@@ -87,31 +100,53 @@ tablaUsuarios.addEventListener("click", async evento => {
     if (!boton) return;
     const usuario = usuarios.get(String(boton.dataset.cedula));
     if (!usuario) return;
-    if (boton.dataset.accionUsuario === "editar") {
+    const accion = boton.dataset.accionUsuario;
+    if (accion === "editar") {
         modoEdicion = true;
-        document.getElementById("cedula").value = usuario.cedula;
-        document.getElementById("cedula").readOnly = true;
+        cedulaOriginal = String(usuario.cedula);
+        campoCedula.value = usuario.cedula;
+        campoCedula.readOnly = false;
         document.getElementById("usuario").value = usuario.usuario;
         document.getElementById("correo").value = usuario.correo;
         document.getElementById("rol").value = usuario.rol;
-        document.getElementById("contrasena").required = false;
+        campoContrasena.value = "";
+        campoContrasena.required = false;
+        campoContrasena.placeholder = "Vacía para conservar la contraseña actual";
+        campoContrasena.autocomplete = "new-password";
+        if (ayudaContrasena) ayudaContrasena.textContent = "Por seguridad no se puede recuperar la contraseña actual. Escribe una nueva o deja el campo vacío para conservarla.";
         document.getElementById("guardarUsuario").textContent = "Guardar cambios";
         document.getElementById("cancelarEdicionUsuario").hidden = false;
+        campoCedula.focus();
         return;
     }
-    if (!window.confirm(`¿Desactivar la cuenta ${usuario.usuario}?`)) return;
-    try {
-        await apiUsuarios("DELETE", { cedula: usuario.cedula });
-        mensajeUsuarios.textContent = "Usuario desactivado.";
-        await cargarUsuarios();
-    } catch (error) { mensajeUsuarios.textContent = error.message; }
+    if (accion === "desactivar") {
+        if (!window.confirm(`¿Desactivar la cuenta ${usuario.usuario}?`)) return;
+        try {
+            await apiUsuarios("DELETE", { cedula: usuario.cedula });
+            mensajeUsuarios.textContent = "Usuario desactivado.";
+            await cargarUsuarios();
+        } catch (error) { mensajeUsuarios.textContent = error.message; }
+        return;
+    }
+    if (accion === "activar") {
+        if (!window.confirm(`¿Activar la cuenta ${usuario.usuario}?`)) return;
+        try {
+            await apiUsuarios("PUT", { accion: "activar", cedula: usuario.cedula });
+            mensajeUsuarios.textContent = "Usuario activado.";
+            await cargarUsuarios();
+        } catch (error) { mensajeUsuarios.textContent = error.message; }
+    }
 });
 
 function reiniciarFormulario() {
     formularioUsuario.reset();
     modoEdicion = false;
-    document.getElementById("cedula").readOnly = false;
-    document.getElementById("contrasena").required = true;
+    cedulaOriginal = "";
+    campoCedula.readOnly = false;
+    campoContrasena.required = true;
+    campoContrasena.placeholder = "Mínimo 8 caracteres";
+    campoContrasena.autocomplete = "new-password";
+    if (ayudaContrasena) ayudaContrasena.textContent = "Al modificar, deja el campo vacío para conservar la contraseña actual.";
     document.getElementById("guardarUsuario").textContent = "Crear usuario";
     document.getElementById("cancelarEdicionUsuario").hidden = true;
 }

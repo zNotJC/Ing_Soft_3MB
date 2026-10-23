@@ -540,12 +540,7 @@ if (filtroUsuario) {
 
 
 if (filtroTipo) {
-
-    filtroTipo.addEventListener(
-        "input",
-        aplicarFiltros
-    );
-
+    filtroTipo.addEventListener("change", aplicarFiltros);
 }
 
 
@@ -591,11 +586,12 @@ if (cerrarSesionBtn) {
 
 
 async function cargarSolicitudes() {
+    if (!tabla) return;
     try {
         const respuesta = await fetch("api/solicitudes.php", { headers: { Accept: "application/json" } });
         const resultado = await respuesta.json();
         const solicitudes = resultado.data;
-        if (!respuesta.ok || resultado.status !== "success" || !Array.isArray(solicitudes)) throw new Error(resultado.message || "No se pudo cargar la lista de solicitudes.");
+        if (!respuesta.ok || resultado.status !== "success" || !Array.isArray(solicitudes)) throw new Error(resultado.message || `No se pudo cargar la lista de solicitudes (HTTP ${respuesta.status}).`);
         if (solicitudes.length === 0) {
             const fila = document.createElement("tr");
             const celda = crearCeldaSolicitud("No hay solicitudes registradas.");

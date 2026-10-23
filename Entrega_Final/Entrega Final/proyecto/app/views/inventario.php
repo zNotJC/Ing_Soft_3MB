@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="assets/css/global.css">
 </head>
 <body data-es-administrador="<?= $esAdministrador ? 'true' : 'false' ?>">
-<header class="container-fluid py-3"><nav class="navbar navbar-expand-lg"><a class="navbar-brand" href="dashboard.php">JOJOLOS</a><div class="navbar-nav ms-auto"><a class="nav-link" href="dashboard.php">Inicio</a><a class="nav-link" href="tickets.php">Tickets</a><a class="nav-link" href="solicitudes.php">Solicitudes</a><a class="nav-link" href="prestamos.php">Préstamos</a><a class="nav-link" href="historial.php">Historial</a><a class="nav-link" href="/proyecto/app/controllers/cerrarSesion.php">Cerrar sesión</a></div></nav></header>
+<?php require __DIR__ . "/partials/navbar.php"; ?>
 <main class="container py-4">
 <h1>Inventario de equipos</h1>
 <p><?= $esAdministrador ? 'Gestiona las altas, modificaciones y bajas de equipos.' : 'Consulta los equipos registrados.' ?></p>
@@ -27,5 +27,6 @@
 <p id="mensajeInventario" role="status" aria-live="polite"></p>
 </main>
 <script src="assets/js/inventario.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

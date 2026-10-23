@@ -187,3 +187,31 @@ th {
         margin-top: 5px;
     }
 }
+
+.site-header { background: #1e2a38; color: #fff; padding: 12px 24px; }
+.site-header .navbar { display: flex; gap: 24px; min-height: 48px; }
+.site-header .navbar-brand { color: #fff !important; font-weight: 700; white-space: nowrap; }
+.site-header .navbar-collapse { min-width: 0; }
+.site-header .navbar-nav { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+.site-header .nav-link { color: #e7edf5 !important; padding: 10px 12px !important; border-radius: 6px; white-space: nowrap; }
+.site-header .nav-link:hover, .site-header .nav-link.active { color: #fff !important; background: rgba(255,255,255,.12); }
+.site-header .navbar-toggler { border-color: rgba(255,255,255,.45); }
+.site-header .navbar-toggler-icon { filter: invert(1); }
+.site-header .btnCerrarSesion { margin-left: 8px; white-space: nowrap; }
+.identidad-usuario { display: flex; flex-wrap: wrap; gap: 8px 28px; align-items: center; }
+.identidad-usuario p { margin: 0; }
+.acciones-tabla { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.acciones-tabla .btn, .acciones .btn, td.acciones button { white-space: nowrap; margin: 2px; }
+.password-field { display: flex; align-items: stretch; gap: 6px; }
+.password-field input { min-width: 0; flex: 1; }
+.password-toggle { flex: 0 0 44px; padding: 8px; border: 1px solid #c5ccd4; background: #f8fafc; color: #253246; border-radius: 6px; }
+.password-toggle:hover { background: #e6ebf1; color: #111827; }
+.btn-success { background-color: #198754 !important; color: #fff !important; }
+.btn-danger { background-color: #dc3545 !important; color: #fff !important; }
+.btn-primary { background-color: #0d6efd !important; color: #fff !important; }
+.btn-secondary { background-color: #6c757d !important; color: #fff !important; }
+button:disabled { opacity: .6; cursor: not-allowed; }
+@media (max-width: 1199px) { .site-header .navbar-nav { align-items: stretch; } .site-header .nav-link { white-space: normal; } .site-header .btnCerrarSesion { display: inline-block; margin: 8px 0; } }
+@media (min-width: 1200px) { .site-header .navbar-nav { flex-wrap: nowrap; } }
+
+.modal-ticket[hidden], [hidden] { display: none !important; }

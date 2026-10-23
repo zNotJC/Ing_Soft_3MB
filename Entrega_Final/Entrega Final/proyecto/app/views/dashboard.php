@@ -31,107 +31,7 @@
 
 <body>
 
-<header>
-
-    <nav class="navbar navbar-expand-lg">
-
-        <a
-            class="navbar-brand"
-            href="dashboard.php"
-        >
-            JOJOLOS
-        </a>
-
-        <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#menuPrincipal"
-            aria-controls="menuPrincipal"
-            aria-expanded="false"
-            aria-label="Menú"
-        >
-
-            <span class="navbar-toggler-icon"></span>
-
-        </button>
-
-        <div
-            class="collapse navbar-collapse"
-            id="menuPrincipal"
-        >
-
-            <ul class="navbar-nav ms-auto">
-
-                <li class="nav-item">
-
-                    <a
-                        class="nav-link active"
-                        href="dashboard.php"
-                    >
-                        Inicio
-                    </a>
-
-                </li>
-
-                <?php if (!empty($_SESSION["administrador"])): ?>
-                <li class="nav-item">
-                    <a class="nav-link" href="usuarios.php">Gestionar usuarios</a>
-                    <a class="nav-link" href="inventario.php">Inventario</a>
-                    <a class="nav-link" href="catalogos.php">Catálogos</a>
-                </li>
-                <?php elseif (!empty($_SESSION["tecnico"])): ?>
-                <li class="nav-item"><a class="nav-link" href="inventario.php">Inventario</a></li>
-                <?php endif; ?>
-
-                <li class="nav-item">
-
-                    <a
-                        class="nav-link"
-                        href="tickets.php"
-                    >
-                        Tickets
-                    </a>
-
-                </li>
-
-                <?php if ($esDocente || $esTecnico): ?>
-                <li class="nav-item"><a class="nav-link" href="solicitudes.php">Solicitudes</a></li>
-                <?php endif; ?>
-
-                <?php if ($esAdministrador || $esDocente): ?>
-                <li class="nav-item"><a class="nav-link" href="prestamos.php">Préstamos</a></li>
-                <?php endif; ?>
-
-                <li class="nav-item">
-
-                    <a
-                        class="nav-link"
-                        href="historial.php"
-                    >
-                        Historial
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <a
-                        class="btnCerrarSesion"
-                        href="/proyecto/app/controllers/cerrarSesion.php"
-                    >
-                        Cerrar Sesión
-                    </a>
-
-                </li>
-
-            </ul>
-
-        </div>
-
-    </nav>
-
-</header>
+<?php require __DIR__ . "/partials/navbar.php"; ?>
 
 <main>
 
@@ -141,10 +41,10 @@
             Panel Principal
         </h1>
 
-        <p>
-            Usuario:
-            <?= htmlspecialchars($usuario) ?>
-        </p>
+        <div class="identidad-usuario" aria-label="Datos de sesión">
+            <p><strong>Usuario:</strong> <?= htmlspecialchars($usuario, ENT_QUOTES, "UTF-8") ?></p>
+            <p><strong>Rol:</strong> <?= htmlspecialchars((string) (($_SESSION["rol"] ?? "") === "Tecnico" ? "Técnico" : ($_SESSION["rol"] ?? "Sin rol")), ENT_QUOTES, "UTF-8") ?></p>
+        </div>
 
         <p>
             JOJOLOS es una plataforma diseñada para centralizar
@@ -159,33 +59,17 @@
 
     <section class="accesos-rapidos">
 
-        <a
-            href="tickets.php"
-            class="acceso"
-        >
-            Gestionar Tickets
-        </a>
+        <a href="tickets.php" class="acceso"><?= $esTecnico || $esDocente ? 'Gestionar Tickets' : 'Consultar Tickets' ?></a>
 
-        <a
-            href="solicitudes.php"
-            class="acceso"
-        >
-            Gestionar Solicitudes
-        </a>
+        <?php if ($esDocente || $esTecnico): ?>
+        <a href="solicitudes.php" class="acceso"><?= $esTecnico ? 'Gestionar Solicitudes' : 'Mis Solicitudes' ?></a>
+        <?php endif; ?>
 
-        <a
-            href="prestamos.php"
-            class="acceso"
-        >
-            Gestionar Préstamos
-        </a>
+        <?php if ($esAdministrador): ?>
+        <a href="prestamos.php" class="acceso">Gestionar Préstamos</a>
+        <?php endif; ?>
 
-        <a
-            href="historial.php"
-            class="acceso"
-        >
-            Ver Historial
-        </a>
+        <a href="historial.php" class="acceso">Ver Historial</a>
 
     </section>
 

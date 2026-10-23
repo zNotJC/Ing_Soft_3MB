@@ -31,104 +31,7 @@
 
 <body data-es-docente="<?= $esDocente ? "true" : "false" ?>" data-es-administrador="<?= $esAdministrador ? "true" : "false" ?>" data-es-tecnico="<?= $esTecnico ? "true" : "false" ?>">
 
-<header>
-
-    <nav class="navbar navbar-expand-lg">
-
-        <a
-            class="navbar-brand"
-            href="dashboard.php"
-        >
-            JOJOLOS
-        </a>
-
-        <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#menuPrincipal"
-            aria-controls="menuPrincipal"
-            aria-expanded="false"
-            aria-label="Menú"
-        >
-
-            <span class="navbar-toggler-icon"></span>
-
-        </button>
-
-        <div
-            class="collapse navbar-collapse"
-            id="menuPrincipal"
-        >
-
-            <ul class="navbar-nav ms-auto">
-
-                <li class="nav-item">
-
-                    <a
-                        class="nav-link"
-                        href="dashboard.php"
-                    >
-                        Inicio
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <a
-                        class="nav-link"
-                        href="tickets.php"
-                    >
-                        Tickets
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <a
-                        class="nav-link active"
-                        href="solicitudes.php"
-                    >
-                        Solicitudes
-                    </a>
-
-                </li>
-
-                <?php if ($esDocente || $esAdministrador): ?>
-                <li class="nav-item"><a class="nav-link" href="prestamos.php">Préstamos</a></li>
-                <?php endif; ?>
-
-                <li class="nav-item">
-
-                    <a
-                        class="nav-link"
-                        href="historial.php"
-                    >
-                        Historial
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <button
-                        id="cerrarSesionBtn"
-                        type="button"
-                    >
-                        Cerrar Sesión
-                    </button>
-
-                </li>
-
-            </ul>
-
-        </div>
-
-    </nav>
-
-</header>
+<?php require __DIR__ . "/partials/navbar.php"; ?>
 
 <main>
 
@@ -497,11 +400,15 @@
             placeholder="Usuario"
         >
 
-        <input
-            type="text"
-            id="filtroTipo"
-            placeholder="Tipo de solicitud"
-        >
+        <select id="filtroTipo" aria-label="Filtrar por tipo de solicitud">
+            <option value="">Todos los tipos</option>
+            <option value="Equipamiento">Equipamiento</option>
+            <option value="Reparación">Reparación</option>
+            <option value="Acceso">Acceso</option>
+            <option value="Licencia">Licencia</option>
+            <option value="Mobiliario">Mobiliario</option>
+            <option value="Otro">Otro</option>
+        </select>
 
         <input
             type="text"

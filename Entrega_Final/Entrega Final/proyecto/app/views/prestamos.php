@@ -29,106 +29,9 @@
 
 </head>
 
-<body data-es-docente="<?= $esDocente ? "true" : "false" ?>" data-es-administrador="<?= $esAdministrador ? "true" : "false" ?>">
+<body data-es-docente="false" data-es-administrador="<?= $esAdministrador ? "true" : "false" ?>">
 
-<header>
-
-    <nav class="navbar navbar-expand-lg">
-
-        <a
-            class="navbar-brand"
-            href="dashboard.php"
-        >
-            JOJOLOS
-        </a>
-
-        <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#menuPrincipal"
-            aria-controls="menuPrincipal"
-            aria-expanded="false"
-            aria-label="Menú"
-        >
-
-            <span class="navbar-toggler-icon"></span>
-
-        </button>
-
-        <div
-            class="collapse navbar-collapse"
-            id="menuPrincipal"
-        >
-
-            <ul class="navbar-nav ms-auto">
-
-                <li class="nav-item">
-
-                    <a
-                        class="nav-link"
-                        href="dashboard.php"
-                    >
-                        Inicio
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <a
-                        class="nav-link"
-                        href="tickets.php"
-                    >
-                        Tickets
-                    </a>
-
-                </li>
-
-                <?php if ($esDocente || !empty($_SESSION["tecnico"])): ?>
-                <li class="nav-item"><a class="nav-link" href="solicitudes.php">Solicitudes</a></li>
-                <?php endif; ?>
-
-                <li class="nav-item">
-
-                    <a
-                        class="nav-link active"
-                        href="prestamos.php"
-                    >
-                        Préstamos
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <a
-                        class="nav-link"
-                        href="historial.php"
-                    >
-                        Historial
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <button
-                        id="cerrarSesionBtn"
-                        type="button"
-                    >
-                        Cerrar Sesión
-                    </button>
-
-                </li>
-
-            </ul>
-
-        </div>
-
-    </nav>
-
-</header>
+<?php require __DIR__ . "/partials/navbar.php"; ?>
 
 <main>
 
@@ -142,7 +45,7 @@
             Consulta y administra los préstamos registrados.
         </p>
 
-        <?php if ($esDocente): ?>
+        <?php if ($esAdministrador): ?>
 
             <button
                 id="btnNuevoPrestamo"
@@ -155,7 +58,7 @@
 
     </section>
 
-    <?php if ($esDocente): ?>
+    <?php if ($esAdministrador): ?>
 
         <div
             id="modalPrestamo"
