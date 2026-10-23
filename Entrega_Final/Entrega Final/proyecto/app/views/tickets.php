@@ -128,6 +128,13 @@
                         </select>
 
 
+                        <label for="idEquipo">
+                            Equipo afectado
+                        </label>
+                        <select id="idEquipo" name="idEquipo">
+                            <option value="">Seleccione un equipo (opcional)</option>
+                        </select>
+
                         <label for="descripcion">
                             Descripción de la incidencia
                         </label>
@@ -156,31 +163,14 @@
         <section class="filtros">
 
             <select id="filtroEstado">
-
-                <option value="">
-                    Todos los estados
-                </option>
-
-                <option value="Pendiente">
-                    Pendiente
-                </option>
-
-                <option value="En Proceso">
-                    En Proceso
-                </option>
-
-                <option value="Vencido">
-                    Vencido
-                </option>
-
-                <option value="Resuelto">
-                    Resuelto
-                </option>
-
-                <option value="Cancelado">
-                    Cancelado
-                </option>
-
+                <option value="">Todos los estados</option>
+                <option value="En espera">En espera</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="En Proceso">En Proceso</option>
+                <option value="Vencido">Vencido</option>
+                <option value="Resuelto">Resuelto</option>
+                <option value="Cancelado">Cancelado</option>
+                <option value="Denegado">Denegado</option>
             </select>
 
 

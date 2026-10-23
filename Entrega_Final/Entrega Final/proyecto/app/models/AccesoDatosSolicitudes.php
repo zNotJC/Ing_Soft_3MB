@@ -101,7 +101,7 @@ class AccesoDatosSolicitudes
                 :equipo,
                 :fechaSolicitud,
                 :fechaNecesaria,
-                'Pendiente'
+                'En espera'
             )
         ";
 
@@ -138,7 +138,7 @@ class AccesoDatosSolicitudes
                 equipo = :equipo,
                 fechaNecesaria = :fechaNecesaria
             WHERE idSolicitud = :idSolicitud
-            AND estado = 'Pendiente'
+            AND estado IN ('En espera','Pendiente')
             " . ($cedulaUsuario !== null ? "AND cedulaUsuario = :cedulaUsuario" : "") . "
         ";
 
@@ -167,7 +167,7 @@ class AccesoDatosSolicitudes
                 estado = 'Aprobada',
                 respuesta = :respuesta
             WHERE idSolicitud = :idSolicitud
-            AND estado = 'Pendiente'
+            AND estado IN ('En espera','Pendiente')
         ";
 
         $consulta =
@@ -190,7 +190,7 @@ class AccesoDatosSolicitudes
                 estado = 'Rechazada',
                 respuesta = :respuesta
             WHERE idSolicitud = :idSolicitud
-            AND estado = 'Pendiente'
+            AND estado IN ('En espera','Pendiente')
         ";
 
         $consulta =
@@ -211,7 +211,7 @@ class AccesoDatosSolicitudes
             SET
                 estado = 'Cancelada'
             WHERE idSolicitud = :idSolicitud
-            AND estado = 'Pendiente'
+            AND estado IN ('En espera','Pendiente')
         ";
 
         $consulta =
@@ -224,7 +224,7 @@ class AccesoDatosSolicitudes
 
     public function eliminarSolicitud(int $idSolicitud, ?string $cedulaUsuario = null): bool
     {
-        $sql = "UPDATE solicitud SET estado = 'Cancelada' WHERE idSolicitud = :idSolicitud AND estado IN ('Pendiente', 'Aprobada')" . ($cedulaUsuario !== null ? " AND cedulaUsuario = :cedulaUsuario" : "");
+        $sql = "UPDATE solicitud SET estado = 'Cancelada' WHERE idSolicitud = :idSolicitud AND estado IN ('En espera','Pendiente', 'Aprobada')" . ($cedulaUsuario !== null ? " AND cedulaUsuario = :cedulaUsuario" : "");
         $consulta = $this->conexion->prepare($sql);
         $parametros = ['idSolicitud' => $idSolicitud];
         if ($cedulaUsuario !== null) $parametros['cedulaUsuario'] = $cedulaUsuario;
@@ -234,7 +234,7 @@ class AccesoDatosSolicitudes
 
     public function actualizarEstado(int $idSolicitud, string $estado, ?string $respuesta = null): bool
     {
-        $estadosPermitidos = ['Pendiente', 'Aprobada', 'Rechazada', 'Cancelada'];
+        $estadosPermitidos = ['En espera', 'Pendiente', 'Aprobada', 'Rechazada', 'Cancelada', 'Denegada'];
         if (!in_array($estado, $estadosPermitidos, true)) {
             return false;
         }

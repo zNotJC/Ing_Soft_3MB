@@ -19,6 +19,10 @@ function mostrarMensaje(mensaje) {
 }
 
 function renderizarHistorial(registros) {
+    const anterior = filtroUsuario.value;
+    filtroUsuario.replaceChildren(new Option('Todos los usuarios', ''));
+    [...new Set(registros.map(r => r.usuario).filter(Boolean))].sort().forEach(usuario => filtroUsuario.add(new Option(usuario, usuario)));
+    filtroUsuario.value = anterior;
     if (!registros.length) {
         mostrarMensaje("No hay registros en el historial.");
         return;
@@ -26,7 +30,7 @@ function renderizarHistorial(registros) {
     const fragmento = document.createDocumentFragment();
     registros.forEach(registro => {
         const fila = document.createElement("tr");
-        [registro.id, registro.tipo, registro.detalle, registro.usuario, registro.estado, registro.fecha].forEach(valor => fila.appendChild(crearCelda(valor)));
+        [registro.id, registro.tipo, registro.detalle, registro.usuario, registro.estado, String(registro.fecha || '').slice(0, 10)].forEach(valor => fila.appendChild(crearCelda(valor)));
         fragmento.appendChild(fila);
     });
     tabla.replaceChildren(fragmento);
@@ -66,6 +70,6 @@ async function cargarHistorial() {
 
 filtroTipo.addEventListener("change", aplicarFiltros);
 filtroEstado.addEventListener("change", aplicarFiltros);
-filtroUsuario.addEventListener("input", aplicarFiltros);
+filtroUsuario.addEventListener("change", aplicarFiltros);
 filtroFecha.addEventListener("change", aplicarFiltros);
 cargarHistorial();

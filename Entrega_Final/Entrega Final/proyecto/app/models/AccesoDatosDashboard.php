@@ -11,7 +11,7 @@ class AccesoDatosDashboard
 
     public function obtenerTicketsPendientes(): int
     {
-        $consulta = $this->conexion->query("SELECT COUNT(*) AS cantidad FROM ticket WHERE estado = 'Pendiente'");
+        $consulta = $this->conexion->query("SELECT COUNT(*) AS cantidad FROM ticket WHERE estado IN ('En espera','Pendiente')");
         return (int) $consulta->fetch()['cantidad'];
     }
 
@@ -23,7 +23,7 @@ class AccesoDatosDashboard
 
     public function obtenerSolicitudesActivas(): int
     {
-        $consulta = $this->conexion->query("SELECT COUNT(*) AS cantidad FROM solicitud WHERE estado = 'Pendiente'");
+        $consulta = $this->conexion->query("SELECT COUNT(*) AS cantidad FROM solicitud WHERE estado IN ('En espera','Pendiente')");
         return (int) $consulta->fetch()['cantidad'];
     }
 

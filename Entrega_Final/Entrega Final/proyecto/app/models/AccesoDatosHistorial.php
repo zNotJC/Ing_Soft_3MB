@@ -21,13 +21,13 @@ class AccesoDatosHistorial
                 INNER JOIN usuario AS u ON u.cedula = t.cedulaSolicitante
                 UNION ALL
                 SELECT s.idSolicitud AS id, 'Solicitud' AS tipo, s.descripcion AS detalle,
-                       u.usuario AS usuario, s.estado AS estado, s.fechaSolicitud AS fecha
+                       u.usuario AS usuario, s.estado AS estado, CAST(s.fechaSolicitud AS DATETIME) AS fecha
                 FROM solicitud AS s
                 INNER JOIN usuario AS u ON u.cedula = s.cedulaUsuario
                 UNION ALL
                 SELECT p.idPrestamo AS id, 'Préstamo' AS tipo,
                        CONCAT('Equipo: ', e.nombre) AS detalle,
-                       u.usuario AS usuario, p.estado AS estado, p.fechaPrestamo AS fecha
+                       u.usuario AS usuario, p.estado AS estado, CAST(p.fechaPrestamo AS DATETIME) AS fecha
                 FROM prestamo AS p
                 INNER JOIN equipo AS e ON e.idEquipo = p.idEquipo
                 INNER JOIN usuario AS u ON u.cedula = p.cedulaUsuario

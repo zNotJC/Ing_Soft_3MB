@@ -15,6 +15,8 @@ class AccesoDatosTickets
             SELECT
                 t.idTicket,
                 t.idLaboratorio,
+                t.idEquipo,
+                e.nombre AS equipo,
                 t.titulo,
                 t.descripcion,
                 t.fechaRegistro,
@@ -31,6 +33,7 @@ class AccesoDatosTickets
             FROM ticket AS t
             INNER JOIN usuario AS u ON u.cedula = t.cedulaSolicitante
             INNER JOIN laboratorio AS l ON l.idLaboratorio = t.idLaboratorio
+            LEFT JOIN equipo AS e ON e.idEquipo = t.idEquipo
             ORDER BY t.idTicket DESC
         ";
         return $this->conexion->query($sql)->fetchAll(PDO::FETCH_ASSOC);
@@ -41,6 +44,11 @@ class AccesoDatosTickets
         return $this->conexion->query(
             "SELECT idLaboratorio, nombre FROM laboratorio ORDER BY nombre"
         )->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function obtenerEquipos(): array
+    {
+        return $this->conexion->query("SELECT idEquipo, nombre, tipo, idLaboratorio, estado FROM equipo WHERE estado IN ('Disponible','Roto','No disponible') ORDER BY nombre")->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function obtenerPrioridades(): array
@@ -55,24 +63,25 @@ class AccesoDatosTickets
     public function crearTicket(
         string $titulo,
         string $descripcion,
-        string $fechaLimite,
+        ?string $fechaLimite,
         string $cedulaSolicitante,
         int $idLaboratorio,
-        string $prioridad
+        string $prioridad,
+        ?int $idEquipo = null
     ): void {
         $sql = "
             INSERT INTO ticket
-                (titulo, descripcion, fechaLimite, cedulaSolicitante, idLaboratorio, prioridad, estado)
+                (titulo, descripcion, fechaLimite, cedulaSolicitante, idLaboratorio, idEquipo, prioridad, estado)
             VALUES
-                (:titulo, :descripcion, :fechaLimite, :cedulaSolicitante, :idLaboratorio, '-', 'En espera')
+                (:titulo, :descripcion, NULL, :cedulaSolicitante, :idLaboratorio, :idEquipo, '-', 'En espera')
         ";
         $consulta = $this->conexion->prepare($sql);
         $consulta->execute([
             'titulo' => $titulo,
             'descripcion' => $descripcion,
-            'fechaLimite' => $fechaLimite,
             'cedulaSolicitante' => $cedulaSolicitante,
             'idLaboratorio' => $idLaboratorio,
+            'idEquipo' => $idEquipo,
         ]);
     }
 
@@ -106,7 +115,6 @@ class AccesoDatosTickets
             'idTicket' => $idTicket,
             'titulo' => $titulo,
             'descripcion' => $descripcion,
-            'fechaLimite' => $fechaLimite,
             'idLaboratorio' => $idLaboratorio,
             'prioridad' => $prioridad
         ]);

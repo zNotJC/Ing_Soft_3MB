@@ -53,15 +53,17 @@ CREATE TABLE ticket (
   titulo VARCHAR(150) NOT NULL,
   descripcion TEXT NOT NULL,
   fechaRegistro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  fechaLimite DATE NOT NULL,
+  fechaLimite DATE NULL,
   cedulaSolicitante CHAR(8) NOT NULL,
   idLaboratorio INT NOT NULL,
-  prioridad VARCHAR(20) NOT NULL DEFAULT 'Media',
-  estado VARCHAR(20) NOT NULL DEFAULT 'Pendiente',
+  idEquipo INT NULL,
+  prioridad VARCHAR(20) NOT NULL DEFAULT '-',
+  estado VARCHAR(20) NOT NULL DEFAULT 'En espera',
   CONSTRAINT fk_ticket_solicitante FOREIGN KEY (cedulaSolicitante) REFERENCES usuario(cedula),
   CONSTRAINT fk_ticket_laboratorio FOREIGN KEY (idLaboratorio) REFERENCES laboratorio(idLaboratorio),
-  CONSTRAINT chk_ticket_prioridad CHECK (prioridad IN ('Baja','Media','Alta')),
-  CONSTRAINT chk_ticket_estado CHECK (estado IN ('Pendiente','En Proceso','Resuelto','Cancelado'))
+  CONSTRAINT fk_ticket_equipo FOREIGN KEY (idEquipo) REFERENCES equipo(idEquipo) ON DELETE SET NULL,
+  CONSTRAINT chk_ticket_prioridad CHECK (prioridad IN ('-','Baja','Media','Alta')),
+  CONSTRAINT chk_ticket_estado CHECK (estado IN ('En espera','Pendiente','En Proceso','Resuelto','Cancelado','Denegado'))
 ) ENGINE=InnoDB;
 
 CREATE TABLE solicitud (
@@ -73,12 +75,12 @@ CREATE TABLE solicitud (
   equipo VARCHAR(100) NULL,
   fechaSolicitud DATE NOT NULL,
   fechaNecesaria DATE NULL,
-  estado VARCHAR(20) NOT NULL DEFAULT 'Pendiente',
+  estado VARCHAR(20) NOT NULL DEFAULT 'En espera',
   respuesta VARCHAR(500) NULL,
   CONSTRAINT fk_solicitud_usuario FOREIGN KEY (cedulaUsuario) REFERENCES usuario(cedula),
   CONSTRAINT chk_solicitud_tipo CHECK (tipoSolicitud IN ('Laboratorio','Reparación')),
   CONSTRAINT chk_solicitud_cantidad CHECK (cantidad > 0),
-  CONSTRAINT chk_solicitud_estado CHECK (estado IN ('Pendiente','Aprobada','Rechazada','Cancelada'))
+  CONSTRAINT chk_solicitud_estado CHECK (estado IN ('En espera','Pendiente','Aprobada','Rechazada','Cancelada','Denegada'))
 ) ENGINE=InnoDB;
 
 CREATE TABLE prestamo (
@@ -87,12 +89,12 @@ CREATE TABLE prestamo (
   cedulaUsuario CHAR(8) NOT NULL,
   fechaPrestamo DATE NOT NULL,
   fechaDevolucion DATE NOT NULL,
-  estado VARCHAR(20) NOT NULL DEFAULT 'Pendiente',
-  prioridad VARCHAR(20) NOT NULL DEFAULT 'Media',
+  estado VARCHAR(20) NOT NULL DEFAULT 'En espera',
+  prioridad VARCHAR(20) NOT NULL DEFAULT '-',
   CONSTRAINT fk_prestamo_equipo FOREIGN KEY (idEquipo) REFERENCES equipo(idEquipo),
   CONSTRAINT fk_prestamo_usuario FOREIGN KEY (cedulaUsuario) REFERENCES usuario(cedula),
-  CONSTRAINT chk_prestamo_estado CHECK (estado IN ('Pendiente','Activo','Cancelado','Devuelto')),
-  CONSTRAINT chk_prestamo_prioridad CHECK (prioridad IN ('Baja','Media','Alta'))
+  CONSTRAINT chk_prestamo_estado CHECK (estado IN ('En espera','Pendiente','Activo','Cancelado','Devuelto','Denegado')),
+  CONSTRAINT chk_prestamo_prioridad CHECK (prioridad IN ('-','Baja','Media','Alta'))
 ) ENGINE=InnoDB;
 
 

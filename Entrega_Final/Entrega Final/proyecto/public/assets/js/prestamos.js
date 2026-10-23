@@ -1,14 +1,93 @@
-const modal=document.getElementById('modalPrestamo'), btnNuevo=document.getElementById('btnNuevoPrestamo'), cerrar=document.getElementById('cerrarModal'), form=document.getElementById('formPrestamo'), modalMod=document.getElementById('modalModificarPrestamo'), cerrarMod=document.getElementById('cerrarModalModificar'), formMod=modalMod?.querySelector('form'), tabla=document.getElementById('tablaPrestamos');
-const esAdmin=document.body.dataset.esAdministrador==='true', esTecnico=document.body.dataset.esTecnico==='true'; const porId=new Map(); let equipos=[];
-function td(v){const x=document.createElement('td');x.textContent=v??'';return x;} function boton(t,c,a,id){const b=document.createElement('button');b.type='button';b.textContent=t;b.className=c;b.dataset.accionPrestamo=a;b.dataset.idPrestamo=id;return b;}
-function mensaje(t){const tr=document.createElement('tr'),cell=td(t);cell.colSpan=10;tr.append(cell);tabla.replaceChildren(tr);}
-function poblarEquipos(select,tipo='',selected=''){if(!select)return;select.replaceChildren(new Option('Seleccione un equipo',''));equipos.filter(e=>Boolean(tipo)&&e.tipo===tipo&&e.estado==='Disponible').forEach(e=>select.add(new Option(e.nombre,e.idEquipo)));if(selected)select.value=String(selected);}
-function renderEquipos(data){equipos=data; const t1=document.getElementById('tipoEquipoPrestamo')?.value||''; const t2=document.getElementById('tipoEquipoModificar')?.value||''; poblarEquipos(document.getElementById('idEquipo'),t1);poblarEquipos(document.getElementById('modificarIdEquipo'),t2);}
-function renderizar(prestamos){porId.clear();tabla.replaceChildren();if(!prestamos.length){mensaje('No hay préstamos registrados.');return;}prestamos.forEach(p=>{porId.set(String(p.idPrestamo),p);const tr=document.createElement('tr');[p.idPrestamo,p.equipo,p.tipoEquipo,p.nombre,p.cedula,p.fechaPrestamo,p.fechaDevolucion,p.estado,p.prioridad].forEach(v=>tr.append(td(v)));const actions=td('');if(esTecnico){if(p.estado==='Pendiente')actions.append(boton('Aceptar','btn btn-sm btn-success','aceptar',p.idPrestamo));if(p.estado==='Pendiente'){actions.append(boton('Modificar','btn btn-sm btn-primary','modificar',p.idPrestamo),boton('Cancelar','btn btn-sm btn-danger','cancelar',p.idPrestamo));}if(p.estado==='Activo')actions.append(boton('Registrar devolución','btn btn-sm btn-secondary','devolver',p.idPrestamo));}tr.append(actions);tabla.append(tr);});}
-async function api(method,data){const opt={method,headers:{Accept:'application/json'}};if(data){opt.headers['Content-Type']='application/json';opt.body=JSON.stringify(data);}const r=await fetch('api/prestamos.php',{...opt,cache:'no-store'});const text=await r.text();let j;try{j=JSON.parse(text)}catch{throw new Error(`Respuesta inválida del servidor (HTTP ${r.status}).`)}if(!r.ok||j.status!=='success')throw new Error(j.message||'No se pudo completar la operación.');return j.data;}
-async function cargar(){try{const d=await api('GET');renderEquipos(d.equipos||[]);renderizar(d.prestamos||[]);}catch(e){console.error(e);mensaje(e.message);}}
-btnNuevo?.addEventListener('click',()=>{form.reset();poblarEquipos(document.getElementById('idEquipo'),document.getElementById('tipoEquipoPrestamo')?.value||'');modal.hidden=false;});cerrar?.addEventListener('click',()=>modal.hidden=true);cerrarMod?.addEventListener('click',()=>modalMod.hidden=true);
-document.getElementById('tipoEquipoPrestamo')?.addEventListener('change',e=>poblarEquipos(document.getElementById('idEquipo'),e.target.value));document.getElementById('tipoEquipoModificar')?.addEventListener('change',e=>poblarEquipos(document.getElementById('modificarIdEquipo'),e.target.value));
-form?.addEventListener('submit',async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(form));if(d.fechaDevolucion<d.fechaPrestamo){alert('La fecha de devolución no puede ser anterior a la fecha de préstamo.');return;}d.idEquipo=Number(d.idEquipo);try{await api('POST',d);modal.hidden=true;await cargar();}catch(err){alert(err.message);}});
-formMod?.addEventListener('submit',async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(formMod));if(d.fechaDevolucion<d.fechaPrestamo){alert('La fecha de devolución no puede ser anterior a la fecha de préstamo.');return;}d.idPrestamo=Number(d.idPrestamo);d.idEquipo=Number(d.idEquipo);d.accion='modificar';try{await api('PUT',d);modalMod.hidden=true;await cargar();}catch(err){alert(err.message);}});
-tabla?.addEventListener('click',async e=>{const b=e.target.closest('button[data-accion-prestamo]');if(!b||!esTecnico)return;const id=Number(b.dataset.idPrestamo),accion=b.dataset.accionPrestamo;if(accion==='modificar'){const p=porId.get(String(id));if(!p)return;document.getElementById('modificarIdPrestamo').value=p.idPrestamo;document.getElementById('tipoEquipoModificar').value=p.tipoEquipo;poblarEquipos(document.getElementById('modificarIdEquipo'),p.tipoEquipo,p.idEquipo);document.getElementById('modificarFechaPrestamo').value=p.fechaPrestamo;document.getElementById('modificarFechaDevolucion').value=p.fechaDevolucion;document.getElementById('modificarPrioridad').value=p.prioridad&&p.prioridad!=='-'?p.prioridad:'Media';modalMod.hidden=false;return;}if(accion==='cancelar'&&!confirm('¿Deseas cancelar este préstamo?'))return;try{await api('PUT',{idPrestamo:id,accion});await cargar();}catch(err){alert(err.message);}});cargar();
+const modal = document.getElementById('modalPrestamo');
+const btnNuevo = document.getElementById('btnNuevoPrestamo');
+const cerrar = document.getElementById('cerrarModal');
+const form = document.getElementById('formPrestamo');
+const tabla = document.getElementById('tablaPrestamos');
+const esTecnico = document.body.dataset.esTecnico === 'true';
+const porId = new Map();
+let equipos = [];
+
+function celda(valor) { const td = document.createElement('td'); td.textContent = valor ?? ''; return td; }
+function boton(texto, clase, accion, id) { const b = document.createElement('button'); b.type = 'button'; b.textContent = texto; b.className = clase; b.dataset.accionPrestamo = accion; b.dataset.idPrestamo = id; return b; }
+function mensaje(texto) { const tr = document.createElement('tr'); const td = celda(texto); td.colSpan = 10; tr.append(td); tabla.replaceChildren(tr); }
+function poblarEquipos(select, tipo = '', seleccionado = '') {
+    if (!select) return;
+    select.replaceChildren(new Option('Seleccione un equipo', ''));
+    equipos.filter(e => tipo && e.tipo === tipo && e.estado === 'Disponible').forEach(e => select.add(new Option(e.nombre, e.idEquipo)));
+    if (seleccionado) select.value = String(seleccionado);
+}
+function renderEquipos(datos) {
+    equipos = datos;
+    poblarEquipos(document.getElementById('idEquipo'), document.getElementById('tipoEquipoPrestamo')?.value || '');
+}
+function cargarFiltros(prestamos) {
+    [['filtroEstado', 'Todos los estados', 'estado'], ['filtroNombre', 'Todos los usuarios', 'nombre'], ['filtroEquipo', 'Todos los equipos', 'equipo'], ['filtroCedula', 'Todas las cédulas', 'cedula']].forEach(([id, etiqueta, campo]) => {
+        const select = document.getElementById(id); if (!select) return;
+        const anterior = select.value;
+        select.replaceChildren(new Option(etiqueta, ''));
+        [...new Set(prestamos.map(p => p[campo]).filter(v => v !== null && v !== undefined && v !== ''))].sort().forEach(v => select.add(new Option(v, v)));
+        select.value = anterior;
+    });
+}
+function renderizar(prestamos) {
+    porId.clear(); cargarFiltros(prestamos); tabla.replaceChildren();
+    if (!prestamos.length) { mensaje('No hay préstamos registrados.'); return; }
+    prestamos.forEach(p => {
+        porId.set(String(p.idPrestamo), p);
+        const tr = document.createElement('tr');
+        [p.idPrestamo, p.equipo, p.tipoEquipo, p.nombre, p.cedula, p.fechaPrestamo, p.fechaDevolucion, p.estado, p.prioridad].forEach(v => tr.append(celda(v)));
+        const acciones = celda('');
+        if (esTecnico && ['En espera', 'Pendiente'].includes(p.estado)) {
+            if (!p.prioridad || p.prioridad === '-') acciones.append(boton('Revisar préstamo', 'btn btn-sm btn-primary', 'revisar', p.idPrestamo));
+            else acciones.append(boton('Aceptar', 'btn btn-sm btn-success', 'aceptar', p.idPrestamo), boton('Denegar', 'btn btn-sm btn-danger', 'denegar', p.idPrestamo));
+        }
+        if (esTecnico && p.estado === 'Activo') acciones.append(boton('Registrar devolución', 'btn btn-sm btn-secondary', 'devolver', p.idPrestamo));
+        if (esTecnico && ['En espera', 'Pendiente'].includes(p.estado)) acciones.append(boton('Cancelar', 'btn btn-sm btn-danger', 'cancelar', p.idPrestamo));
+        tr.append(acciones); tabla.append(tr);
+    });
+    filtrarPrestamos();
+}
+async function api(metodo, datos) {
+    const opciones = { method: metodo, headers: { Accept: 'application/json' } };
+    if (datos) { opciones.headers['Content-Type'] = 'application/json'; opciones.body = JSON.stringify(datos); }
+    const respuesta = await fetch('api/prestamos.php', { ...opciones, cache: 'no-store' });
+    let json; try { json = await respuesta.json(); } catch { throw new Error(`Respuesta inválida del servidor (HTTP ${respuesta.status}).`); }
+    if (!respuesta.ok || json.status !== 'success') throw new Error(json.message || 'No se pudo completar la operación.');
+    return json.data;
+}
+async function cargar() { try { const datos = await api('GET'); renderEquipos(datos.equipos || []); renderizar(datos.prestamos || []); } catch (e) { console.error(e); mensaje(e.message); } }
+function filtrarPrestamos() {
+    const estado = document.getElementById('filtroEstado')?.value || '';
+    const nombre = document.getElementById('filtroNombre')?.value || '';
+    const equipo = document.getElementById('filtroEquipo')?.value || '';
+    const cedula = document.getElementById('filtroCedula')?.value || '';
+    tabla.querySelectorAll('tr').forEach(tr => {
+        if (tr.children.length < 9) return;
+        tr.hidden = Boolean((estado && tr.children[7].textContent !== estado) || (nombre && tr.children[3].textContent !== nombre) || (equipo && tr.children[1].textContent !== equipo) || (cedula && tr.children[4].textContent !== cedula));
+    });
+}
+btnNuevo?.addEventListener('click', () => { form?.reset(); poblarEquipos(document.getElementById('idEquipo'), document.getElementById('tipoEquipoPrestamo')?.value || ''); if (modal) modal.hidden = false; });
+cerrar?.addEventListener('click', () => { if (modal) modal.hidden = true; });
+document.getElementById('tipoEquipoPrestamo')?.addEventListener('change', e => poblarEquipos(document.getElementById('idEquipo'), e.target.value));
+form?.addEventListener('submit', async e => { e.preventDefault(); const datos = Object.fromEntries(new FormData(form)); if (datos.fechaDevolucion < datos.fechaPrestamo) { alert('La fecha de devolución no puede ser anterior a la fecha de préstamo.'); return; } datos.idEquipo = Number(datos.idEquipo); try { await api('POST', datos); modal.hidden = true; await cargar(); } catch (err) { alert(err.message); } });
+tabla?.addEventListener('click', async e => {
+    const b = e.target.closest('button[data-accion-prestamo]'); if (!b || !esTecnico) return;
+    const idPrestamo = Number(b.dataset.idPrestamo), accion = b.dataset.accionPrestamo;
+    try {
+        if (accion === 'revisar') {
+            const prioridad = prompt('Selecciona prioridad: Baja, Media o Alta');
+            if (prioridad === null) return;
+            const normalizada = prioridad.trim().toLowerCase();
+            const valor = ({ baja: 'Baja', media: 'Media', alta: 'Alta' })[normalizada];
+            if (!valor) { alert('La prioridad debe ser Baja, Media o Alta.'); return; }
+            await api('PUT', { idPrestamo, accion: 'revisar', prioridad: valor });
+        } else {
+            if (accion === 'cancelar' && !confirm('¿Deseas cancelar este préstamo?')) return;
+            if (accion === 'denegar' && !confirm('¿Deseas denegar este préstamo?')) return;
+            await api('PUT', { idPrestamo, accion });
+        }
+        await cargar();
+    } catch (err) { alert(err.message); }
+});
+['filtroEstado', 'filtroNombre', 'filtroEquipo', 'filtroCedula'].forEach(id => document.getElementById(id)?.addEventListener('change', filtrarPrestamos));
+cargar();

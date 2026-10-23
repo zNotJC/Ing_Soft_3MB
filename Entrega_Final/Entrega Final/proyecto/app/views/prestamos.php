@@ -273,23 +273,11 @@
 
         </select>
 
-        <input
-            type="text"
-            id="filtroNombre"
-            placeholder="Nombre"
-        >
+        <select id="filtroNombre"><option value="">Todos los usuarios</option></select>
 
-        <input
-            type="text"
-            id="filtroEquipo"
-            placeholder="Equipo"
-        >
+        <select id="filtroEquipo"><option value="">Todos los equipos</option></select>
 
-        <input
-            type="text"
-            id="filtroCedula"
-            placeholder="Cédula"
-        >
+        <select id="filtroCedula"><option value="">Todas las cédulas</option></select>
 
         <input
             type="date"

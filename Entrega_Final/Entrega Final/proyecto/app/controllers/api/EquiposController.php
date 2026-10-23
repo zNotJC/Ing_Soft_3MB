@@ -11,7 +11,7 @@ final class EquiposController extends ApiController
     public function handle(): void
     {
         $method=$_SERVER['REQUEST_METHOD']??'GET';
-        $role=$this->requireRole(['Administrador','Tecnico']);
+        $role=$this->requireRole(['Administrador','Tecnico','Docente']);
         [$connector,$connection]=$this->connect();
         try {
             $equipos=new AccesoDatosEquipos($connection); $labs=new AccesoDatosCatalogos($connection);
