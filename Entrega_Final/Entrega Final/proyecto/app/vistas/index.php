@@ -19,13 +19,16 @@
 </head>
 
 <body>
-    <div id="preferenciasLogin" aria-label="Preferencias de accesibilidad"></div>
+    <div id="preferenciasLogin" class="preferencias-login" aria-label="Preferencias de accesibilidad">
+        <button type="button" id="alternarIdioma" class="btn-preferencia" aria-label="Cambiar idioma">ES / EN</button>
+        <button type="button" id="alternarTema" class="btn-preferencia" aria-label="Cambiar tema">Claro / Oscuro</button>
+    </div>
 
     <header>
 
         <h1>JOJOLOS</h1>
 
-        <p>Sistema de Gestión de Laboratorios</p>
+        <p class="subtitulo-sistema" data-traducible="subtitulo">Sistema de Gestión de Recursos y Soporte de Informática</p>
 
     </header>
 
@@ -112,13 +115,7 @@
 
     </main>
 
-    <footer>
-
-        <p>
-            JOJOLOS - Gestión de Incidencias, Solicitudes y Préstamos
-        </p>
-
-    </footer>
+    <footer class="site-footer"><img class="footer-logo" src="assets/img/jojolos-footer.svg" alt="JOJOLOS"><p>JOJOLOS - Sistema de Gestión de Recursos y Soporte de Informática</p></footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/password-toggle.js"></script>

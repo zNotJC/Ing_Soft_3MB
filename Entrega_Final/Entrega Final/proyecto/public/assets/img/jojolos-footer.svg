@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="110" viewBox="0 0 180 110" role="img" aria-labelledby="titulo">
+<title id="titulo">JOJOLOS - Recursos informáticos</title>
+<rect x="18" y="8" width="144" height="76" rx="10" fill="#f8fafc" stroke="#60a5fa" stroke-width="5"/>
+<rect x="29" y="19" width="122" height="54" rx="4" fill="#1e2a38"/>
+<path d="M90 84 V96 M61 98 H119" stroke="#60a5fa" stroke-width="6" stroke-linecap="round"/>
+<text x="90" y="52" font-family="Arial,sans-serif" font-size="25" font-weight="700" text-anchor="middle" fill="#ffffff">JOJOLOS</text>
+</svg>

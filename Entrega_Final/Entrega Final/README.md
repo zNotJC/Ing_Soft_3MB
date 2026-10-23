@@ -1,6 +1,6 @@
 # JOJOLOS — Sistema de Gestión de Laboratorios
 
-Versión de trabajo: **v1.21**.
+Versión de trabajo: **v1.22**.
 
 ## Estructura principal
 
@@ -32,6 +32,6 @@ Versión de trabajo: **v1.21**.
 - v1.18: revisión de flujos de tickets y préstamos.
 - v1.19: ajustes de validación y filtros.
 - v1.20: organización inicial de la documentación.
-- **v1.21: ajustes de estados, cuentas iniciales, idioma/tema y organización de capas.**
+- **v1.22: ajustes de estados, cuentas iniciales, idioma/tema y organización de capas.**
 
 La documentación completa se encuentra en `DOCUMENTACION_JOJOLOS.md`.

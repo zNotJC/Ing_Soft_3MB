@@ -14,6 +14,10 @@ $enlaces = [
 <header class="site-header">
     <nav class="navbar navbar-expand-xl" aria-label="Navegación principal">
         <a class="navbar-brand" href="dashboard.php">JOJOLOS</a>
+        <div id="controlesPreferencias" class="controles-preferencias" aria-label="Preferencias de accesibilidad">
+            <button type="button" id="alternarIdioma" class="btn-preferencia" aria-label="Cambiar idioma">ES / EN</button>
+            <button type="button" id="alternarTema" class="btn-preferencia" aria-label="Cambiar tema">Claro / Oscuro</button>
+        </div>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false" aria-label="Abrir menú">
             <span class="navbar-toggler-icon"></span>
         </button>
