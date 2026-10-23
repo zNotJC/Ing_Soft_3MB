@@ -92,7 +92,7 @@ class AccesoDatosTickets
 
     public function aceptarTicket(int $idTicket, string $prioridad): bool
     {
-        $q = $this->conexion->prepare("UPDATE ticket SET prioridad=:prioridad, fechaLimite=CURDATE(), estado='En Proceso' WHERE idTicket=:id AND estado IN ('En espera','Pendiente')");
+        $q = $this->conexion->prepare("UPDATE ticket SET prioridad=:prioridad, fechaLimite=NOW(), estado='En Proceso' WHERE idTicket=:id AND estado IN ('En espera','Pendiente')");
         $q->execute(['prioridad'=>$prioridad, 'id'=>$idTicket]);
         return $q->rowCount() > 0;
     }

@@ -31,7 +31,7 @@
 
 <body data-es-docente="<?= $esDocente ? "true" : "false" ?>" data-es-administrador="<?= $esAdministrador ? "true" : "false" ?>" data-es-tecnico="<?= $esTecnico ? "true" : "false" ?>">
 
-<?php require __DIR__ . "/partials/navbar.php"; ?>
+<?php require __DIR__ . "/navbar/navbar.php"; ?>
 
 <main>
 
@@ -120,10 +120,10 @@
                             <select id="laboratorioSolicitud" class="form-select"><option value="">Seleccione un laboratorio</option></select>
                         </div>
                         <div class="mt-3" id="grupoReparacionSolicitud" hidden>
-                            <label for="tipoEquipoSolicitud">Tipo de equipo (opcional)</label>
-                            <select id="tipoEquipoSolicitud" class="form-select"><option value="">Seleccione un tipo</option><option>Ordenadores</option><option>Periféricos</option><option>Televisores</option><option>Aires Acondicionados</option></select>
+                            <label for="tipoEquipoSolicitud">Tipo de equipo</label>
+                            <select id="tipoEquipoSolicitud" name="tipoEquipo" class="form-select"><option value="" disabled selected>Seleccione un tipo</option><option>Ordenadores</option><option>Periféricos</option><option>Televisores</option><option>Aires Acondicionados</option></select>
                             <label for="equipoSolicitud" class="mt-2">Equipo a reparar</label>
-                            <select id="equipoSolicitud" class="form-select"><option value="">Seleccione un equipo</option></select>
+                            <select id="equipoSolicitud" class="form-select" disabled><option value="">Seleccione primero un tipo de equipo</option></select>
                         </div>
                     </div>
 
@@ -245,10 +245,10 @@
                         <select id="laboratorioModificarSolicitud" class="form-select"><option value="">Seleccione un laboratorio</option></select>
                     </div>
                     <div class="mt-3" id="grupoReparacionModificarSolicitud" hidden>
-                        <label for="tipoEquipoModificarSolicitud">Tipo de equipo (opcional)</label>
-                        <select id="tipoEquipoModificarSolicitud" class="form-select"><option value="">Seleccione un tipo</option><option>Ordenadores</option><option>Periféricos</option><option>Televisores</option><option>Aires Acondicionados</option></select>
+                        <label for="tipoEquipoModificarSolicitud">Tipo de equipo</label>
+                        <select id="tipoEquipoModificarSolicitud" name="tipoEquipo" class="form-select"><option value="" disabled selected>Seleccione un tipo</option><option>Ordenadores</option><option>Periféricos</option><option>Televisores</option><option>Aires Acondicionados</option></select>
                         <label for="equipoModificarSolicitud" class="mt-2">Equipo</label>
-                        <select id="equipoModificarSolicitud" class="form-select"><option value="">Seleccione un equipo</option></select>
+                        <select id="equipoModificarSolicitud" class="form-select" disabled><option value="">Seleccione primero un tipo de equipo</option></select>
                     </div>
                     <input type="hidden" id="modificarEquipo" name="equipo" value="">
 
@@ -464,7 +464,7 @@
 
 </main>
 
-<footer class="site-footer"><img class="footer-logo" src="assets/img/jojolos-footer.svg" alt="JOJOLOS"><p data-i18n-es="JOJOLOS - Sistema de Gestión de Recursos y Soporte de Informática" data-i18n-en="JOJOLOS - IT Resources and Support Management System">JOJOLOS - Sistema de Gestión de Recursos y Soporte de Informática</p></footer>
+<footer class="site-footer"><img class="footer-logo" src="assets/img/jojolos-footer.png" alt="JOJOLOS"><p data-i18n-es="JOJOLOS - Sistema de Gestión de Recursos y Soporte de Informática" data-i18n-en="JOJOLOS - IT Resources and Support Management System">JOJOLOS - Sistema de Gestión de Recursos y Soporte de Informática</p></footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 

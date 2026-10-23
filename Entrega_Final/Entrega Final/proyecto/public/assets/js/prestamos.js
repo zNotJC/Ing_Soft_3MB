@@ -1,4 +1,5 @@
 const modal = document.getElementById('modalPrestamo');
+const modalModificarPrestamo = document.getElementById('modalModificarPrestamo');
 const btnNuevo = document.getElementById('btnNuevoPrestamo');
 const cerrar = document.getElementById('cerrarModal');
 const form = document.getElementById('formPrestamo');
@@ -44,8 +45,7 @@ function renderizar(prestamos) {
         [p.idPrestamo, p.equipo, p.tipoEquipo, p.nombre, p.cedula, p.fechaPrestamo, p.fechaDevolucion, p.estado, p.prioridad].forEach(v => tr.append(celda(v)));
         const acciones = celda('');
         if (esTecnico && ['En espera', 'Pendiente'].includes(p.estado)) {
-            if (!p.prioridad || p.prioridad === '-') acciones.append(boton('Revisar préstamo', 'btn btn-sm btn-primary', 'revisar', p.idPrestamo));
-            else acciones.append(boton('Aceptar', 'btn btn-sm btn-success', 'aceptar', p.idPrestamo), boton('Denegar', 'btn btn-sm btn-danger', 'denegar', p.idPrestamo));
+            acciones.append(boton('Revisar préstamo', 'btn btn-sm btn-primary', 'revisar', p.idPrestamo));
         }
         if (esTecnico && ['Aceptado', 'Activo'].includes(p.estado)) acciones.append(boton('Registrar devolución', 'btn btn-sm btn-secondary', 'devolver', p.idPrestamo));
         if (esTecnico && ['En espera', 'Pendiente'].includes(p.estado)) acciones.append(boton('Cancelar', 'btn btn-sm btn-danger', 'cancelar', p.idPrestamo));
@@ -66,8 +66,19 @@ function abrirRevisionPrestamo(prestamo) {
     prestamoEnRevision = prestamo;
     document.getElementById('revisionPrestamoEquipo').textContent = `${prestamo.equipo} (${prestamo.tipoEquipo})`;
     document.getElementById('revisionPrestamoSolicitante').textContent = prestamo.nombre;
-    document.getElementById('revisionPrestamoPrioridad').value = '';
+    document.getElementById('revisionPrestamoPrioridad').value = ['Baja', 'Media', 'Alta'].includes(prestamo.prioridad) ? prestamo.prioridad : '';
     dialogRevision?.showModal();
+}
+async function resolverRevisionPrestamo(accion) {
+    const prioridad = document.getElementById('revisionPrestamoPrioridad')?.value;
+    if (!prestamoEnRevision || !prioridad) { alert('Selecciona una prioridad.'); return; }
+    if (accion === 'denegar' && !confirm('¿Deseas denegar este préstamo?')) return;
+    try {
+        await api('PUT', { idPrestamo: Number(prestamoEnRevision.idPrestamo), accion, prioridad });
+        dialogRevision?.close();
+        prestamoEnRevision = null;
+        await cargar();
+    } catch (error) { alert(error.message); }
 }
 function filtrarPrestamos() {
     const estado = document.getElementById('filtroEstado')?.value || '';
@@ -81,6 +92,7 @@ function filtrarPrestamos() {
 }
 btnNuevo?.addEventListener('click', () => { form?.reset(); poblarEquipos(document.getElementById('idEquipo'), document.getElementById('tipoEquipoPrestamo')?.value || ''); if (modal) modal.hidden = false; });
 cerrar?.addEventListener('click', () => { if (modal) modal.hidden = true; });
+document.getElementById('cerrarModalModificar')?.addEventListener('click', () => { if (modalModificarPrestamo) modalModificarPrestamo.hidden = true; });
 document.getElementById('tipoEquipoPrestamo')?.addEventListener('change', e => poblarEquipos(document.getElementById('idEquipo'), e.target.value));
 form?.addEventListener('submit', async e => { e.preventDefault(); const datos = Object.fromEntries(new FormData(form)); if (datos.fechaDevolucion < datos.fechaPrestamo) { alert('La fecha de devolución no puede ser anterior a la fecha de préstamo.'); return; } datos.idEquipo = Number(datos.idEquipo); try { await api('POST', datos); modal.hidden = true; await cargar(); } catch (err) { alert(err.message); } });
 tabla?.addEventListener('click', async e => {
@@ -93,21 +105,13 @@ tabla?.addEventListener('click', async e => {
             return;
         } else {
             if (accion === 'cancelar' && !confirm('¿Deseas cancelar este préstamo?')) return;
-            if (accion === 'denegar' && !confirm('¿Deseas denegar este préstamo?')) return;
             await api('PUT', { idPrestamo, accion });
         }
         await cargar();
     } catch (err) { alert(err.message); }
 });
-document.getElementById('guardarRevisionPrestamo')?.addEventListener('click', async () => {
-    const botonRevision = document.getElementById('guardarRevisionPrestamo');
-    const fila = botonRevision?.closest('dialog');
-    const prestamo = prestamoEnRevision;
-    const prioridad = document.getElementById('revisionPrestamoPrioridad')?.value;
-    if (!prestamo || !prioridad) { alert('Selecciona una prioridad.'); return; }
-    try { await api('PUT', { idPrestamo: Number(prestamo.idPrestamo), accion: 'revisar', prioridad }); fila?.close(); prestamoEnRevision = null; await cargar(); }
-    catch (error) { alert(error.message); }
-});
+document.getElementById('aceptarRevisionPrestamo')?.addEventListener('click', () => resolverRevisionPrestamo('aceptar'));
+document.getElementById('denegarRevisionPrestamo')?.addEventListener('click', () => resolverRevisionPrestamo('denegar'));
 document.getElementById('cerrarRevisionPrestamo')?.addEventListener('click', () => { dialogRevision?.close(); prestamoEnRevision = null; });
 ['filtroEstado', 'filtroNombre', 'filtroEquipo', 'filtroCedula'].forEach(id => document.getElementById(id)?.addEventListener('change', filtrarPrestamos));
 cargar();

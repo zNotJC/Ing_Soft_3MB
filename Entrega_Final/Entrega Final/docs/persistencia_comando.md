@@ -4,7 +4,7 @@ La persistencia se implementa con PDO y consultas preparadas. Los modelos de acc
 
 ## Instalación
 
-Ejecutar `baseDeDatos/DDL/instalacionDesdeCero.sql` sobre una base vacía y configurar las variables de conexión en `proyecto/.env`.
+Ejecutar `baseDeDatos/DDL/instalacionDesdeCero.sql` sobre una base vacía y configurar las variables de conexión en `proyecto/.env`. Para una base v1.24 existente, consultar la sección opcional de actualización al final del mismo SQL y ejecutar únicamente su instrucción `ALTER TABLE`, nunca el instalador completo.
 
 ## API
 

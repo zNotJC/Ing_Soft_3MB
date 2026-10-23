@@ -48,16 +48,18 @@ final class PrestamosController extends ApiController
             if ($method === 'PUT') {
                 $id = $this->positiveId('idPrestamo', $input);
                 $accion = (string) ($input['accion'] ?? 'modificar');
-                if ($accion === 'revisar') {
+                if ($accion === 'aceptar') {
                     $prioridad = (string) ($input['prioridad'] ?? '');
                     if (!in_array($prioridad, ['Baja', 'Media', 'Alta'], true)) {
                         ApiResponse::send(422, 'error', 'Selecciona una prioridad válida.');
                     }
-                    $updated = $model->revisarPrestamo($id, $prioridad);
-                } elseif ($accion === 'aceptar') {
-                    $updated = $model->aceptarPrestamo($id);
+                    $updated = $model->aceptarPrestamo($id, $prioridad);
                 } elseif ($accion === 'denegar') {
-                    $updated = $model->denegarPrestamo($id);
+                    $prioridad = (string) ($input['prioridad'] ?? '');
+                    if (!in_array($prioridad, ['Baja', 'Media', 'Alta'], true)) {
+                        ApiResponse::send(422, 'error', 'Selecciona una prioridad válida.');
+                    }
+                    $updated = $model->denegarPrestamo($id, $prioridad);
                 } elseif ($accion === 'devolver') {
                     $updated = $model->devolverPrestamo($id);
                 } elseif ($accion === 'cancelar') {

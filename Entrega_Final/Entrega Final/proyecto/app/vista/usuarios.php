@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="assets/css/global.css">
 </head>
 <body>
-<?php require __DIR__ . "/partials/navbar.php"; ?>
+<?php require __DIR__ . "/navbar/navbar.php"; ?>
 <main class="container py-4">
 <h1>Administración de usuarios</h1>
 <form id="formUsuario" class="card card-body mb-4">

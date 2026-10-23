@@ -34,7 +34,7 @@
     'Detalle del Ticket': 'Ticket details', 'Título:': 'Title:', 'Descripción:': 'Description:',
     'Laboratorio/Taller:': 'Laboratory/Workshop:', 'Solicitante:': 'Requester:', 'Prioridad:': 'Priority:',
     'Estado:': 'Status:', 'Fecha de registro:': 'Created on:', 'Fecha límite:': 'Due date:', 'Fecha de atención:': 'Accepted on:', 'Cerrar': 'Close',
-    'Revisar ticket': 'Review ticket', 'Aceptar ticket': 'Accept ticket', 'Esperar': 'Leave pending', 'Denegar': 'Deny',
+    'Revisar ticket': 'Review ticket', 'Aceptar ticket': 'Accept ticket', 'Denegar': 'Deny',
     'Registrar Ticket': 'Create ticket', 'Laboratorio / Taller': 'Laboratory / Workshop', 'Seleccione': 'Select',
     'Seleccione una opción': 'Select an option', 'Cargando laboratorios...': 'Loading laboratories...',
     'La cédula o la contraseña son incorrectas.': 'The ID number or password is incorrect.',
@@ -50,13 +50,14 @@
     'Cargando solicitudes...': 'Loading requests...', 'Indica el motivo del rechazo.': 'Enter the reason for rejection.',
     'Tipo de Solicitud': 'Request type', 'Laboratorio': 'Laboratory', 'Reparación': 'Repair',
     'Seleccione un laboratorio': 'Select a laboratory', 'Seleccione un tipo': 'Select a type',
+    'Seleccione primero un tipo de equipo': 'Select an equipment type first',
     'Tipo de equipo': 'Equipment type', 'Equipo a reparar': 'Equipment to repair', 'Equipo': 'Equipment',
     'Equipo disponible': 'Available equipment', 'Equipo/Recurso': 'Equipment/Resource', 'Laboratorio disponible': 'Available laboratory',
     'Laboratorio:': 'Laboratory:', 'Disponible': 'Available', 'En uso': 'In use',
     'Descripción': 'Description', 'Fecha Necesaria': 'Needed date', 'Guardar Solicitud': 'Save request',
     'Modificar Solicitud': 'Edit request', 'Guardar Cambios': 'Save changes', 'Todos los estados': 'All statuses',
     'Día solicitado': 'Requested day', 'Día solicitado para el laboratorio': 'Requested laboratory day', 'Día solicitado (opcional)': 'Requested day (optional)',
-    'Revisar préstamo': 'Review loan', 'Guardar prioridad': 'Save priority',
+    'Revisar préstamo': 'Review loan', 'Aceptar préstamo': 'Accept loan',
     'Ordenadores': 'Computers', 'Periféricos': 'Peripherals', 'Televisores': 'Televisions', 'Aires Acondicionados': 'Air conditioners',
     'Tipo de dispositivo': 'Device type', 'Fecha de Préstamo': 'Loan date', 'Fecha de Devolución': 'Return date',
     'Denegado': 'Denied', 'Aceptar': 'Accept', 'Cancelar': 'Cancel', 'Registrar Préstamo': 'Create loan',
@@ -150,10 +151,11 @@
     '¿Deseas cancelar esta solicitud?': 'Do you want to cancel this request?',
     '¿Deseas cancelar este ticket?': 'Do you want to cancel this ticket?', '¿Deseas denegar este ticket?': 'Do you want to deny this ticket?',
     '¿Deseas cancelar este préstamo?': 'Do you want to cancel this loan?',
+    '¿Deseas denegar este préstamo?': 'Do you want to deny this loan?',
     '¿Deseas cancelar esta solicitud?': 'Do you want to cancel this request?',
     '¿Deseas cancelar este ticket?': 'Do you want to cancel this ticket?', '¿Deseas denegar este ticket?': 'Do you want to deny this ticket?',
     'Revisar ticket': 'Review ticket', 'Registrar Completado': 'Mark complete', 'Cancelar': 'Cancel',
-    'Aceptar ticket': 'Accept ticket', 'Espera': 'Wait', 'No hay tickets registrados.': 'There are no tickets to show.',
+    'Aceptar ticket': 'Accept ticket', 'No hay tickets registrados.': 'There are no tickets to show.',
     'Gestiona los usuarios registrados.': 'Manage registered users.', 'Actualizar usuario': 'Update user',
     'Cargando usuarios...': 'Loading users...', 'No hay usuarios registrados.': 'There are no users to show.',
     'Cargando laboratorios...': 'Loading laboratories...', 'Cargando equipos...': 'Loading equipment...',
@@ -165,6 +167,8 @@
     'La fecha de devolución no puede ser anterior a la fecha de préstamo.': 'The return date cannot be earlier than the loan date.',
     'Selecciona una prioridad.': 'Select a priority.', 'Indica una prioridad válida.': 'Select a valid priority.',
     'Los datos de la solicitud no son válidos.': 'The request details are invalid.',
+    'El tipo de solicitud no es válido.': 'The request type is invalid.',
+    'Selecciona un tipo y un equipo disponible que coincidan.': 'Select an equipment type and a matching available item.',
     'Indica un día válido para solicitar el laboratorio.': 'Select a valid date for the laboratory request.',
     'Selecciona un laboratorio disponible.': 'Select an available laboratory.',
     'El laboratorio seleccionado no está disponible.': 'The selected laboratory is unavailable.',
@@ -174,8 +178,8 @@
     , 'JOJOLOS - Gestión de Solicitudes': 'JOJOLOS - Request management', 'JOJOLOS - Gestión de Préstamos': 'JOJOLOS - Loan management'
     , 'JOJOLOS - Panel Principal': 'JOJOLOS - Dashboard', 'JOJOLOS - Inicio de Sesión': 'JOJOLOS - Login'
     , 'JOJOLOS - Inventario y laboratorios': 'JOJOLOS - Inventory and laboratories', 'JOJOLOS - Usuarios': 'JOJOLOS - Users'
-    , 'Tipo de equipo (opcional)': 'Equipment type (optional)', 'Cambiar idioma': 'Change language', 'Cambiar tema': 'Change theme'
-    , 'Abrir menú': 'Open menu', 'Preferencias de accesibilidad': 'Accessibility preferences',
+    , 'Cambiar idioma': 'Change language', 'Cambiar tema': 'Change theme'
+    , 'Abrir menú': 'Open menu', 'Navegación principal': 'Main navigation', 'Preferencias de accesibilidad': 'Accessibility preferences',
     'Usuario:': 'User:', 'Rol:': 'Role:', 'Manage tickets': 'Manage tickets', 'My requests': 'My requests', 'View history': 'View history',
     'JOJOLOS es una plataforma diseñada para centralizar la gestión de incidencias, solicitudes y préstamos de equipos dentro de los laboratorios informáticos. El sistema permite registrar información, realizar seguimientos y consultar estadísticas para mejorar la organización de los recursos tecnológicos.':
       'JOJOLOS is a platform designed to centralize the management of incidents, requests, and equipment loans in computer labs. The system lets users record information, track progress, and review statistics to improve the organization of technology resources.',

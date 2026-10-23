@@ -20,4 +20,4 @@ $esAdministrador = (bool) ($_SESSION["administrador"] ?? false);
 $esDocente = (bool) ($_SESSION["docente"] ?? false);
 $esTecnico = (bool) ($_SESSION["tecnico"] ?? false);
 
-require __DIR__ . "/../vistas/dashboard.php";
+require __DIR__ . "/../vista/dashboard.php";

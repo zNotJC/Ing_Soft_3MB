@@ -50,4 +50,4 @@ $esTecnico = $_SESSION["tecnico"] ?? false;
 $conectorPDO->desconectar();
 
 
-require __DIR__ . "/../vistas/tickets.php";
+require __DIR__ . "/../vista/tickets.php";

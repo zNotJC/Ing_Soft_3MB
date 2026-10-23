@@ -10,7 +10,6 @@ function dispatchApiResource(string $resource): void
         'historial' => ['HistorialController', __DIR__ . '/../controladores/HistorialController.php'],
         'usuarios' => ['UsuariosController', __DIR__ . '/../controladores/UsuariosController.php'],
         'equipos' => ['EquiposController', __DIR__ . '/../controladores/EquiposController.php'],
-        'catalogos' => ['CatalogosController', __DIR__ . '/../controladores/CatalogosController.php'],
         'session' => ['SesionController', __DIR__ . '/../controladores/SesionController.php']
     ];
     if (!isset($controllers[$resource])) {

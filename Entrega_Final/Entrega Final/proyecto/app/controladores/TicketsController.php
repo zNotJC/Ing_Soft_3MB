@@ -64,7 +64,7 @@ final class TicketsController extends ApiController
                         ApiResponse::send(422, 'error', 'Acción no válida.');
                     }
                 } else {
-                    ApiResponse::send(403, 'error', 'Los tickets solo se gestionan mediante aceptar, esperar, denegar, resolver o cancelar.');
+                    ApiResponse::send(403, 'error', 'Los tickets solo se gestionan mediante aceptar, denegar, resolver o cancelar.');
                 }
                 if (!$updated) {
                     ApiResponse::send(404, 'error', 'No se encontró el ticket o no se pudo modificar.');

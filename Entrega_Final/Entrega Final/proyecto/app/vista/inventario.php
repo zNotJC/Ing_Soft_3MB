@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>JOJOLOS - Inventario y laboratorios</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" href="assets/css/global.css"></head>
 <body data-es-administrador="<?= $esAdministrador ? 'true':'false' ?>">
-<?php require __DIR__ . '/partials/navbar.php'; ?>
+<?php require __DIR__ . '/navbar/navbar.php'; ?>
 <main class="container py-4">
 <h1>Inventario y laboratorios</h1><p><?= $esAdministrador ? 'Gestiona laboratorios y equipos del inventario.' : 'Consulta los laboratorios y equipos registrados.' ?></p>
 <?php if($esAdministrador): ?>

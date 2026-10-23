@@ -115,7 +115,7 @@
 
     </main>
 
-    <footer class="site-footer"><img class="footer-logo" src="assets/img/jojolos-footer.svg" alt="JOJOLOS"><p data-i18n-es="JOJOLOS - Sistema de Gestión de Recursos y Soporte de Informática" data-i18n-en="JOJOLOS - IT Resources and Support Management System">JOJOLOS - Sistema de Gestión de Recursos y Soporte de Informática</p></footer>
+    <footer class="site-footer"><img class="footer-logo" src="assets/img/jojolos-footer.png" alt="JOJOLOS"><p data-i18n-es="JOJOLOS - Sistema de Gestión de Recursos y Soporte de Informática" data-i18n-en="JOJOLOS - IT Resources and Support Management System">JOJOLOS - Sistema de Gestión de Recursos y Soporte de Informática</p></footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/password-toggle.js"></script>

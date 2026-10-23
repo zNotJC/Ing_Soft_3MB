@@ -56,4 +56,11 @@ class AccesoDatosEquipos
         $q=$this->conexion->prepare("SELECT idEquipo,nombre,tipo,estado FROM equipo WHERE tipo=:tipo AND estado='Disponible' ORDER BY nombre");
         $q->execute(['tipo'=>$tipo]); return $q->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function equipoDisponiblePorNombreYTipo(string $nombre, string $tipo): bool
+    {
+        $q = $this->conexion->prepare("SELECT COUNT(*) FROM equipo WHERE nombre = :nombre AND tipo = :tipo AND estado = 'Disponible'");
+        $q->execute(['nombre' => $nombre, 'tipo' => $tipo]);
+        return (int) $q->fetchColumn() > 0;
+    }
 }

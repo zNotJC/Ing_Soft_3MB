@@ -53,7 +53,7 @@ CREATE TABLE ticket (
   titulo VARCHAR(150) NOT NULL,
   descripcion TEXT NOT NULL,
   fechaRegistro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  fechaLimite DATE NULL,
+  fechaLimite DATETIME NULL,
   cedulaSolicitante CHAR(8) NOT NULL,
   idLaboratorio INT NOT NULL,
   idEquipo INT NOT NULL,
@@ -125,3 +125,20 @@ INSERT INTO equipo (nombre, idLaboratorio, tipo, estado) VALUES
 ('Periférico 1', 1, 'Periféricos', 'Disponible'),
 ('Televisor 1', 1, 'Televisores', 'Disponible'),
 ('Aire acondicionado 1', 1, 'Aires Acondicionados', 'Disponible');
+
+-- ============================================================================
+-- ACTUALIZACIÓN DE UNA BASE EXISTENTE DE v1.24 A v1.25 (OPCIONAL)
+-- ============================================================================
+-- No ejecute este archivo completo sobre una base con datos que desea conservar:
+-- las instrucciones CREATE TABLE y los datos iniciales están destinados a una
+-- instalación desde cero.
+--
+-- Esta actualización solo hace falta si la tabla ticket existente tiene
+-- fechaLimite como DATE, como en el esquema v1.24. Compruebe primero que tiene
+-- una copia de seguridad. Para actualizar, ejecute únicamente la instrucción
+-- siguiente contra la base jojolos (o ajuste el nombre de la base si corresponde).
+-- No se ejecuta automáticamente al instalar desde cero: allí fechaLimite ya es
+-- DATETIME.
+--
+-- ALTER TABLE jojolos.ticket
+--     MODIFY COLUMN fechaLimite DATETIME NULL;

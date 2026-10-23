@@ -1,9 +1,128 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>JOJOLOS - Historial</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" href="../assets/css/global.css"><link rel="stylesheet" href="../assets/css/historial.css"><style>body.auth-pendiente{visibility:hidden}</style></head>
-<body class="auth-pendiente"><header id="appNavbar"></header><main class="container py-4"><section><h1>Historial</h1><p>Consulta las operaciones registradas en el sistema.</p></section>
-  <section class="filtros"><select id="filtroTipo"><option value="">Todos los tipos</option><option value="Ticket">Tickets</option><option value="Solicitud">Solicitudes</option><option value="Préstamo">Préstamos</option></select>
-    <select id="filtroEstado"><option value="">Todos los estados</option><option value="Pendiente">Pendiente</option><option value="En espera">En espera</option><option value="Aprobada">Aprobada</option><option value="Rechazada">Rechazada</option><option value="Cancelada">Cancelada</option><option value="Activo">Activo</option><option value="Resuelto">Resuelto</option><option value="Denegado">Denegado</option></select>
-    <select id="filtroUsuario"><option value="">Todos los usuarios</option></select><input type="date" id="filtroFecha"></section>
-  <section><table><thead><tr><th>ID</th><th>Tipo</th><th>Detalle</th><th>Usuario</th><th>Estado</th><th>Fecha</th></tr></thead><tbody id="tablaHistorial"><tr><td colspan="6">Cargando...</td></tr></tbody></table></section>
-</main><footer class="site-footer"><img class="footer-logo" src="../assets/img/jojolos-footer.svg" alt="JOJOLOS"><p data-i18n-es="JOJOLOS - Sistema de Gestión de Recursos y Soporte de Informática" data-i18n-en="JOJOLOS - IT Resources and Support Management System">JOJOLOS - Sistema de Gestión de Recursos y Soporte de Informática</p></footer>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script><script src="../assets/js/preferencias.js"></script><script src="../assets/js/paginas.js" data-page-script="historial.js"></script></body></html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>
+      JOJOLOS - Historial
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/global.css">
+    <link rel="stylesheet" href="../assets/css/historial.css">
+    <style>
+      body.auth-pendiente {
+        visibility: hidden;
+      }
+    </style>
+  </head>
+  <body class="auth-pendiente">
+    <header id="appNavbar">
+    </header>
+    <main class="container py-4">
+      <section>
+        <h1>
+          Historial
+        </h1>
+        <p>
+          Consulta las operaciones registradas en el sistema.
+        </p>
+      </section>
+      <section class="filtros">
+        <select id="filtroTipo">
+          <option value="">
+            Todos los tipos
+          </option>
+          <option value="Ticket">
+            Tickets
+          </option>
+          <option value="Solicitud">
+            Solicitudes
+          </option>
+          <option value="Préstamo">
+            Préstamos
+          </option>
+        </select>
+        <select id="filtroEstado">
+          <option value="">
+            Todos los estados
+          </option>
+          <option value="Pendiente">
+            Pendiente
+          </option>
+          <option value="En espera">
+            En espera
+          </option>
+          <option value="Aprobada">
+            Aprobada
+          </option>
+          <option value="Rechazada">
+            Rechazada
+          </option>
+          <option value="Cancelada">
+            Cancelada
+          </option>
+          <option value="Activo">
+            Activo
+          </option>
+          <option value="Resuelto">
+            Resuelto
+          </option>
+          <option value="Denegado">
+            Denegado
+          </option>
+        </select>
+        <select id="filtroUsuario">
+          <option value="">
+            Todos los usuarios
+          </option>
+        </select>
+        <input type="date" id="filtroFecha">
+      </section>
+      <section>
+        <table>
+          <thead>
+            <tr>
+              <th>
+                ID
+              </th>
+              <th>
+                Tipo
+              </th>
+              <th>
+                Detalle
+              </th>
+              <th>
+                Usuario
+              </th>
+              <th>
+                Estado
+              </th>
+              <th>
+                Fecha
+              </th>
+            </tr>
+          </thead>
+          <tbody id="tablaHistorial">
+            <tr>
+              <td colspan="6">
+                Cargando...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <img class="footer-logo" src="../assets/img/jojolos-footer.png" alt="JOJOLOS">
+      <p data-i18n-es="JOJOLOS - Sistema de Gestión de Recursos y Soporte de Informática" data-i18n-en="JOJOLOS - IT Resources and Support Management System">
+        JOJOLOS - Sistema de Gestión de Recursos y Soporte de Informática
+      </p>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
+    </script>
+    <script src="../assets/js/preferencias.js">
+    </script>
+    <script src="../assets/js/paginas.js" data-page-script="historial.js">
+    </script>
+  </body>
+</html>

@@ -10,4 +10,4 @@ if (empty($_SESSION['cedula']) || !in_array($rol, ['Administrador', 'Docente', '
 $esAdministrador = $rol === 'Administrador';
 $esDocente = $rol === 'Docente';
 $esTecnico = $rol === 'Tecnico';
-require __DIR__ . '/../vistas/historial.html';
+require __DIR__ . '/../vista/historial.php';

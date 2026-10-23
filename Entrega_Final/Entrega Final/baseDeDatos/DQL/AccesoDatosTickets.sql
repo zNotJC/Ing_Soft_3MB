@@ -1,5 +1,5 @@
 -- Consultar tickets con solicitante, laboratorio, prioridad y estado.
-SELECT t.idTicket, t.titulo, t.descripcion, t.fechaRegistro, t.fechaLimite,
+SELECT t.idTicket, t.titulo, t.descripcion, t.fechaRegistro, t.fechaLimite AS fechaAtencion,
        l.nombre AS laboratorio, t.prioridad, t.estado, u.usuario AS solicitante
 FROM ticket AS t
 JOIN usuario AS u ON u.cedula = t.cedulaSolicitante

@@ -1,19 +1,12 @@
 <?php
 
-class AccesoDatosCatalogos
+class AccesoDatosLaboratorios
 {
     private PDO $conexion;
 
     public function __construct(PDO $conexion)
     {
         $this->conexion = $conexion;
-    }
-
-    public function listarLaboratorios(): array
-    {
-        return $this->conexion->query(
-            'SELECT idLaboratorio AS id, nombre FROM laboratorio ORDER BY nombre'
-        )->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function crearLaboratorio(string $nombre, string $estado = 'Disponible'): int

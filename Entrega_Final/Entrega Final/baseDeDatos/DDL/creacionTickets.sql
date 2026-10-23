@@ -5,7 +5,7 @@ CREATE TABLE TICKET (
     titulo VARCHAR(150) NOT NULL,
     descripcion TEXT NOT NULL,
     fechaRegistro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    fechaLimite DATE NULL,
+    fechaLimite DATETIME NULL,
     cedulaSolicitante CHAR(8) NOT NULL,
     idLaboratorio INT NOT NULL,
     idEquipo INT NOT NULL,

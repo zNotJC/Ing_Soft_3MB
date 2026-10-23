@@ -76,29 +76,23 @@ class AccesoDatosPrestamos
         }
     }
 
-    public function revisarPrestamo(int $idPrestamo, string $prioridad): bool
+    public function denegarPrestamo(int $idPrestamo, string $prioridad): bool
     {
         if (!in_array($prioridad, ['Baja', 'Media', 'Alta'], true)) return false;
-        $consulta = $this->conexion->prepare("UPDATE prestamo SET prioridad = :prioridad WHERE idPrestamo = :idPrestamo AND estado IN ('En espera','Pendiente') AND prioridad = '-'");
+        $consulta = $this->conexion->prepare("UPDATE prestamo SET prioridad = :prioridad, estado = 'Denegado' WHERE idPrestamo = :idPrestamo AND estado IN ('En espera','Pendiente')");
         $consulta->execute(['idPrestamo' => $idPrestamo, 'prioridad' => $prioridad]);
         return $consulta->rowCount() > 0;
     }
 
-    public function denegarPrestamo(int $idPrestamo): bool
+    public function aceptarPrestamo(int $idPrestamo, string $prioridad): bool
     {
-        $consulta = $this->conexion->prepare("UPDATE prestamo SET estado = 'Denegado' WHERE idPrestamo = :idPrestamo AND estado IN ('En espera','Pendiente')");
-        $consulta->execute(['idPrestamo' => $idPrestamo]);
-        return $consulta->rowCount() > 0;
-    }
-
-    public function aceptarPrestamo(int $idPrestamo): bool
-    {
+        if (!in_array($prioridad, ['Baja', 'Media', 'Alta'], true)) return false;
         $this->conexion->beginTransaction();
         try {
             $consulta = $this->conexion->prepare("
                 SELECT idEquipo FROM prestamo
                 WHERE idPrestamo = :idPrestamo AND estado IN ('En espera','Pendiente')
-                  AND prioridad IN ('Baja','Media','Alta') FOR UPDATE
+                FOR UPDATE
             ");
             $consulta->execute(['idPrestamo' => $idPrestamo]);
             $prestamo = $consulta->fetch(PDO::FETCH_ASSOC);
@@ -106,8 +100,8 @@ class AccesoDatosPrestamos
             $equipo = $this->conexion->prepare("UPDATE equipo SET estado = 'En uso' WHERE idEquipo = :idEquipo AND estado = 'Disponible'");
             $equipo->execute(['idEquipo' => $prestamo['idEquipo']]);
             if ($equipo->rowCount() !== 1) { $this->conexion->rollBack(); return false; }
-            $actualizar = $this->conexion->prepare("UPDATE prestamo SET estado = 'Aceptado' WHERE idPrestamo = :idPrestamo AND estado IN ('En espera','Pendiente')");
-            $actualizar->execute(['idPrestamo' => $idPrestamo]);
+            $actualizar = $this->conexion->prepare("UPDATE prestamo SET prioridad = :prioridad, estado = 'Aceptado' WHERE idPrestamo = :idPrestamo AND estado IN ('En espera','Pendiente')");
+            $actualizar->execute(['idPrestamo' => $idPrestamo, 'prioridad' => $prioridad]);
             if ($actualizar->rowCount() !== 1) { $this->conexion->rollBack(); return false; }
             $this->conexion->commit();
             return true;

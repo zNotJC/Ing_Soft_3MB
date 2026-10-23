@@ -19,6 +19,6 @@ $esDocente =
     $_SESSION["docente"] ?? false;
 $esTecnico = $_SESSION["tecnico"] ?? false;
 
-require __DIR__ . "/../vistas/solicitudes.php";
+require __DIR__ . "/../vista/solicitudes.php";
 
 ?>

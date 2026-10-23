@@ -34,7 +34,7 @@
 
 <body data-es-docente="<?= $esDocente ? "true" : "false" ?>" data-es-administrador="<?= $esAdministrador ? "true" : "false" ?>" data-es-tecnico="<?= !empty($_SESSION["tecnico"]) ? "true" : "false" ?>">
 
-    <?php require __DIR__ . "/partials/navbar.php"; ?>
+    <?php require __DIR__ . "/navbar/navbar.php"; ?>
 
 
     <main>
@@ -231,7 +231,6 @@
                 <option value="Baja">Baja</option><option value="Media">Media</option><option value="Alta">Alta</option>
             </select>
             <button type="button" id="btnAceptarTicket">Aceptar ticket</button>
-            <button type="button" id="btnEsperarTicket">Esperar</button>
             <button type="button" id="btnDenegarTicket">Denegar</button>
             <button type="button" id="cerrarRevisionTicket">Cerrar</button>
         </dialog>
@@ -297,7 +296,7 @@
     </main>
 
 
-    <footer class="site-footer"><img class="footer-logo" src="assets/img/jojolos-footer.svg" alt="JOJOLOS"><p data-i18n-es="JOJOLOS - Sistema de Gestión de Recursos y Soporte de Informática" data-i18n-en="JOJOLOS - IT Resources and Support Management System">JOJOLOS - Sistema de Gestión de Recursos y Soporte de Informática</p></footer>
+    <footer class="site-footer"><img class="footer-logo" src="assets/img/jojolos-footer.png" alt="JOJOLOS"><p data-i18n-es="JOJOLOS - Sistema de Gestión de Recursos y Soporte de Informática" data-i18n-en="JOJOLOS - IT Resources and Support Management System">JOJOLOS - Sistema de Gestión de Recursos y Soporte de Informática</p></footer>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>

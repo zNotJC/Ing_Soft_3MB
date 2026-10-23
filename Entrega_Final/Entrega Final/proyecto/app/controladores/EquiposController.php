@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../nucleo/ApiController.php';
 require_once __DIR__ . '/../modelos/AccesoDatosEquipos.php';
-require_once __DIR__ . '/../modelos/AccesoDatosCatalogos.php';
+require_once __DIR__ . '/../modelos/AccesoDatosLaboratorios.php';
 
 final class EquiposController extends ApiController
 {
@@ -14,7 +14,7 @@ final class EquiposController extends ApiController
         $role=$this->requireRole(['Administrador','Tecnico','Docente']);
         [$connector,$connection]=$this->connect();
         try {
-            $equipos=new AccesoDatosEquipos($connection); $labs=new AccesoDatosCatalogos($connection);
+            $equipos=new AccesoDatosEquipos($connection); $labs=new AccesoDatosLaboratorios($connection);
             if ($method==='GET') ApiResponse::send(200,'success','Inventario consultado correctamente.',['equipos'=>$equipos->listar(),'laboratorios'=>$equipos->laboratorios(),'laboratoriosDisponibles'=>$equipos->laboratoriosDisponibles(),'tipos'=>self::TIPOS,'estados'=>self::ESTADOS]);
             if ($role!=='Administrador') ApiResponse::send(403,'error','Solo el Administrador puede modificar el inventario.');
             $input=ApiResponse::input(); $tipoInventario=(string)($input['tipoInventario']??'Equipo');

@@ -215,6 +215,7 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 @media (min-width: 1200px) { .site-header .navbar-nav { flex-wrap: nowrap; } }
 
 .modal-ticket[hidden], [hidden] { display: none !important; }
+.rol-oculto { display: none !important; }
 
 
 
@@ -249,10 +250,10 @@ body.tema-oscuro th { background: #334155; color: #fff; border-color: #475569; }
 body.tema-oscuro td { background: #1f2937; color: #f3f4f6; border-color: #374151; }
 body.tema-oscuro tbody tr:nth-child(even) td { background: #273449; }
 body.tema-oscuro .table { --bs-table-bg: #1f2937; --bs-table-color: #f3f4f6; --bs-table-border-color: #475569; }
-.site-footer { background: #1e2a38; color: #f8fafc; text-align: center; padding: 1rem; }
+.site-footer { background: #050118; color: #f8fafc; text-align: center; padding: 1rem; }
 .site-footer p { color: #f8fafc; margin: .5rem 0 0; }
-.footer-logo { display: block; width: 76px; height: 48px; object-fit: contain; margin: 0 auto .4rem; }
-body.tema-oscuro .site-footer { background: #0b1220; color: #fff; }
+.footer-logo { display: block; width: 110px; height: auto; max-width: 100%; object-fit: contain; margin: 0 auto .4rem; clip-path: inset(0 3px 0 0); }
+body.tema-oscuro .site-footer { background: #050118; color: #fff; }
 @media (max-width: 1199px) {
  .site-header .navbar { flex-wrap: wrap; }
  .controles-preferencias { margin: .5rem 0; }

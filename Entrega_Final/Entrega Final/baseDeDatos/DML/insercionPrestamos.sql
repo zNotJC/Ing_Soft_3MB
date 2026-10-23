@@ -1,29 +1,30 @@
-INSERT INTO EQUIPO
-    (nombre, numeroSerie, idLaboratorio, tipo, marca, modelo, estado)
-SELECT
-    'Laptop Lenovo', 'LEN-001', idLaboratorio, 'Ordenador', 'Lenovo', 'No especificado', 'Activo'
-FROM LABORATORIO
-WHERE nombre = (SELECT MIN(nombre) FROM LABORATORIO)
-  AND NOT EXISTS (SELECT 1 FROM EQUIPO WHERE numeroSerie = 'LEN-001')
-LIMIT 1;
+-- Crear una solicitud de préstamo para un equipo disponible.
+-- Antes de ejecutar, define: @idEquipo, @cedulaUsuario, @fechaPrestamo y
+-- @fechaDevolucion. Usa fechas en formato 'AAAA-MM-DD'.
 
-INSERT INTO EQUIPO
-    (nombre, numeroSerie, idLaboratorio, tipo, marca, modelo, estado)
+INSERT INTO prestamo (
+    idEquipo,
+    idLaboratorio,
+    cedulaUsuario,
+    fechaPrestamo,
+    fechaDevolucion,
+    estado,
+    prioridad
+)
 SELECT
-    'Laptop HP', 'HP-001', idLaboratorio, 'Ordenador', 'HP', 'No especificado', 'Activo'
-FROM LABORATORIO
-WHERE nombre = (SELECT MIN(nombre) FROM LABORATORIO)
-  AND NOT EXISTS (SELECT 1 FROM EQUIPO WHERE numeroSerie = 'HP-001')
-LIMIT 1;
+    e.idEquipo,
+    e.idLaboratorio,
+    @cedulaUsuario,
+    @fechaPrestamo,
+    @fechaDevolucion,
+    'En espera',
+    '-'
+FROM equipo AS e
+WHERE e.idEquipo = @idEquipo
+  AND e.estado = 'Disponible'
+  AND @cedulaUsuario IS NOT NULL
+  AND @fechaPrestamo IS NOT NULL
+  AND @fechaDevolucion IS NOT NULL
+  AND @fechaDevolucion >= @fechaPrestamo;
 
-INSERT INTO EQUIPO
-    (nombre, numeroSerie, idLaboratorio, tipo, marca, modelo, estado)
-SELECT
-    'Laptop Dell', 'DEL-001', idLaboratorio, 'Ordenador', 'Dell', 'No especificado', 'Activo'
-FROM LABORATORIO
-WHERE nombre = (SELECT MIN(nombre) FROM LABORATORIO)
-  AND NOT EXISTS (SELECT 1 FROM EQUIPO WHERE numeroSerie = 'DEL-001')
-LIMIT 1;
-
-SELECT idEquipo, nombre, numeroSerie, idLaboratorio, tipo, marca, modelo, estado
-FROM EQUIPO ORDER BY idEquipo;
+SELECT ROW_COUNT() AS prestamos_creados;

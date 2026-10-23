@@ -25,6 +25,7 @@ final class SolicitudesController extends ApiController
                 $tipo = $this->requiredString($input, 'tipoSolicitud', 30);
                 $descripcion = $this->requiredString($input, 'descripcion', 500);
                 $equipo = trim((string) ($input['equipo'] ?? '')) ?: null;
+                $tipoEquipo = trim((string) ($input['tipoEquipo'] ?? ''));
                 $fechaSolicitud = (string) ($input['fechaSolicitud'] ?? date('Y-m-d'));
                 $fechaNecesaria = trim((string) ($input['fechaNecesaria'] ?? '')) ?: null;
                 $tipos = ['Laboratorio', 'Reparación'];
@@ -37,6 +38,12 @@ final class SolicitudesController extends ApiController
                 if ($tipo === 'Laboratorio') {
                     $inventario = new AccesoDatosEquipos($connection);
                     if (!$equipo || !$inventario->laboratorioDisponiblePorNombre($equipo)) ApiResponse::send(422, 'error', 'Selecciona un laboratorio disponible.');
+                } elseif ($tipo === 'Reparación') {
+                    $tiposEquipo = ['Ordenadores', 'Periféricos', 'Televisores', 'Aires Acondicionados'];
+                    $inventario = new AccesoDatosEquipos($connection);
+                    if (!in_array($tipoEquipo, $tiposEquipo, true) || !$equipo || !$inventario->equipoDisponiblePorNombreYTipo($equipo, $tipoEquipo)) {
+                        ApiResponse::send(422, 'error', 'Selecciona un tipo y un equipo disponible que coincidan.');
+                    }
                 }
                 $model->crearSolicitud((string) $_SESSION['cedula'], $tipo, $descripcion, $equipo, $fechaSolicitud, $fechaNecesaria);
                 ApiResponse::send(201, 'success', 'Solicitud registrada correctamente.', ['idSolicitud' => (int) $connection->lastInsertId()]);
@@ -54,13 +61,23 @@ final class SolicitudesController extends ApiController
                     $tipo = $this->requiredString($input, 'tipoSolicitud', 30);
                     $descripcion = $this->requiredString($input, 'descripcion', 500);
                     $equipo = trim((string) ($input['equipo'] ?? '')) ?: null;
+                    $tipoEquipo = trim((string) ($input['tipoEquipo'] ?? ''));
                     $fechaNecesaria = trim((string) ($input['fechaNecesaria'] ?? '')) ?: null;
+                    if (!in_array($tipo, ['Laboratorio', 'Reparación'], true)) {
+                        ApiResponse::send(422, 'error', 'El tipo de solicitud no es válido.');
+                    }
                     if ($tipo === 'Laboratorio' && (!$fechaNecesaria || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaNecesaria) || $fechaNecesaria < date('Y-m-d'))) {
                         ApiResponse::send(422, 'error', 'Indica un día válido para solicitar el laboratorio.');
                     }
                     if ($tipo === 'Laboratorio') {
                         $inventario = new AccesoDatosEquipos($connection);
                         if (!$equipo || !$inventario->laboratorioDisponiblePorNombre($equipo)) ApiResponse::send(422, 'error', 'Selecciona un laboratorio disponible.');
+                    } elseif ($tipo === 'Reparación') {
+                        $tiposEquipo = ['Ordenadores', 'Periféricos', 'Televisores', 'Aires Acondicionados'];
+                        $inventario = new AccesoDatosEquipos($connection);
+                        if (!in_array($tipoEquipo, $tiposEquipo, true) || !$equipo || !$inventario->equipoDisponiblePorNombreYTipo($equipo, $tipoEquipo)) {
+                            ApiResponse::send(422, 'error', 'Selecciona un tipo y un equipo disponible que coincidan.');
+                        }
                     }
                     $updated = $model->modificarSolicitud($id, $tipo, $descripcion, $equipo, $fechaNecesaria, (string) $_SESSION['cedula']);
                 } else {

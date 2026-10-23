@@ -1,6 +1,17 @@
 (() => {
   const pageScript = document.currentScript?.dataset.pageScript || '';
 
+  document.addEventListener('keydown', evento => {
+    if (evento.key !== 'Escape') return;
+    document.querySelectorAll('.modal-ticket:not([hidden])').forEach(modal => { modal.hidden = true; });
+  });
+
+  document.addEventListener('click', evento => {
+    if (evento.target instanceof HTMLElement && evento.target.classList.contains('modal-ticket')) {
+      evento.target.hidden = true;
+    }
+  });
+
   async function iniciarPagina() {
     try {
       const respuesta = await fetch('../index.php?api=session', { headers: { Accept: 'application/json' }, cache: 'no-store' });
@@ -13,7 +24,7 @@
       document.body.dataset.esAdministrador = String(rol === 'Administrador');
       document.querySelectorAll('[data-roles]').forEach(elemento => {
         const roles = elemento.dataset.roles.split(',').map(valor => valor.trim());
-        elemento.hidden = !roles.includes(rol);
+        elemento.classList.toggle('rol-oculto', !roles.includes(rol));
       });
       document.querySelectorAll('[data-session-user]').forEach(elemento => { elemento.textContent = usuario; });
       document.querySelectorAll('[data-session-role]').forEach(elemento => { elemento.textContent = rol === 'Tecnico' ? 'Técnico' : rol; });
@@ -25,7 +36,7 @@
         cabecera.outerHTML = await parcial.text();
         document.querySelectorAll('[data-roles]').forEach(elemento => {
           const roles = elemento.dataset.roles.split(',').map(valor => valor.trim());
-          elemento.hidden = !roles.includes(rol);
+          elemento.classList.toggle('rol-oculto', !roles.includes(rol));
         });
         const rutaActual = location.pathname.split('/').pop();
         document.querySelectorAll('.navbar-nav a').forEach(enlace => {

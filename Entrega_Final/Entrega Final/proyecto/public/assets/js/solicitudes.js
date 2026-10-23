@@ -206,6 +206,7 @@ if (formularioSolicitud) {
         try {
             const datos = Object.fromEntries(new FormData(formularioSolicitud).entries());
             datos.equipo = tipoSolicitudSelector?.value === 'Laboratorio' ? (selectorLaboratorioSolicitud?.value || '') : (selectorEquipoSolicitud?.value || '');
+            datos.tipoEquipo = tipoSolicitudSelector?.value === 'Reparación' ? (selectorTipoEquipoSolicitud?.value || '') : '';
             await enviarSolicitud("POST", datos);
             formularioSolicitud.reset();
             modalSolicitud.hidden = true;
@@ -226,6 +227,7 @@ if (formularioModificar) {
             datos.idSolicitud = Number(datos.idSolicitud);
             const tipoMod = document.getElementById('modificarTipoSolicitud')?.value;
             datos.equipo = tipoMod === 'Laboratorio' ? (document.getElementById('laboratorioModificarSolicitud')?.value || '') : (document.getElementById('equipoModificarSolicitud')?.value || '');
+            datos.tipoEquipo = tipoMod === 'Reparación' ? (tipoEquipoModificar?.value || '') : '';
             await enviarSolicitud("PUT", datos);
             modalModificar.hidden = true;
         } catch (error) { window.alert(error.message); }
@@ -639,8 +641,11 @@ function actualizarTipoSolicitud() {
     if (grupoLaboratorio) grupoLaboratorio.hidden = tipo !== 'Laboratorio';
     if (grupoReparacion) grupoReparacion.hidden = tipo !== 'Reparación';
     if (selectorLaboratorioSolicitud) selectorLaboratorioSolicitud.required = tipo === 'Laboratorio';
-    if (selectorTipoEquipoSolicitud) selectorTipoEquipoSolicitud.required = false;
-    if (selectorEquipoSolicitud) selectorEquipoSolicitud.required = tipo === 'Reparación';
+    if (selectorTipoEquipoSolicitud) selectorTipoEquipoSolicitud.required = tipo === 'Reparación';
+    if (selectorEquipoSolicitud) {
+        selectorEquipoSolicitud.required = tipo === 'Reparación';
+        selectorEquipoSolicitud.disabled = tipo !== 'Reparación' || !selectorTipoEquipoSolicitud?.value;
+    }
     const fecha = document.getElementById('fechaNecesaria');
     if (fecha) { fecha.required = tipo === 'Laboratorio'; if (tipo !== 'Laboratorio') fecha.value = ''; }
     const grupoFecha = document.getElementById('grupoFechaNecesaria');
@@ -650,11 +655,11 @@ function actualizarTipoSolicitud() {
     actualizarEquiposSolicitud();
 }
 function actualizarEquiposSolicitud() {
-    const poblar=(select,tipo)=>{if(!select)return;select.replaceChildren(new Option('Seleccione un equipo',''));(inventarioSolicitudes.equipos||[]).filter(e=>(!tipo||e.tipo===tipo)&&e.estado==='Disponible').forEach(e=>select.add(new Option(`${e.nombre} (${e.tipo})`,e.nombre)));};
+    const poblar=(select,tipo)=>{if(!select)return;select.replaceChildren(new Option(tipo?'Seleccione un equipo':'Seleccione primero un tipo de equipo',''));select.disabled=!tipo;if(!tipo)return;(inventarioSolicitudes.equipos||[]).filter(e=>e.tipo===tipo&&e.estado==='Disponible').forEach(e=>select.add(new Option(`${e.nombre} (${e.tipo})`,e.nombre)));};
     poblar(selectorEquipoSolicitud,selectorTipoEquipoSolicitud?.value||'');
     poblar(selectorEquipoModificar,tipoEquipoModificar?.value||'');
 }
-function actualizarTipoModificar(){const tipo=tipoSolicitudModificar?.value||'';if(grupoLabModificar)grupoLabModificar.hidden=tipo!=='Laboratorio';if(grupoRepModificar)grupoRepModificar.hidden=tipo!=='Reparación';if(selectorLabModificar)selectorLabModificar.required=tipo==='Laboratorio';if(tipoEquipoModificar)tipoEquipoModificar.required=false;if(selectorEquipoModificar)selectorEquipoModificar.required=tipo==='Reparación';const fecha=document.getElementById('modificarFechaNecesaria');if(fecha){fecha.required=tipo==='Laboratorio';if(tipo!=='Laboratorio')fecha.value='';}const grupoFecha=document.getElementById('grupoModificarFechaNecesaria');if(grupoFecha)grupoFecha.hidden=tipo!=='Laboratorio';const etiqueta=document.getElementById('etiquetaModificarFechaNecesaria');if(etiqueta)etiqueta.textContent='Día solicitado para el laboratorio';actualizarEquiposSolicitud();}
+function actualizarTipoModificar(){const tipo=tipoSolicitudModificar?.value||'';if(grupoLabModificar)grupoLabModificar.hidden=tipo!=='Laboratorio';if(grupoRepModificar)grupoRepModificar.hidden=tipo!=='Reparación';if(selectorLabModificar)selectorLabModificar.required=tipo==='Laboratorio';if(tipoEquipoModificar)tipoEquipoModificar.required=tipo==='Reparación';if(selectorEquipoModificar)selectorEquipoModificar.required=tipo==='Reparación';const fecha=document.getElementById('modificarFechaNecesaria');if(fecha){fecha.required=tipo==='Laboratorio';if(tipo!=='Laboratorio')fecha.value='';}const grupoFecha=document.getElementById('grupoModificarFechaNecesaria');if(grupoFecha)grupoFecha.hidden=tipo!=='Laboratorio';const etiqueta=document.getElementById('etiquetaModificarFechaNecesaria');if(etiqueta)etiqueta.textContent='Día solicitado para el laboratorio';actualizarEquiposSolicitud();}
 tipoSolicitudSelector?.addEventListener('change', actualizarTipoSolicitud);
 selectorTipoEquipoSolicitud?.addEventListener('change', actualizarEquiposSolicitud);
 tipoSolicitudModificar?.addEventListener('change', actualizarTipoModificar);
