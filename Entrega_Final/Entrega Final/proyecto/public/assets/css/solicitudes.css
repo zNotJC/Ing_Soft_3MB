@@ -1,0 +1,228 @@
+#btnNuevaSolicitud {
+    margin-top: 10px;
+}
+
+.filtros {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.filtros select,
+.filtros input {
+    width: 100%;
+}
+
+.acciones {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    min-width: 220px;
+}
+
+.acciones form {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.acciones button {
+    width: 95px;
+    min-width: 95px;
+    height: 38px;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-modificar {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.btn-modificar:hover {
+    background-color: #0b5ed7;
+}
+
+.btn-cancelar {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-cancelar:hover {
+    background-color: #bb2d3b;
+}
+
+.btn-aprobar {
+    background-color: #198754;
+    color: white;
+}
+
+.btn-aprobar:hover {
+    background-color: #157347;
+}
+
+.btn-rechazar {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-rechazar:hover {
+    background-color: #bb2d3b;
+}
+
+.modal-ticket {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(0, 0, 0, 0.5);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 999;
+}
+
+.modal-contenido {
+    background-color: white;
+
+    width: 90%;
+    max-width: 700px;
+
+    padding: 25px;
+
+    border-radius: 10px;
+
+    position: relative;
+
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.cerrar-modal {
+    position: absolute;
+
+    top: 10px;
+    right: 10px;
+
+    width: 40px;
+    height: 40px;
+
+    padding: 0;
+
+    border: none;
+
+    font-size: 24px;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+#solicitudForm,
+#formModificarSolicitud,
+#formRespuesta {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#solicitudForm div,
+#formModificarSolicitud div,
+#formRespuesta div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+#solicitudForm input,
+#solicitudForm select,
+#solicitudForm textarea,
+#formModificarSolicitud input,
+#formModificarSolicitud select,
+#formModificarSolicitud textarea,
+#formRespuesta textarea {
+    width: 100%;
+}
+
+#solicitudForm textarea,
+#formModificarSolicitud textarea,
+#formRespuesta textarea {
+    resize: vertical;
+}
+
+table {
+    width: 100%;
+}
+
+th,
+td {
+    vertical-align: middle;
+}
+
+.btnCerrarSesion {
+    display: inline-block;
+    background-color: #2d6cdf;
+    color: white !important;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btnCerrarSesion:hover {
+    background-color: #1b4fb8;
+    color: white !important;
+}
+
+@media (max-width: 1100px) {
+
+    .filtros {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+@media (max-width: 768px) {
+
+    .filtros {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-contenido {
+        width: 95%;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .acciones {
+        min-width: 0;
+        flex-direction: column;
+    }
+
+    .acciones form {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .acciones button {
+        width: 100%;
+    }
+
+}

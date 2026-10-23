@@ -1,0 +1,75 @@
+.bienvenida {
+    margin-bottom: 30px;
+}
+
+.accesos-rapidos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.acceso {
+    display: block;
+    text-align: center;
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+
+.acceso:hover {
+    background-color: #e9ecef;
+}
+
+.resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+article {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+article p {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+#usuarioActivo {
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+@media (max-width: 576px) {
+
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+}
+
+.btnCerrarSesion {
+    display: inline-block;
+    background-color: #2d6cdf;
+    color: white !important;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btnCerrarSesion:hover {
+    background-color: #1b4fb8;
+    color: white !important;
+}

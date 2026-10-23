@@ -1,0 +1,246 @@
+#btnNuevoTicket {
+    margin-top: 10px;
+}
+
+
+.filtros {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+
+.acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+
+.form-accion {
+    display: inline;
+    padding: 0;
+    margin: 0;
+    background-color: transparent;
+    border-radius: 0;
+}
+
+
+.acciones button {
+    width: auto;
+    min-width: 75px;
+    margin: 0;
+    padding: 8px 12px;
+
+    border: none;
+    border-radius: 5px;
+
+    font-size: 14px;
+    line-height: 1.2;
+
+    cursor: pointer;
+}
+
+
+.btn-ver {
+    background-color: #2d6cdf;
+    color: white;
+}
+
+.btn-ver:hover {
+    background-color: #1b4fb8;
+}
+
+
+.btn-estado {
+    background-color: #198754;
+    color: white;
+}
+
+.btn-estado:hover {
+    background-color: #146c43;
+}
+
+
+.btn-cancelar {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-cancelar:hover {
+    background-color: #b02a37;
+}
+
+
+
+.btn-editar {
+    background-color: #ffc107;
+    color: black;
+}
+
+.btn-editar:hover {
+    background-color: #e0a800;
+}
+
+
+
+.modal-ticket {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(0, 0, 0, 0.5);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 999;
+}
+
+
+
+.modal-contenido {
+    background-color: white;
+
+    width: 90%;
+    max-width: 700px;
+
+    padding: 20px;
+
+    border-radius: 10px;
+
+    position: relative;
+
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+
+
+.cerrar-modal {
+    position: absolute;
+
+    top: 10px;
+    right: 10px;
+
+    width: 40px;
+    height: 40px;
+
+    padding: 0;
+
+    font-size: 24px;
+    line-height: 1;
+
+    border-radius: 5px;
+}
+
+
+#dialogTicket {
+    width: 90%;
+    max-width: 650px;
+
+    padding: 25px;
+
+    border: none;
+    border-radius: 10px;
+
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.25);
+}
+
+#dialogTicket::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#dialogTicket h2 {
+    margin-bottom: 20px;
+}
+
+#dialogTicket p {
+    margin-bottom: 12px;
+}
+
+#dialogTicket strong {
+    display: inline-block;
+    min-width: 150px;
+}
+
+#cerrarDetalleTicket {
+    margin-top: 10px;
+    width: auto;
+    min-width: 90px;
+}
+
+
+table {
+    width: 100%;
+}
+
+table th,
+table td {
+    vertical-align: middle;
+}
+
+@media (min-width: 576px) {
+
+    .filtros {
+        flex-direction: row;
+    }
+
+}
+
+
+@media (max-width: 768px) {
+
+    .modal-contenido {
+        width: 95%;
+    }
+
+    .acciones {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .acciones button {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .form-accion {
+        width: 100%;
+    }
+
+    #dialogTicket {
+        width: 95%;
+        padding: 20px;
+    }
+
+    #dialogTicket strong {
+        display: block;
+        min-width: 0;
+        margin-bottom: 3px;
+    }
+
+}
+
+.btnCerrarSesion {
+    display: inline-block;
+    background-color: #2d6cdf;
+    color: white !important;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btnCerrarSesion:hover {
+    background-color: #1b4fb8;
+    color: white !important;
+}

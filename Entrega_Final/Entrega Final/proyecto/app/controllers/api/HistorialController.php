@@ -1,0 +1,25 @@
+<?php
+
+require_once __DIR__ . '/../../core/ApiController.php';
+require_once __DIR__ . '/../../models/AccesoDatosHistorial.php';
+
+final class HistorialController extends ApiController
+{
+    public function handle(): void
+    {
+        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
+            $this->methodNotAllowed(['GET']);
+        }
+        $this->requireRole(['Administrador', 'Tecnico', 'Docente']);
+        [$connector, $connection] = $this->connect();
+        try {
+            $model = new AccesoDatosHistorial($connection);
+            ApiResponse::send(200, 'success', 'Historial consultado correctamente.', $model->obtenerHistorial());
+        } catch (Throwable $error) {
+            error_log($error->getMessage());
+            ApiResponse::send(500, 'error', 'No se pudo cargar el historial.');
+        } finally {
+            $connector->desconectar();
+        }
+    }
+}

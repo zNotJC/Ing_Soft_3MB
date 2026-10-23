@@ -1,0 +1,189 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+    color: #1f1f1f;
+}
+
+header {
+    background-color: #1e2a38;
+    color: white;
+    padding: 15px 20px;
+}
+
+.navbar {
+    padding: 0;
+}
+
+.navbar-brand,
+.nav-link {
+    color: white !important;
+}
+
+.navbar ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+main {
+    flex: 1;
+    width: 100%;
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+section {
+    margin-bottom: 20px;
+}
+
+footer {
+    background-color: #1e2a38;
+    color: white;
+    text-align: center;
+    padding: 15px;
+}
+
+form {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #2d6cdf;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #1b4fb8;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+th,
+td {
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #f0f0f0;
+}
+
+.btnCerrarSesion {
+    display: inline-block;
+    background-color: #2d6cdf;
+    color: white !important;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btnCerrarSesion:hover {
+    background-color: #1b4fb8;
+    color: white !important;
+}
+
+
+
+
+@media (max-width: 768px) {
+
+    main {
+        padding: 10px;
+    }
+
+    section {
+        padding: 0;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+    }
+
+    h2 {
+        font-size: 1.3rem;
+    }
+
+    p,
+    label,
+    input,
+    select,
+    textarea,
+    button {
+        font-size: 14px;
+    }
+
+    button {
+        padding: 8px;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        font-size: 13px;
+    }
+
+    th,
+    td {
+        padding: 6px;
+    }
+
+    .navbar-collapse {
+        margin-top: 10px;
+    }
+
+    .navbar-nav {
+        width: 100%;
+    }
+
+    .nav-item {
+        width: 100%;
+    }
+
+    .nav-link {
+        display: block;
+        padding: 10px 0;
+    }
+
+    .btnCerrarSesion {
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin-top: 5px;
+    }
+}
