@@ -62,7 +62,7 @@ class AccesoDatosPrestamos
             INSERT INTO prestamo
                 (idEquipo, cedulaUsuario, fechaPrestamo, fechaDevolucion, estado, prioridad)
             VALUES
-                (:idEquipo, :cedulaUsuario, :fechaPrestamo, :fechaDevolucion, 'Pendiente', 'Media')
+                (:idEquipo, :cedulaUsuario, :fechaPrestamo, :fechaDevolucion, 'Pendiente', '-')
         ");
         $consulta->execute([
             'idEquipo' => $idEquipo,
@@ -76,7 +76,7 @@ class AccesoDatosPrestamos
     {
         $consulta = $this->conexion->prepare("
             UPDATE prestamo SET estado = 'Activo'
-            WHERE idPrestamo = :idPrestamo AND estado = 'Pendiente'
+            WHERE idPrestamo = :idPrestamo AND estado = 'Pendiente' AND prioridad IN ('Baja','Media','Alta')
         ");
         $consulta->execute(['idPrestamo' => $idPrestamo]);
         return $consulta->rowCount() > 0;
@@ -99,7 +99,7 @@ class AccesoDatosPrestamos
                 fechaDevolucion = :fechaDevolucion,
                 prioridad = :prioridad
             WHERE idPrestamo = :idPrestamo
-              AND estado IN ('Pendiente', 'Activo')
+              AND estado = 'Pendiente'
         ");
         $consulta->execute([
             'idPrestamo' => $idPrestamo,
@@ -115,7 +115,7 @@ class AccesoDatosPrestamos
     {
         $consulta = $this->conexion->prepare("
             UPDATE prestamo SET estado = 'Cancelado'
-            WHERE idPrestamo = :idPrestamo AND estado IN ('Pendiente', 'Activo')
+            WHERE idPrestamo = :idPrestamo AND estado = 'Pendiente'
         ");
         $consulta->execute(['idPrestamo' => $idPrestamo]);
         return $consulta->rowCount() > 0;

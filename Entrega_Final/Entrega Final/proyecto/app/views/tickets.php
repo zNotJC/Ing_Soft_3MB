@@ -48,7 +48,7 @@
                 en los laboratorios informáticos.
             </p>
 
-            <?php if ($esDocente || !empty($_SESSION["tecnico"])): ?>
+            <?php if ($esDocente): ?>
 
                 <button
                     type="button"
@@ -62,7 +62,7 @@
         </section>
 
 
-        <?php if ($esDocente || !empty($_SESSION["tecnico"])): ?>
+        <?php if ($esDocente): ?>
 
             <div
                 id="modalTicket"
@@ -140,40 +140,6 @@
                         ></textarea>
 
 
-                        <label for="prioridad">
-                            Prioridad
-                        </label>
-
-                        <select
-                            id="prioridad"
-                            name="prioridad"
-                            required
-                        >
-
-                            <option value="">
-                                Seleccione
-                            </option>
-
-                            <option value="Baja">Baja</option>
-                            <option value="Media" selected>Media</option>
-                            <option value="Alta">Alta</option>
-
-                        </select>
-
-
-                        <label for="fechaLimite">
-                            Fecha límite
-                        </label>
-
-                        <input
-                            type="date"
-                            id="fechaLimite"
-                            name="fechaLimite"
-                            min="<?= date("Y-m-d") ?>"
-                            required
-                        >
-
-
                         <button type="submit">
                             Guardar Ticket
                         </button>
@@ -218,11 +184,7 @@
             </select>
 
 
-            <input
-                type="text"
-                id="filtroLaboratorio"
-                placeholder="Laboratorio o taller"
-            >
+            <select id="filtroLaboratorio"><option value="">Todos los laboratorios</option></select>
 
 
             <input
@@ -268,6 +230,23 @@
             </table>
 
         </section>
+        <dialog id="dialogRevisionTicket">
+            <h2>Revisar ticket</h2>
+            <p><strong>Título:</strong> <span id="revisionTitulo"></span></p>
+            <p><strong>Descripción:</strong> <span id="revisionDescripcion"></span></p>
+            <p><strong>Laboratorio:</strong> <span id="revisionLaboratorio"></span></p>
+            <label for="revisionPrioridad">Prioridad</label>
+            <select id="revisionPrioridad" required>
+                <option value="">Seleccione</option>
+                <option value="Baja">Baja</option><option value="Media">Media</option><option value="Alta">Alta</option>
+            </select>
+            <label for="revisionFechaLimite">Fecha límite</label>
+            <input type="date" id="revisionFechaLimite" required>
+            <button type="button" id="btnIniciarTicket">Iniciar</button>
+            <button type="button" id="btnEsperarTicket">Esperar</button>
+            <button type="button" id="cerrarRevisionTicket">Cerrar</button>
+        </dialog>
+
         <dialog id="dialogTicket">
 
             <h2>Detalle del Ticket</h2>

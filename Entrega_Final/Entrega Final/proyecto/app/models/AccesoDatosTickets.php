@@ -14,6 +14,7 @@ class AccesoDatosTickets
         $sql = "
             SELECT
                 t.idTicket,
+                t.idLaboratorio,
                 t.titulo,
                 t.descripcion,
                 t.fechaRegistro,
@@ -63,7 +64,7 @@ class AccesoDatosTickets
             INSERT INTO ticket
                 (titulo, descripcion, fechaLimite, cedulaSolicitante, idLaboratorio, prioridad, estado)
             VALUES
-                (:titulo, :descripcion, :fechaLimite, :cedulaSolicitante, :idLaboratorio, :prioridad, 'En espera')
+                (:titulo, :descripcion, :fechaLimite, :cedulaSolicitante, :idLaboratorio, '-', 'En espera')
         ";
         $consulta = $this->conexion->prepare($sql);
         $consulta->execute([
@@ -72,7 +73,6 @@ class AccesoDatosTickets
             'fechaLimite' => $fechaLimite,
             'cedulaSolicitante' => $cedulaSolicitante,
             'idLaboratorio' => $idLaboratorio,
-            'prioridad' => $prioridad
         ]);
     }
 
@@ -127,16 +127,21 @@ class AccesoDatosTickets
 
     public function cambiarEstado(int $idTicket, string $estado): bool
     {
-        $estados = ['En espera', 'Pendiente', 'En Proceso', 'Resuelto', 'Cancelado'];
+        $estados = ['En espera', 'En Proceso', 'Resuelto', 'Cancelado'];
         if (!in_array($estado, $estados, true)) {
             return false;
         }
+        $permitidos = [
+            'En Proceso' => "estado = 'En espera' AND prioridad IN ('Baja','Media','Alta') AND fechaLimite IS NOT NULL",
+            'En espera' => "estado = 'En espera'",
+            'Resuelto' => "estado = 'En Proceso'",
+            'Cancelado' => "estado = 'En Proceso'"
+        ];
+        if (!isset($permitidos[$estado])) return false;
         $consulta = $this->conexion->prepare("
-            UPDATE ticket
-            SET estado = :estado
-            WHERE idTicket = :idTicket
-              AND estado NOT IN ('Resuelto', 'Cancelado')
-        ");
+            UPDATE ticket SET estado = :estado
+            WHERE idTicket = :idTicket AND " . $permitidos[$estado]
+        );
         $consulta->execute(['idTicket' => $idTicket, 'estado' => $estado]);
         return $consulta->rowCount() > 0;
     }

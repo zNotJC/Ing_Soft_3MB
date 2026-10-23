@@ -31,7 +31,7 @@ final class TicketsController extends ApiController
                 $descripcion = $this->requiredString($input, 'descripcion', 5000);
                 $fechaLimite = date('Y-m-d', strtotime('+7 days'));
                 $idLaboratorio = filter_var($input['idLaboratorio'] ?? null, FILTER_VALIDATE_INT);
-                $prioridad = 'Media';
+                $prioridad = '-';
                 if (!$idLaboratorio || !in_array($prioridad, ['Baja', 'Media', 'Alta'], true) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaLimite) || $fechaLimite < date('Y-m-d')) {
                     ApiResponse::send(422, 'error', 'Los datos del ticket no son válidos.');
                 }
@@ -45,27 +45,28 @@ final class TicketsController extends ApiController
                 }
                 $id = $this->positiveId('idTicket', $input);
                 if (isset($input['accion'])) {
-                    $accion = (string)$input['accion'];
-                    if ($accion === 'revisar') {
-                        $prioridad = (string)($input['prioridad'] ?? '');
-                        $fechaLimite = (string)($input['fechaLimite'] ?? '');
-                        if (!in_array($prioridad, ['Baja','Media','Alta'], true) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaLimite)) ApiResponse::send(422, 'error', 'Indica una prioridad y fecha límite válidas.');
+                    $accion = (string) $input['accion'];
+                    if (in_array($accion, ['iniciar', 'esperar'], true)) {
+                        $prioridad = (string) ($input['prioridad'] ?? '');
+                        $fechaLimite = (string) ($input['fechaLimite'] ?? '');
+                        if (!in_array($prioridad, ['Baja', 'Media', 'Alta'], true) ||
+                            !preg_match('/^\\d{4}-\\d{2}-\\d{2}$/', $fechaLimite) ||
+                            $fechaLimite < date('Y-m-d')) {
+                            ApiResponse::send(422, 'error', 'Indica una prioridad y fecha límite válidas.');
+                        }
                         $updated = $model->revisarTicket($id, $prioridad, $fechaLimite);
-                    } elseif ($accion === 'iniciar') $updated = $model->cambiarEstado($id, 'En Proceso');
-                    elseif ($accion === 'esperar') $updated = $model->cambiarEstado($id, 'En espera');
-                    elseif ($accion === 'completar') $updated = $model->cambiarEstado($id, 'Resuelto');
-                    elseif ($accion === 'cancelar') $updated = $model->cambiarEstado($id, 'Cancelado');
-                    else ApiResponse::send(422, 'error', 'Acción no válida.');
-                } else {
-                    $titulo = $this->requiredString($input, 'titulo', 150);
-                    $descripcion = $this->requiredString($input, 'descripcion', 5000);
-                    $fechaLimite = $this->requiredString($input, 'fechaLimite', 10);
-                    $idLaboratorio = filter_var($input['idLaboratorio'] ?? null, FILTER_VALIDATE_INT);
-                    $prioridad = (string) ($input['prioridad'] ?? 'Media');
-                    if (!$idLaboratorio || !in_array($prioridad, ['Baja', 'Media', 'Alta'], true) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaLimite)) {
-                        ApiResponse::send(422, 'error', 'Los datos del ticket no son válidos.');
+                        if ($updated && $accion === 'iniciar') {
+                            $updated = $model->cambiarEstado($id, 'En Proceso');
+                        }
+                    } elseif ($accion === 'completar') {
+                        $updated = $model->cambiarEstado($id, 'Resuelto');
+                    } elseif ($accion === 'cancelar') {
+                        $updated = $model->cambiarEstado($id, 'Cancelado');
+                    } else {
+                        ApiResponse::send(422, 'error', 'Acción no válida.');
                     }
-                    $updated = $model->modificarTicket($id, $titulo, $descripcion, $fechaLimite, (int) $idLaboratorio, $prioridad);
+                } else {
+                    ApiResponse::send(403, 'error', 'Los tickets solo se gestionan mediante las acciones de revisión, inicio, resolución o cancelación.');
                 }
                 if (!$updated) {
                     ApiResponse::send(404, 'error', 'No se encontró el ticket o no se pudo modificar.');

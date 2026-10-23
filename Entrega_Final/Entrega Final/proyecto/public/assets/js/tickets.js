@@ -1,176 +1,44 @@
-const tablaTickets = document.getElementById("tablaTickets");
-const modalTicket = document.getElementById("modalTicket");
-const btnNuevoTicket = document.getElementById("btnNuevoTicket");
-const cerrarModal = document.getElementById("cerrarModal");
-const formularioTicket = document.getElementById("ticketForm");
-const filtroEstado = document.getElementById("filtroEstado");
-const filtroLaboratorio = document.getElementById("filtroLaboratorio");
-const filtroEquipo = document.getElementById("filtroEquipo");
-const dialogTicket = document.getElementById("dialogTicket");
-const cerrarDetalleTicket = document.getElementById("cerrarDetalleTicket");
-const esTecnico = document.body.dataset.esTecnico === "true";
-const ticketsPorId = new Map();
-
-function celda(texto) {
-    const td = document.createElement("td");
-    td.textContent = texto ?? "";
-    return td;
+const tablaTickets=document.getElementById("tablaTickets");
+const modalTicket=document.getElementById("modalTicket");
+const btnNuevoTicket=document.getElementById("btnNuevoTicket");
+const cerrarModal=document.getElementById("cerrarModal");
+const formularioTicket=document.getElementById("ticketForm");
+const filtroEstado=document.getElementById("filtroEstado");
+const filtroLaboratorio=document.getElementById("filtroLaboratorio");
+const filtroEquipo=document.getElementById("filtroEquipo");
+const dialogTicket=document.getElementById("dialogTicket");
+const esTecnico=document.body.dataset.esTecnico==="true";
+const esDocente=document.body.dataset.esDocente==="true";
+const ticketsPorId=new Map();
+let ticketRevision=null;
+function celda(v){const e=document.createElement("td");e.textContent=v??"";return e;}
+function boton(texto,clase,attrs={}){const b=document.createElement("button");b.type="button";b.textContent=texto;b.className=clase;Object.entries(attrs).forEach(([k,v])=>b.dataset[k]=String(v));return b;}
+function mostrarMensajeTabla(texto){const tr=document.createElement("tr");const td=celda(texto);td.colSpan=7;tr.append(td);tablaTickets.replaceChildren(tr);}
+function construirFilaTicket(t){
+ ticketsPorId.set(String(t.idTicket),t);const tr=document.createElement("tr");
+ [t.idTicket,t.fechaRegistro,t.laboratorio,t.titulo,t.prioridad||"-",t.estado].forEach(v=>tr.append(celda(v)));
+ const acciones=celda("");acciones.className="acciones";acciones.append(boton("Ver","btn-ver",{idTicket:t.idTicket}));
+ if(esTecnico){
+  if(t.estado==="En espera") acciones.append(boton("Revisar ticket","btn-revisar",{idTicket:t.idTicket}));
+  if(t.estado==="En Proceso"){acciones.append(boton("Registrar Completado","btn-completar",{idTicket:t.idTicket}),boton("Cancelar","btn-cancelar",{idTicket:t.idTicket}));}
+ }
+ tr.append(acciones);return tr;
 }
-
-function boton(texto, clase, atributos = {}) {
-    const elemento = document.createElement("button");
-    elemento.type = "button";
-    elemento.textContent = texto;
-    elemento.className = clase;
-    Object.entries(atributos).forEach(([clave, valor]) => elemento.dataset[clave] = String(valor));
-    return elemento;
-}
-
-function mostrarMensajeTabla(mensaje) {
-    const fila = document.createElement("tr");
-    const celdaMensaje = celda(mensaje);
-    celdaMensaje.colSpan = 7;
-    fila.appendChild(celdaMensaje);
-    tablaTickets.replaceChildren(fila);
-}
-
-function construirFilaTicket(ticket) {
-    ticketsPorId.set(String(ticket.idTicket), ticket);
-    const fila = document.createElement("tr");
-    [ticket.idTicket, ticket.fechaRegistro, ticket.laboratorio, ticket.titulo, ticket.prioridad, ticket.estado].forEach(valor => fila.appendChild(celda(valor)));
-    const acciones = document.createElement("td");
-    acciones.className = "acciones";
-    acciones.appendChild(boton("Ver", "btn-ver", { idTicket: ticket.idTicket }));
-    if (esTecnico && !["Resuelto", "Cancelado"].includes(ticket.estado)) {
-        if (ticket.estado === "Pendiente" || ticket.estado === "Vencido") {
-            acciones.appendChild(boton("Iniciar", "btn-estado", { idTicket: ticket.idTicket, estadoTicket: "En Proceso" }));
-        }
-        if (ticket.estado === "En Proceso") {
-            acciones.appendChild(boton("Resolver", "btn-estado", { idTicket: ticket.idTicket, estadoTicket: "Resuelto" }));
-        }
-        acciones.appendChild(boton("Cancelar", "btn-cancelar", { idTicket: ticket.idTicket, estadoTicket: "Cancelado" }));
-    }
-    fila.appendChild(acciones);
-    return fila;
-}
-
-function aplicarFiltros() {
-    const estado = filtroEstado?.value ?? "";
-    const laboratorio = (filtroLaboratorio?.value ?? "").toLowerCase().trim();
-    const titulo = (filtroEquipo?.value ?? "").toLowerCase().trim();
-    tablaTickets.querySelectorAll("tr").forEach(fila => {
-        if (fila.children.length < 7) return;
-        fila.hidden = !((!estado || fila.children[5].textContent.trim() === estado) &&
-            (!laboratorio || fila.children[2].textContent.toLowerCase().includes(laboratorio)) &&
-            (!titulo || fila.children[3].textContent.toLowerCase().includes(titulo)));
-    });
-}
-
-function mostrarDetalleTicket(ticket) {
-    const campos = {
-        detalleId: ticket.idTicket,
-        detalleTitulo: ticket.titulo,
-        detalleDescripcion: ticket.descripcion,
-        detalleLaboratorio: ticket.laboratorio,
-        detalleSolicitante: ticket.solicitante,
-        detallePrioridad: ticket.prioridad,
-        detalleEstado: ticket.estado,
-        detalleFechaRegistro: ticket.fechaRegistro,
-        detalleFechaLimite: ticket.fechaLimite
-    };
-    Object.entries(campos).forEach(([id, valor]) => {
-        const elemento = document.getElementById(id);
-        if (elemento) elemento.textContent = valor ?? "";
-    });
-    dialogTicket?.showModal();
-}
-
-async function cargarTickets() {
-    try {
-        const respuesta = await fetch("api/tickets.php", { headers: { Accept: "application/json" }, cache: "no-store" });
-        const texto = await respuesta.text();
-        let resultado; try { resultado = JSON.parse(texto); } catch { throw new Error(`Respuesta inválida del servidor (HTTP ${respuesta.status}).`); }
-        if (!respuesta.ok || resultado.status !== "success" || !Array.isArray(resultado.data?.tickets)) {
-            throw new Error(resultado.message || "No se pudieron cargar los tickets.");
-        }
-        ticketsPorId.clear();
-        const selectorLaboratorioNuevo = document.getElementById("idLaboratorio");
-        if (selectorLaboratorioNuevo && Array.isArray(resultado.data.laboratorios)) {
-            const opciones = [new Option("Seleccione", "")];
-            resultado.data.laboratorios.forEach(laboratorio => {
-                opciones.push(new Option(laboratorio.nombre, laboratorio.idLaboratorio));
-            });
-            selectorLaboratorioNuevo.replaceChildren(...opciones);
-        }
-        const fragmento = document.createDocumentFragment();
-        if (resultado.data.tickets.length === 0) {
-            const fila = document.createElement("tr");
-            const mensaje = celda("No hay tickets registrados.");
-            mensaje.colSpan = 7;
-            fila.appendChild(mensaje);
-            fragmento.appendChild(fila);
-        } else {
-            resultado.data.tickets.forEach(ticket => fragmento.appendChild(construirFilaTicket(ticket)));
-        }
-        tablaTickets.replaceChildren(fragmento);
-        aplicarFiltros();
-    } catch (error) {
-        console.error(error);
-        mostrarMensajeTabla(error.message || "No se pudieron cargar los tickets.");
-    }
-}
-
-btnNuevoTicket?.addEventListener("click", () => { modalTicket.hidden = false; });
-cerrarModal?.addEventListener("click", () => { modalTicket.hidden = true; });
-modalTicket?.addEventListener("click", evento => { if (evento.target === modalTicket) modalTicket.hidden = true; });
-cerrarDetalleTicket?.addEventListener("click", () => dialogTicket?.close());
-filtroEstado?.addEventListener("change", aplicarFiltros);
-filtroLaboratorio?.addEventListener("input", aplicarFiltros);
-filtroEquipo?.addEventListener("input", aplicarFiltros);
-
-tablaTickets?.addEventListener("click", async evento => {
-    const elemento = evento.target.closest("button");
-    if (!elemento) return;
-    const id = elemento.dataset.idTicket;
-    if (elemento.classList.contains("btn-ver")) {
-        const ticket = ticketsPorId.get(String(id));
-        if (ticket) mostrarDetalleTicket(ticket);
-        return;
-    }
-    if (!elemento.classList.contains("btn-estado") && !elemento.classList.contains("btn-cancelar")) return;
-    if (elemento.dataset.estadoTicket === "Cancelado" && !window.confirm("¿Deseas cancelar este ticket?")) return;
-    const estado = elemento.dataset.estadoTicket;
-    try {
-        const respuesta = await fetch("api/tickets.php", {
-            method: "PUT",
-            headers: { "Content-Type": "application/json", Accept: "application/json" },
-            body: JSON.stringify({ idTicket: Number(id), accion: "estado", estado })
-        });
-        const resultado = await respuesta.json();
-        if (!respuesta.ok || resultado.status !== "success") throw new Error(resultado.message || "No se pudo actualizar el ticket.");
-        await cargarTickets();
-    } catch (error) {
-        window.alert(error.message);
-    }
-});
-
-formularioTicket?.addEventListener("submit", async evento => {
-    evento.preventDefault();
-    const datos = Object.fromEntries(new FormData(formularioTicket).entries());
-    try {
-        const respuesta = await fetch("api/tickets.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Accept: "application/json" },
-            body: JSON.stringify(datos)
-        });
-        const resultado = await respuesta.json();
-        if (!respuesta.ok || resultado.status !== "success") throw new Error(resultado.message || "No se pudo registrar el ticket.");
-        formularioTicket.reset();
-        modalTicket.hidden = true;
-        await cargarTickets();
-    } catch (error) {
-        window.alert(error.message);
-    }
-});
-
+function aplicarFiltros(){const estado=filtroEstado?.value||"",lab=filtroLaboratorio?.value||"",titulo=(filtroEquipo?.value||"").toLowerCase().trim();tablaTickets.querySelectorAll("tr").forEach(tr=>{if(tr.children.length<7)return;tr.hidden=!!((estado&&tr.children[5].textContent.trim()!==estado)||(lab&&tr.children[2].textContent.trim()!==lab)||(titulo&&!tr.children[3].textContent.toLowerCase().includes(titulo)));});}
+function detalle(t){const m={detalleId:t.idTicket,detalleTitulo:t.titulo,detalleDescripcion:t.descripcion,detalleLaboratorio:t.laboratorio,detalleSolicitante:t.solicitante,detallePrioridad:t.prioridad||"-",detalleEstado:t.estado,detalleFechaRegistro:t.fechaRegistro,detalleFechaLimite:t.fechaLimite||"-"};Object.entries(m).forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.textContent=v??"";});dialogTicket?.showModal();}
+async function api(method,data){const r=await fetch("api/tickets.php",{method,headers:{"Content-Type":"application/json",Accept:"application/json"},...(data?{body:JSON.stringify(data)}:{}),cache:"no-store"});let j;try{j=await r.json();}catch{throw Error(`Respuesta inválida del servidor (HTTP ${r.status}).`);}if(!r.ok||j.status!=="success")throw Error(j.message||"No se pudo completar la operación.");return j.data;}
+async function cargarTickets(){try{const d=await api("GET");ticketsPorId.clear();const labs=[...new Map((d.tickets||[]).map(t=>[String(t.idLaboratorio??t.laboratorio),t.laboratorio])).entries()];if(filtroLaboratorio){const old=filtroLaboratorio.value;filtroLaboratorio.replaceChildren(new Option("Todos los laboratorios",""));labs.forEach(([id,n])=>filtroLaboratorio.add(new Option(n,n)));filtroLaboratorio.value=old;}
+ const sel=document.getElementById("idLaboratorio");if(sel){sel.replaceChildren(new Option("Seleccione",""));(d.laboratorios||[]).forEach(l=>sel.add(new Option(l.nombre,l.idLaboratorio)));}
+ const frag=document.createDocumentFragment();if(!(d.tickets||[]).length){const tr=document.createElement("tr"),td=celda("No hay tickets registrados.");td.colSpan=7;tr.append(td);frag.append(tr);}else d.tickets.forEach(t=>frag.append(construirFilaTicket(t)));tablaTickets.replaceChildren(frag);aplicarFiltros();
+ }catch(e){console.error(e);mostrarMensajeTabla(e.message);}}
+function abrirRevision(t){ticketRevision=t;document.getElementById("revisionTitulo").textContent=t.titulo;document.getElementById("revisionDescripcion").textContent=t.descripcion;document.getElementById("revisionLaboratorio").textContent=t.laboratorio;document.getElementById("revisionPrioridad").value="";document.getElementById("revisionFechaLimite").value="";document.getElementById("revisionFechaLimite").min=new Date().toISOString().slice(0,10);document.getElementById("dialogRevisionTicket").showModal();}
+async function gestionarTicket(accion,extra={}){if(!ticketRevision)return;await api("PUT",{idTicket:Number(ticketRevision.idTicket),accion,...extra});document.getElementById("dialogRevisionTicket").close();ticketRevision=null;await cargarTickets();}
+btnNuevoTicket?.addEventListener("click",()=>{if(esDocente)modalTicket.hidden=false;});
+cerrarModal?.addEventListener("click",()=>modalTicket.hidden=true);
+document.getElementById("cerrarRevisionTicket")?.addEventListener("click",()=>document.getElementById("dialogRevisionTicket").close());
+document.getElementById("btnIniciarTicket")?.addEventListener("click",async()=>{const prioridad=document.getElementById("revisionPrioridad").value,fechaLimite=document.getElementById("revisionFechaLimite").value;if(!prioridad||!fechaLimite){alert("Selecciona prioridad y fecha límite.");return;}try{await gestionarTicket("iniciar",{prioridad,fechaLimite});}catch(e){alert(e.message);}});
+document.getElementById("btnEsperarTicket")?.addEventListener("click",async()=>{const prioridad=document.getElementById("revisionPrioridad").value,fechaLimite=document.getElementById("revisionFechaLimite").value;if(!prioridad||!fechaLimite){alert("Selecciona prioridad y fecha límite.");return;}try{await gestionarTicket("esperar",{prioridad,fechaLimite});}catch(e){alert(e.message);}});
+filtroEstado?.addEventListener("change",aplicarFiltros);filtroLaboratorio?.addEventListener("change",aplicarFiltros);filtroEquipo?.addEventListener("input",aplicarFiltros);
+tablaTickets?.addEventListener("click",async e=>{const b=e.target.closest("button");if(!b)return;const t=ticketsPorId.get(String(b.dataset.idTicket));if(!t)return;if(b.classList.contains("btn-ver")){detalle(t);return;}if(b.classList.contains("btn-revisar")){abrirRevision(t);return;}let accion=null;if(b.classList.contains("btn-completar"))accion="completar";if(b.classList.contains("btn-cancelar"))accion="cancelar";if(!accion)return;if(accion==="cancelar"&&!confirm("¿Deseas cancelar este ticket?"))return;try{await api("PUT",{idTicket:Number(t.idTicket),accion});await cargarTickets();}catch(err){alert(err.message);}});
+formularioTicket?.addEventListener("submit",async e=>{e.preventDefault();if(!esDocente)return;const datos=Object.fromEntries(new FormData(formularioTicket));delete datos.prioridad;delete datos.fechaLimite;try{await api("POST",datos);formularioTicket.reset();modalTicket.hidden=true;await cargarTickets();}catch(err){alert(err.message);}});
 cargarTickets();
