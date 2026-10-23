@@ -21,6 +21,7 @@ final class DashboardController extends ApiController
                 'ticketsResueltos' => $dashboard->obtenerTicketsResueltos(),
                 'solicitudesActivas' => $dashboard->obtenerSolicitudesActivas(),
                 'prestamosActivos' => $dashboard->obtenerPrestamosActivos(),
+                'equiposRegistrados' => $dashboard->obtenerEquiposRegistrados(),
                 'ultimosAccesos' => $usuarios->obtenerUltimosAccesos()
             ];
             ApiResponse::send(200, 'success', 'Dashboard consultado correctamente.', $data);

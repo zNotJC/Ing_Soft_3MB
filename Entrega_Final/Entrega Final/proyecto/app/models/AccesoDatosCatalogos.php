@@ -3,59 +3,40 @@
 class AccesoDatosCatalogos
 {
     private PDO $conexion;
-    private array $tablas = [
-        'lugares' => ['tabla' => 'lugar', 'id' => 'idLugar'],
-        'prioridades' => ['tabla' => 'prioridad', 'id' => 'idPrioridad'],
-        'estadosTicket' => ['tabla' => 'estado_ticket', 'id' => 'idEstado'],
-        'estadosPrestamo' => ['tabla' => 'estado_prestamo', 'id' => 'idEstado']
-    ];
 
     public function __construct(PDO $conexion)
     {
         $this->conexion = $conexion;
     }
 
-    public function validarTipo(string $tipo): array
+    public function listarLaboratorios(): array
     {
-        if (!isset($this->tablas[$tipo])) throw new InvalidArgumentException('Catálogo no válido.');
-        return $this->tablas[$tipo];
+        return $this->conexion->query(
+            'SELECT idLaboratorio AS id, nombre FROM laboratorio ORDER BY nombre'
+        )->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function listar(string $tipo): array
+    public function crearLaboratorio(string $nombre): int
     {
-        $config = $this->validarTipo($tipo);
-        return $this->conexion->query('SELECT ' . $config['id'] . ' AS id, nombre FROM ' . $config['tabla'] . ' ORDER BY nombre')->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function crear(string $tipo, string $nombre): int
-    {
-        $config = $this->validarTipo($tipo);
-        $consulta = $this->conexion->prepare('INSERT INTO ' . $config['tabla'] . ' (nombre) VALUES (:nombre)');
+        $consulta = $this->conexion->prepare('INSERT INTO laboratorio (nombre) VALUES (:nombre)');
         $consulta->execute(['nombre' => $nombre]);
         return (int) $this->conexion->lastInsertId();
     }
 
-    public function modificar(string $tipo, int $id, string $nombre): bool
+    public function modificarLaboratorio(int $id, string $nombre): bool
     {
-        $config = $this->validarTipo($tipo);
-        $consulta = $this->conexion->prepare('UPDATE ' . $config['tabla'] . ' SET nombre = :nombre WHERE ' . $config['id'] . ' = :id');
+        $consulta = $this->conexion->prepare(
+            'UPDATE laboratorio SET nombre = :nombre WHERE idLaboratorio = :id'
+        );
         $consulta->execute(['id' => $id, 'nombre' => $nombre]);
         return $consulta->rowCount() > 0;
     }
 
-    public function obtenerNombre(string $tipo, int $id): ?string
+    public function eliminarLaboratorio(int $id): bool
     {
-        $config = $this->validarTipo($tipo);
-        $consulta = $this->conexion->prepare('SELECT nombre FROM ' . $config['tabla'] . ' WHERE ' . $config['id'] . ' = :id');
-        $consulta->execute(['id' => $id]);
-        $nombre = $consulta->fetchColumn();
-        return $nombre === false ? null : (string) $nombre;
-    }
-
-    public function eliminar(string $tipo, int $id): bool
-    {
-        $config = $this->validarTipo($tipo);
-        $consulta = $this->conexion->prepare('DELETE FROM ' . $config['tabla'] . ' WHERE ' . $config['id'] . ' = :id');
+        $consulta = $this->conexion->prepare(
+            'DELETE FROM laboratorio WHERE idLaboratorio = :id AND NOT EXISTS (SELECT 1 FROM equipo WHERE equipo.idLaboratorio = laboratorio.idLaboratorio)'
+        );
         $consulta->execute(['id' => $id]);
         return $consulta->rowCount() > 0;
     }

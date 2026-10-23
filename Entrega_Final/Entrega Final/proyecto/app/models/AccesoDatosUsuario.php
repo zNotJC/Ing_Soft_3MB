@@ -261,6 +261,38 @@ class AccesoDatosUsuario
         return $consulta->rowCount() > 0;
     }
 
+
+    public function eliminarUsuario(string $cedula): bool
+    {
+        $this->conexion->beginTransaction();
+        try {
+            foreach ([
+                "SELECT COUNT(*) FROM ticket WHERE cedulaSolicitante = :cedula",
+                "SELECT COUNT(*) FROM solicitud WHERE cedulaUsuario = :cedula",
+                "SELECT COUNT(*) FROM prestamo WHERE cedulaUsuario = :cedula"
+            ] as $sql) {
+                $consulta = $this->conexion->prepare($sql);
+                $consulta->execute(['cedula' => $cedula]);
+                if ((int) $consulta->fetchColumn() > 0) {
+                    $this->conexion->rollBack();
+                    return false;
+                }
+            }
+            foreach (['ADMINISTRADOR', 'DOCENTE', 'TECNICO', 'ACCESO_SISTEMA'] as $tabla) {
+                $consulta = $this->conexion->prepare("DELETE FROM {$tabla} WHERE " . ($tabla === 'ACCESO_SISTEMA' ? 'cedulaUsuario' : 'cedula') . " = :cedula");
+                $consulta->execute(['cedula' => $cedula]);
+            }
+            $consulta = $this->conexion->prepare('DELETE FROM USUARIO WHERE cedula = :cedula');
+            $consulta->execute(['cedula' => $cedula]);
+            $eliminado = $consulta->rowCount() > 0;
+            $this->conexion->commit();
+            return $eliminado;
+        } catch (Throwable $error) {
+            if ($this->conexion->inTransaction()) $this->conexion->rollBack();
+            throw $error;
+        }
+    }
+
 }
 
 ?>

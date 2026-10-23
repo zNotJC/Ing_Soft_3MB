@@ -29,7 +29,7 @@
 
 </head>
 
-<body data-es-docente="false" data-es-administrador="<?= $esAdministrador ? "true" : "false" ?>">
+<body data-es-docente="<?= $esDocente ? "true" : "false" ?>" data-es-administrador="<?= $esAdministrador ? "true" : "false" ?>" data-es-tecnico="<?= $esTecnico ? "true" : "false" ?>">
 
 <?php require __DIR__ . "/partials/navbar.php"; ?>
 
@@ -42,10 +42,10 @@
         </h1>
 
         <p>
-            Consulta y administra los préstamos registrados.
+            El Docente solicita préstamos, el Técnico los gestiona y el Administrador solo los consulta.
         </p>
 
-        <?php if ($esAdministrador): ?>
+        <?php if ($esDocente): ?>
 
             <button
                 id="btnNuevoPrestamo"
@@ -58,7 +58,7 @@
 
     </section>
 
-    <?php if ($esAdministrador): ?>
+    <?php if ($esDocente): ?>
 
         <div
             id="modalPrestamo"
@@ -94,10 +94,11 @@
 
                     <div>
 
-                        <label for="idEquipo">
-                            Equipo
-                        </label>
-
+                        <label for="tipoEquipoPrestamo">Tipo de dispositivo</label>
+                        <select id="tipoEquipoPrestamo" class="form-select" required>
+                            <option value="">Seleccione un tipo</option><option>Ordenadores</option><option>Periféricos</option><option>Televisores</option><option>Aires Acondicionados</option>
+                        </select>
+                        <label for="idEquipo">Equipo</label>
                         <select
                             id="idEquipo"
                             name="idEquipo"
@@ -152,7 +153,7 @@
 
     <?php endif; ?>
 
-    <?php if ($esAdministrador): ?>
+    <?php if ($esTecnico): ?>
 
         <div
             id="modalModificarPrestamo"
@@ -194,10 +195,11 @@
 
                     <div>
 
-                        <label for="modificarIdEquipo">
-                            Equipo
-                        </label>
-
+                        <label for="tipoEquipoModificar" class="form-label">Tipo de dispositivo</label>
+                        <select id="tipoEquipoModificar" class="form-select" required>
+                            <option value="">Seleccione un tipo</option><option>Ordenadores</option><option>Periféricos</option><option>Televisores</option><option>Aires Acondicionados</option>
+                        </select>
+                        <label for="modificarIdEquipo">Equipo</label>
                         <select
                             name="idEquipo"
                             id="modificarIdEquipo"
@@ -238,6 +240,15 @@
                             required
                         >
 
+                    </div>
+
+                    <div>
+                        <label for="modificarPrioridad">Prioridad</label>
+                        <select class="form-select" name="prioridad" id="modificarPrioridad" required>
+                            <option value="Baja">Baja</option>
+                            <option value="Media">Media</option>
+                            <option value="Alta">Alta</option>
+                        </select>
                     </div>
 
                     <button type="submit">
@@ -309,7 +320,7 @@
                     </th>
 
                     <th>
-                        Nº Serie
+                        Tipo de equipo
                     </th>
 
                     <th>
@@ -333,6 +344,10 @@
                     </th>
 
                     <th>
+                        Prioridad
+                    </th>
+
+                    <th>
                         Acciones
                     </th>
 
@@ -343,7 +358,7 @@
             <tbody id="tablaPrestamos">
 
                 <tr>
-                    <td colspan="9">Cargando...</td>
+                    <td colspan="10">Cargando...</td>
                 </tr>
 
             </tbody>

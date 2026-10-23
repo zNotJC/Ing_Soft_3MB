@@ -109,13 +109,13 @@
                         >
 
 
-                        <label for="idLugar">
+                        <label for="idLaboratorio">
                             Laboratorio / Taller
                         </label>
 
                         <select
-                            id="idLugar"
-                            name="idLugar"
+                            id="idLaboratorio"
+                            name="idLaboratorio"
                             required
                         >
 
@@ -123,12 +123,12 @@
                                 Seleccione
                             </option>
 
-                            <?php foreach ($lugares as $lugar): ?>
+                            <?php foreach ($laboratorios as $laboratorio): ?>
 
                                 <option
-                                    value="<?= htmlspecialchars($lugar["idLugar"]) ?>"
+                                    value="<?= htmlspecialchars($laboratorio["idLaboratorio"]) ?>"
                                 >
-                                    <?= htmlspecialchars($lugar["nombre"]) ?>
+                                    <?= htmlspecialchars($laboratorio["nombre"]) ?>
                                 </option>
 
                             <?php endforeach; ?>
@@ -154,7 +154,7 @@
 
                         <select
                             id="prioridad"
-                            name="idPrioridad"
+                            name="prioridad"
                             required
                         >
 
@@ -165,7 +165,7 @@
                             <?php foreach ($prioridades as $prioridad): ?>
 
                                 <option
-                                    value="<?= htmlspecialchars($prioridad["idPrioridad"]) ?>"
+                                    value="<?= htmlspecialchars($prioridad["nombre"]) ?>"
                                 >
                                     <?= htmlspecialchars($prioridad["nombre"]) ?>
                                 </option>
@@ -303,7 +303,7 @@
 
             <p>
                 <strong>Laboratorio/Taller:</strong>
-                <span id="detalleLugar"></span>
+                <span id="detalleLaboratorio"></span>
             </p>
 
             <p>

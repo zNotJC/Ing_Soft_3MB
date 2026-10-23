@@ -58,9 +58,15 @@ final class UsuariosController extends ApiController
             if ($method === 'DELETE') {
                 $cedula = trim((string) ($input['cedula'] ?? $_GET['cedula'] ?? ''));
                 if (!preg_match('/^[0-9]{8}$/', $cedula)) ApiResponse::send(400, 'error', 'Cédula no válida.');
-                if ($cedula === (string) $_SESSION['cedula']) ApiResponse::send(409, 'error', 'No puedes desactivar tu propia cuenta.');
-                if (!$model->desactivarUsuario($cedula)) ApiResponse::send(404, 'error', 'No se encontró una cuenta activa con esa cédula.');
-                ApiResponse::send(200, 'success', 'Usuario desactivado correctamente.', ['cedula' => $cedula]);
+                if ($cedula === (string) $_SESSION['cedula']) ApiResponse::send(409, 'error', 'No puedes eliminar ni desactivar tu propia cuenta.');
+                if (($input['accion'] ?? '') === 'desactivar') {
+                    if (!$model->desactivarUsuario($cedula)) ApiResponse::send(404, 'error', 'No se encontró una cuenta activa con esa cédula.');
+                    ApiResponse::send(200, 'success', 'Usuario desactivado correctamente.', ['cedula' => $cedula]);
+                }
+                if (!$model->eliminarUsuario($cedula)) {
+                    ApiResponse::send(409, 'error', 'No se puede eliminar este usuario porque no existe o tiene solicitudes, tickets o préstamos asociados. Puedes desactivarlo.');
+                }
+                ApiResponse::send(200, 'success', 'Usuario eliminado correctamente.', ['cedula' => $cedula]);
             }
             $this->methodNotAllowed(['GET', 'POST', 'PUT', 'DELETE']);
         } catch (PDOException $error) {

@@ -16,7 +16,7 @@ final class TicketsController extends ApiController
             if ($method === 'GET') {
                 $data = [
                     'tickets' => $model->obtenerTickets(),
-                    'lugares' => $model->obtenerLugares(),
+                    'laboratorios' => $model->obtenerLaboratorios(),
                     'prioridades' => $model->obtenerPrioridades()
                 ];
                 ApiResponse::send(200, 'success', 'Tickets consultados correctamente.', $data);
@@ -30,12 +30,12 @@ final class TicketsController extends ApiController
                 $titulo = $this->requiredString($input, 'titulo', 150);
                 $descripcion = $this->requiredString($input, 'descripcion', 5000);
                 $fechaLimite = $this->requiredString($input, 'fechaLimite', 10);
-                $idLugar = filter_var($input['idLugar'] ?? null, FILTER_VALIDATE_INT);
-                $idPrioridad = filter_var($input['idPrioridad'] ?? null, FILTER_VALIDATE_INT);
-                if (!$idLugar || !$idPrioridad || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaLimite) || $fechaLimite < date('Y-m-d')) {
+                $idLaboratorio = filter_var($input['idLaboratorio'] ?? null, FILTER_VALIDATE_INT);
+                $prioridad = (string) ($input['prioridad'] ?? 'Media');
+                if (!$idLaboratorio || !in_array($prioridad, ['Baja', 'Media', 'Alta'], true) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaLimite) || $fechaLimite < date('Y-m-d')) {
                     ApiResponse::send(422, 'error', 'Los datos del ticket no son válidos.');
                 }
-                $model->crearTicket($titulo, $descripcion, $fechaLimite, (string) $_SESSION['cedula'], (int) $idLugar, (int) $idPrioridad);
+                $model->crearTicket($titulo, $descripcion, $fechaLimite, (string) $_SESSION['cedula'], (int) $idLaboratorio, $prioridad);
                 ApiResponse::send(201, 'success', 'Ticket registrado correctamente.', ['idTicket' => (int) $connection->lastInsertId()]);
             }
 
@@ -54,12 +54,12 @@ final class TicketsController extends ApiController
                     $titulo = $this->requiredString($input, 'titulo', 150);
                     $descripcion = $this->requiredString($input, 'descripcion', 5000);
                     $fechaLimite = $this->requiredString($input, 'fechaLimite', 10);
-                    $idLugar = filter_var($input['idLugar'] ?? null, FILTER_VALIDATE_INT);
-                    $idPrioridad = filter_var($input['idPrioridad'] ?? null, FILTER_VALIDATE_INT);
-                    if (!$idLugar || !$idPrioridad || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaLimite)) {
+                    $idLaboratorio = filter_var($input['idLaboratorio'] ?? null, FILTER_VALIDATE_INT);
+                    $prioridad = (string) ($input['prioridad'] ?? 'Media');
+                    if (!$idLaboratorio || !in_array($prioridad, ['Baja', 'Media', 'Alta'], true) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaLimite)) {
                         ApiResponse::send(422, 'error', 'Los datos del ticket no son válidos.');
                     }
-                    $updated = $model->modificarTicket($id, $titulo, $descripcion, $fechaLimite, (int) $idLugar, (int) $idPrioridad);
+                    $updated = $model->modificarTicket($id, $titulo, $descripcion, $fechaLimite, (int) $idLaboratorio, $prioridad);
                 }
                 if (!$updated) {
                     ApiResponse::send(404, 'error', 'No se encontró el ticket o no se pudo modificar.');

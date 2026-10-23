@@ -8,7 +8,7 @@ final class SolicitudesController extends ApiController
     public function handle(): void
     {
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-        $role = $this->requireRole(['Docente', 'Tecnico']);
+        $role = $this->requireRole(['Administrador', 'Docente', 'Tecnico']);
         [$connector, $connection] = $this->connect();
         $model = new AccesoDatosSolicitudes($connection);
 
@@ -27,7 +27,7 @@ final class SolicitudesController extends ApiController
                 $equipo = trim((string) ($input['equipo'] ?? '')) ?: null;
                 $fechaSolicitud = (string) ($input['fechaSolicitud'] ?? date('Y-m-d'));
                 $fechaNecesaria = trim((string) ($input['fechaNecesaria'] ?? '')) ?: null;
-                $tipos = ['Equipamiento', 'Reparación', 'Acceso', 'Licencia', 'Mobiliario', 'Otro'];
+                $tipos = ['Laboratorio', 'Reparación'];
                 if (!in_array($tipo, $tipos, true) || !$cantidad || $cantidad < 1 || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaSolicitud)) {
                     ApiResponse::send(422, 'error', 'Los datos de la solicitud no son válidos.');
                 }

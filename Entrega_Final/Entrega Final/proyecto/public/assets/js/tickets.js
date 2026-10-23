@@ -37,7 +37,7 @@ function mostrarMensajeTabla(mensaje) {
 function construirFilaTicket(ticket) {
     ticketsPorId.set(String(ticket.idTicket), ticket);
     const fila = document.createElement("tr");
-    [ticket.idTicket, ticket.fechaRegistro, ticket.lugar, ticket.titulo, ticket.prioridad, ticket.estado].forEach(valor => fila.appendChild(celda(valor)));
+    [ticket.idTicket, ticket.fechaRegistro, ticket.laboratorio, ticket.titulo, ticket.prioridad, ticket.estado].forEach(valor => fila.appendChild(celda(valor)));
     const acciones = document.createElement("td");
     acciones.className = "acciones";
     acciones.appendChild(boton("Ver", "btn-ver", { idTicket: ticket.idTicket }));
@@ -56,12 +56,12 @@ function construirFilaTicket(ticket) {
 
 function aplicarFiltros() {
     const estado = filtroEstado?.value ?? "";
-    const lugar = (filtroLaboratorio?.value ?? "").toLowerCase().trim();
+    const laboratorio = (filtroLaboratorio?.value ?? "").toLowerCase().trim();
     const titulo = (filtroEquipo?.value ?? "").toLowerCase().trim();
     tablaTickets.querySelectorAll("tr").forEach(fila => {
         if (fila.children.length < 7) return;
         fila.hidden = !((!estado || fila.children[5].textContent.trim() === estado) &&
-            (!lugar || fila.children[2].textContent.toLowerCase().includes(lugar)) &&
+            (!laboratorio || fila.children[2].textContent.toLowerCase().includes(laboratorio)) &&
             (!titulo || fila.children[3].textContent.toLowerCase().includes(titulo)));
     });
 }
@@ -71,7 +71,7 @@ function mostrarDetalleTicket(ticket) {
         detalleId: ticket.idTicket,
         detalleTitulo: ticket.titulo,
         detalleDescripcion: ticket.descripcion,
-        detalleLugar: ticket.lugar,
+        detalleLaboratorio: ticket.laboratorio,
         detalleSolicitante: ticket.solicitante,
         detallePrioridad: ticket.prioridad,
         detalleEstado: ticket.estado,
@@ -87,8 +87,9 @@ function mostrarDetalleTicket(ticket) {
 
 async function cargarTickets() {
     try {
-        const respuesta = await fetch("api/tickets.php", { headers: { Accept: "application/json" } });
-        const resultado = await respuesta.json();
+        const respuesta = await fetch("api/tickets.php", { headers: { Accept: "application/json" }, cache: "no-store" });
+        const texto = await respuesta.text();
+        let resultado; try { resultado = JSON.parse(texto); } catch { throw new Error(`Respuesta inválida del servidor (HTTP ${respuesta.status}).`); }
         if (!respuesta.ok || resultado.status !== "success" || !Array.isArray(resultado.data?.tickets)) {
             throw new Error(resultado.message || "No se pudieron cargar los tickets.");
         }

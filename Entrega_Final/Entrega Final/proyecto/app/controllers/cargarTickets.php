@@ -1,6 +1,8 @@
 <?php
 
 require_once __DIR__ . "/../bootstrap.php";
+require_once __DIR__ . '/../models/ConectorPDO.php';
+require_once __DIR__ . '/../models/AccesoDatosTickets.php';
 
 session_start();
 
@@ -32,18 +34,16 @@ $accesoDatosTickets =
     new AccesoDatosTickets($conexion);
 
 
-$lugares =
-    $accesoDatosTickets->obtenerLugares();
+$laboratorios =
+    $accesoDatosTickets->obtenerLaboratorios();
 
 $prioridades =
     $accesoDatosTickets->obtenerPrioridades();
 
 
-$esAdministrador =
-    $_SESSION["administrador"];
+$esAdministrador = (bool) ($_SESSION["administrador"] ?? false);
 
-$esDocente =
-    $_SESSION["docente"];
+$esDocente = (bool) ($_SESSION["docente"] ?? false);
 $esTecnico = $_SESSION["tecnico"] ?? false;
 
 

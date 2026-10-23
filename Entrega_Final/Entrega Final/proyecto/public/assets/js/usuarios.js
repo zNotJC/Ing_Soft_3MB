@@ -46,10 +46,11 @@ function renderizarUsuarios(lista) {
         acciones.className = "acciones-tabla";
         acciones.appendChild(crearBoton("Modificar", "btn btn-sm btn-primary", "editar", usuario.cedula));
         if (usuario.activo) {
-            acciones.appendChild(crearBoton("Desactivar", "btn btn-sm btn-danger", "desactivar", usuario.cedula));
+            acciones.appendChild(crearBoton("Desactivar", "btn btn-sm btn-warning me-2", "desactivar", usuario.cedula));
         } else {
-            acciones.appendChild(crearBoton("Activar", "btn btn-sm btn-success", "activar", usuario.cedula));
+            acciones.appendChild(crearBoton("Activar", "btn btn-sm btn-success me-2", "activar", usuario.cedula));
         }
+        acciones.appendChild(crearBoton("Eliminar", "btn btn-sm btn-danger", "eliminar", usuario.cedula));
         fila.appendChild(acciones);
         fragmento.appendChild(fila);
     });
@@ -83,7 +84,7 @@ formularioUsuario.addEventListener("submit", async evento => {
     const metodo = modoEdicion ? "PUT" : "POST";
     if (modoEdicion) {
         datos.cedulaOriginal = cedulaOriginal;
-        if (!datos.contrasena) delete datos.contrasena;
+        if (!datos.contrasena) datos.contrasena = '';
     }
     try {
         await apiUsuarios(metodo, datos);
@@ -122,8 +123,17 @@ tablaUsuarios.addEventListener("click", async evento => {
     if (accion === "desactivar") {
         if (!window.confirm(`¿Desactivar la cuenta ${usuario.usuario}?`)) return;
         try {
-            await apiUsuarios("DELETE", { cedula: usuario.cedula });
+            await apiUsuarios("DELETE", { cedula: usuario.cedula, accion: "desactivar" });
             mensajeUsuarios.textContent = "Usuario desactivado.";
+            await cargarUsuarios();
+        } catch (error) { mensajeUsuarios.textContent = error.message; }
+        return;
+    }
+    if (accion === "eliminar") {
+        if (!window.confirm(`¿Eliminar definitivamente la cuenta ${usuario.usuario}? Si tiene tickets, solicitudes o préstamos asociados, la operación será rechazada.`)) return;
+        try {
+            await apiUsuarios("DELETE", { cedula: usuario.cedula });
+            mensajeUsuarios.textContent = "Usuario eliminado.";
             await cargarUsuarios();
         } catch (error) { mensajeUsuarios.textContent = error.message; }
         return;

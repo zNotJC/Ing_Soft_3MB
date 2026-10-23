@@ -112,32 +112,19 @@
                                 Seleccione una opción
                             </option>
 
-                            <option value="Equipamiento">
-                                Equipamiento
-                            </option>
-
-                            <option value="Reparación">
-                                Reparación
-                            </option>
-
-                            <option value="Acceso">
-                                Acceso
-                            </option>
-
-                            <option value="Licencia">
-                                Licencia
-                            </option>
-
-                            <option value="Mobiliario">
-                                Mobiliario
-                            </option>
-
-                            <option value="Otro">
-                                Otro
-                            </option>
-
+                            <option value="Laboratorio">Laboratorio</option>
+                            <option value="Reparación">Reparación</option>
                         </select>
-
+                        <div class="mt-3" id="grupoLaboratorioSolicitud" hidden>
+                            <label for="laboratorioSolicitud">Laboratorio</label>
+                            <select id="laboratorioSolicitud" class="form-select"><option value="">Seleccione un laboratorio</option></select>
+                        </div>
+                        <div class="mt-3" id="grupoReparacionSolicitud" hidden>
+                            <label for="tipoEquipoSolicitud">Tipo de equipo</label>
+                            <select id="tipoEquipoSolicitud" class="form-select"><option value="">Seleccione un tipo</option><option>Ordenadores</option><option>Periféricos</option><option>Televisores</option><option>Aires Acondicionados</option></select>
+                            <label for="equipoSolicitud" class="mt-2">Equipo a reparar</label>
+                            <select id="equipoSolicitud" class="form-select"><option value="">Seleccione un equipo</option></select>
+                        </div>
                     </div>
 
                     <div>
@@ -173,21 +160,7 @@
 
                     </div>
 
-                    <div>
-
-                        <label for="equipo">
-                            Equipo o Recurso
-                        </label>
-
-                        <input
-                            type="text"
-                            id="equipo"
-                            name="equipo"
-                            maxlength="100"
-                            placeholder="Ej.: Laptop, Proyector, Adobe..."
-                        >
-
-                    </div>
+                    <input type="hidden" id="equipo" name="equipo" value="">
 
                     <div>
 
@@ -261,36 +234,9 @@
                             Tipo de Solicitud
                         </label>
 
-                        <select
-                            id="modificarTipoSolicitud"
-                            name="tipoSolicitud"
-                            required
-                        >
-
-                            <option value="Equipamiento">
-                                Equipamiento
-                            </option>
-
-                            <option value="Reparación">
-                                Reparación
-                            </option>
-
-                            <option value="Acceso">
-                                Acceso
-                            </option>
-
-                            <option value="Licencia">
-                                Licencia
-                            </option>
-
-                            <option value="Mobiliario">
-                                Mobiliario
-                            </option>
-
-                            <option value="Otro">
-                                Otro
-                            </option>
-
+                        <select id="modificarTipoSolicitud" name="tipoSolicitud" required>
+                            <option value="Laboratorio">Laboratorio</option>
+                            <option value="Reparación">Reparación</option>
                         </select>
 
                     </div>
@@ -327,20 +273,17 @@
 
                     </div>
 
-                    <div>
-
-                        <label for="modificarEquipo">
-                            Equipo o Recurso
-                        </label>
-
-                        <input
-                            type="text"
-                            id="modificarEquipo"
-                            name="equipo"
-                            maxlength="100"
-                        >
-
+                    <div class="mt-3" id="grupoLaboratorioModificarSolicitud" hidden>
+                        <label for="laboratorioModificarSolicitud">Laboratorio</label>
+                        <select id="laboratorioModificarSolicitud" class="form-select"><option value="">Seleccione un laboratorio</option></select>
                     </div>
+                    <div class="mt-3" id="grupoReparacionModificarSolicitud" hidden>
+                        <label for="tipoEquipoModificarSolicitud">Tipo de equipo</label>
+                        <select id="tipoEquipoModificarSolicitud" class="form-select"><option value="">Seleccione un tipo</option><option>Ordenadores</option><option>Periféricos</option><option>Televisores</option><option>Aires Acondicionados</option></select>
+                        <label for="equipoModificarSolicitud" class="mt-2">Equipo</label>
+                        <select id="equipoModificarSolicitud" class="form-select"><option value="">Seleccione un equipo</option></select>
+                    </div>
+                    <input type="hidden" id="modificarEquipo" name="equipo" value="">
 
                     <div>
 
@@ -402,12 +345,8 @@
 
         <select id="filtroTipo" aria-label="Filtrar por tipo de solicitud">
             <option value="">Todos los tipos</option>
-            <option value="Equipamiento">Equipamiento</option>
+            <option value="Laboratorio">Laboratorio</option>
             <option value="Reparación">Reparación</option>
-            <option value="Acceso">Acceso</option>
-            <option value="Licencia">Licencia</option>
-            <option value="Mobiliario">Mobiliario</option>
-            <option value="Otro">Otro</option>
         </select>
 
         <input

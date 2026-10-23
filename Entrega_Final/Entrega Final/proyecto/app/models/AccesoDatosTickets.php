@@ -4,12 +4,10 @@ class AccesoDatosTickets
 {
     private PDO $conexion;
 
-
     public function __construct(PDO $conexion)
     {
         $this->conexion = $conexion;
     }
-
 
     public function obtenerTickets(): array
     {
@@ -20,136 +18,79 @@ class AccesoDatosTickets
                 t.descripcion,
                 t.fechaRegistro,
                 t.fechaLimite,
-
-                l.nombre AS lugar,
-
-                p.nombre AS prioridad,
-
+                l.nombre AS laboratorio,
+                t.prioridad,
                 CASE
-                    WHEN e.nombre NOT IN ('Resuelto', 'Cancelado')
+                    WHEN t.estado NOT IN ('Resuelto', 'Cancelado')
                          AND t.fechaLimite < CURDATE()
                     THEN 'Vencido'
-                    ELSE e.nombre
+                    ELSE t.estado
                 END AS estado,
-
                 u.usuario AS solicitante
-
-            FROM TICKET AS t
-
-            INNER JOIN USUARIO AS u
-                ON u.cedula = t.cedulaSolicitante
-
-            INNER JOIN LUGAR AS l
-                ON l.idLugar = t.idLugar
-
-            INNER JOIN PRIORIDAD AS p
-                ON p.idPrioridad = t.idPrioridad
-
-            INNER JOIN ESTADO_TICKET AS e
-                ON e.idEstado = t.idEstado
-
+            FROM ticket AS t
+            INNER JOIN usuario AS u ON u.cedula = t.cedulaSolicitante
+            INNER JOIN laboratorio AS l ON l.idLaboratorio = t.idLaboratorio
             ORDER BY t.idTicket DESC
         ";
-
-        $consulta = $this->conexion->query($sql);
-
-        return $consulta->fetchAll();
+        return $this->conexion->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-
-    public function obtenerLugares(): array
+    public function obtenerLaboratorios(): array
     {
-        $sql = "
-            SELECT
-                idLugar,
-                nombre
-            FROM LUGAR
-            ORDER BY idLugar
-        ";
-
-        $consulta = $this->conexion->query($sql);
-
-        return $consulta->fetchAll();
+        return $this->conexion->query(
+            "SELECT idLaboratorio, nombre FROM laboratorio ORDER BY nombre"
+        )->fetchAll(PDO::FETCH_ASSOC);
     }
-
 
     public function obtenerPrioridades(): array
     {
-        $sql = "
-            SELECT
-                idPrioridad,
-                nombre
-            FROM PRIORIDAD
-            ORDER BY idPrioridad
-        ";
-
-        $consulta = $this->conexion->query($sql);
-
-        return $consulta->fetchAll();
+        return [
+            ['nombre' => 'Baja'],
+            ['nombre' => 'Media'],
+            ['nombre' => 'Alta']
+        ];
     }
-
 
     public function crearTicket(
         string $titulo,
         string $descripcion,
         string $fechaLimite,
         string $cedulaSolicitante,
-        int $idLugar,
-        int $idPrioridad
+        int $idLaboratorio,
+        string $prioridad
     ): void {
-
         $sql = "
-            INSERT INTO TICKET
-            (
-                titulo,
-                descripcion,
-                fechaLimite,
-                cedulaSolicitante,
-                idLugar,
-                idPrioridad,
-                idEstado
-            )
+            INSERT INTO ticket
+                (titulo, descripcion, fechaLimite, cedulaSolicitante, idLaboratorio, prioridad, estado)
             VALUES
-            (
-                :titulo,
-                :descripcion,
-                :fechaLimite,
-                :cedulaSolicitante,
-                :idLugar,
-                :idPrioridad,
-
-                (
-                    SELECT idEstado
-                    FROM ESTADO_TICKET
-                    WHERE nombre = 'Pendiente'
-                )
-            )
+                (:titulo, :descripcion, :fechaLimite, :cedulaSolicitante, :idLaboratorio, :prioridad, 'Pendiente')
         ";
-
         $consulta = $this->conexion->prepare($sql);
-
         $consulta->execute([
-            "titulo" => $titulo,
-            "descripcion" => $descripcion,
-            "fechaLimite" => $fechaLimite,
-            "cedulaSolicitante" => $cedulaSolicitante,
-            "idLugar" => $idLugar,
-            "idPrioridad" => $idPrioridad
+            'titulo' => $titulo,
+            'descripcion' => $descripcion,
+            'fechaLimite' => $fechaLimite,
+            'cedulaSolicitante' => $cedulaSolicitante,
+            'idLaboratorio' => $idLaboratorio,
+            'prioridad' => $prioridad
         ]);
     }
 
-    
     public function modificarTicket(
         int $idTicket,
         string $titulo,
         string $descripcion,
         string $fechaLimite,
-        int $idLugar,
-        int $idPrioridad
+        int $idLaboratorio,
+        string $prioridad
     ): bool {
         $sql = "
-            UPDATE TICKET
-            SET titulo = :titulo, descripcion = :descripcion, fechaLimite = :fechaLimite, idLugar = :idLugar, idPrioridad = :idPrioridad
+            UPDATE ticket
+            SET titulo = :titulo,
+                descripcion = :descripcion,
+                fechaLimite = :fechaLimite,
+                idLaboratorio = :idLaboratorio,
+                prioridad = :prioridad
             WHERE idTicket = :idTicket
         ";
         $consulta = $this->conexion->prepare($sql);
@@ -158,55 +99,37 @@ class AccesoDatosTickets
             'titulo' => $titulo,
             'descripcion' => $descripcion,
             'fechaLimite' => $fechaLimite,
-            'idLugar' => $idLugar,
-            'idPrioridad' => $idPrioridad
+            'idLaboratorio' => $idLaboratorio,
+            'prioridad' => $prioridad
         ]);
         return $consulta->rowCount() > 0;
     }
 
     public function eliminarTicket(int $idTicket): bool
     {
-        $sql = "
-            UPDATE TICKET
-            SET idEstado = (SELECT idEstado FROM ESTADO_TICKET WHERE nombre = 'Cancelado')
+        $consulta = $this->conexion->prepare("
+            UPDATE ticket
+            SET estado = 'Cancelado'
             WHERE idTicket = :idTicket
-              AND idEstado NOT IN (SELECT idEstado FROM ESTADO_TICKET WHERE nombre IN ('Resuelto', 'Cancelado'))
-        ";
-        $consulta = $this->conexion->prepare($sql);
+              AND estado NOT IN ('Resuelto', 'Cancelado')
+        ");
         $consulta->execute(['idTicket' => $idTicket]);
         return $consulta->rowCount() > 0;
     }
 
-    public function cambiarEstado(
-        int $idTicket,
-        string $estado
-    ): bool {
-
-        $sql = "
-            UPDATE TICKET
-
-            SET idEstado = (
-                SELECT idEstado
-                FROM ESTADO_TICKET
-                WHERE nombre = :estado
-            )
-
+    public function cambiarEstado(int $idTicket, string $estado): bool
+    {
+        $estados = ['Pendiente', 'En Proceso', 'Resuelto', 'Cancelado'];
+        if (!in_array($estado, $estados, true)) {
+            return false;
+        }
+        $consulta = $this->conexion->prepare("
+            UPDATE ticket
+            SET estado = :estado
             WHERE idTicket = :idTicket
-
-
-            AND idEstado NOT IN (
-                SELECT idEstado
-                FROM ESTADO_TICKET
-                WHERE nombre IN ('Resuelto', 'Cancelado')
-            )
-        ";
-
-        $consulta = $this->conexion->prepare($sql);
-
-        $consulta->execute([
-            "idTicket" => $idTicket,
-            "estado" => $estado
-        ]);
+              AND estado NOT IN ('Resuelto', 'Cancelado')
+        ");
+        $consulta->execute(['idTicket' => $idTicket, 'estado' => $estado]);
         return $consulta->rowCount() > 0;
     }
 }

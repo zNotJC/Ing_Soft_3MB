@@ -1,4 +1,4 @@
-INSERT INTO LUGAR (nombre) VALUES
+INSERT INTO LABORATORIO (nombre) VALUES
 ('Laboratorio-01'),
 ('Laboratorio-02'),
 ('Laboratorio-03'),
@@ -12,18 +12,5 @@ INSERT INTO LUGAR (nombre) VALUES
 ('Taller-F'),
 ('Taller-G'),
 ('Taller-H'),
-('Area de Servidores'),
+('Área de servidores'),
 ('Lobby');
-
-
-INSERT INTO PRIORIDAD (nombre) VALUES
-('Alta'),
-('Media'),
-('Baja');
-
-
-INSERT INTO ESTADO_TICKET (nombre) VALUES
-('Pendiente'),
-('En Proceso'),
-('Resuelto'),
-('Cancelado');

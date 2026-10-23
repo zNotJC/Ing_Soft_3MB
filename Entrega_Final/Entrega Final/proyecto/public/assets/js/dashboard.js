@@ -21,7 +21,7 @@ async function cargarDashboard() {
             throw new Error(resultado.message || "No se pudo cargar el dashboard.");
         }
         const datos = resultado.data;
-        ["ticketsPendientes", "ticketsResueltos", "solicitudesActivas", "prestamosActivos"].forEach(id => {
+        ["ticketsPendientes", "ticketsResueltos", "solicitudesActivas", "prestamosActivos", "equiposRegistrados"].forEach(id => {
             const elemento = document.getElementById(id);
             if (elemento) elemento.textContent = datos[id] ?? 0;
         });

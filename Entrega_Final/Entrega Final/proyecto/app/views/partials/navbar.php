@@ -4,11 +4,10 @@ $paginaActual = basename((string) ($_SERVER['SCRIPT_NAME'] ?? ''));
 $enlaces = [
     ['texto' => 'Inicio', 'ruta' => 'dashboard.php', 'roles' => ['Administrador', 'Docente', 'Tecnico']],
     ['texto' => 'Gestionar usuarios', 'ruta' => 'usuarios.php', 'roles' => ['Administrador']],
-    ['texto' => 'Inventario', 'ruta' => 'inventario.php', 'roles' => ['Administrador', 'Tecnico']],
-    ['texto' => 'Catálogos', 'ruta' => 'catalogos.php', 'roles' => ['Administrador']],
+    ['texto' => 'Inventario y laboratorios', 'ruta' => 'inventario.php', 'roles' => ['Administrador', 'Tecnico', 'Docente']],
     ['texto' => 'Tickets', 'ruta' => 'tickets.php', 'roles' => ['Administrador', 'Docente', 'Tecnico']],
-    ['texto' => 'Solicitudes', 'ruta' => 'solicitudes.php', 'roles' => ['Docente', 'Tecnico']],
-    ['texto' => 'Préstamos', 'ruta' => 'prestamos.php', 'roles' => ['Administrador']],
+    ['texto' => 'Solicitudes', 'ruta' => 'solicitudes.php', 'roles' => ['Administrador', 'Docente', 'Tecnico']],
+    ['texto' => 'Préstamos', 'ruta' => 'prestamos.php', 'roles' => ['Administrador', 'Docente', 'Tecnico']],
     ['texto' => 'Historial', 'ruta' => 'historial.php', 'roles' => ['Administrador', 'Docente', 'Tecnico']],
 ];
 ?>

@@ -4,42 +4,44 @@ class AccesoDatosEquipos
 {
     private PDO $conexion;
 
-    public function __construct(PDO $conexion)
-    {
-        $this->conexion = $conexion;
-    }
+    public function __construct(PDO $conexion) { $this->conexion = $conexion; }
 
     public function listar(): array
     {
-        $sql = "SELECT e.idEquipo, e.nombre, e.numeroSerie, e.idLugar, l.nombre AS lugar FROM equipo e INNER JOIN lugar l ON l.idLugar = e.idLugar ORDER BY e.idEquipo DESC";
+        $sql = "SELECT e.idEquipo, e.nombre, e.idLaboratorio, l.nombre AS laboratorio, e.tipo, e.estado
+                FROM equipo e INNER JOIN laboratorio l ON l.idLaboratorio=e.idLaboratorio
+                ORDER BY e.tipo, e.nombre";
         return $this->conexion->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function crear(string $nombre, string $numeroSerie, int $idLugar): int
+    public function crear(string $nombre, int $idLaboratorio, string $tipo, string $estado): int
     {
-        $sql = "INSERT INTO equipo (nombre, numeroSerie, idLugar) VALUES (:nombre, :numeroSerie, :idLugar)";
-        $consulta = $this->conexion->prepare($sql);
-        $consulta->execute(['nombre' => $nombre, 'numeroSerie' => $numeroSerie, 'idLugar' => $idLugar]);
-        return (int) $this->conexion->lastInsertId();
+        $q=$this->conexion->prepare('INSERT INTO equipo (nombre,idLaboratorio,tipo,estado) VALUES (:nombre,:lab,:tipo,:estado)');
+        $q->execute(['nombre'=>$nombre,'lab'=>$idLaboratorio,'tipo'=>$tipo,'estado'=>$estado]);
+        return (int)$this->conexion->lastInsertId();
     }
 
-    public function modificar(int $idEquipo, string $nombre, string $numeroSerie, int $idLugar): bool
+    public function modificar(int $id, string $nombre, int $idLaboratorio, string $tipo, string $estado): bool
     {
-        $sql = "UPDATE equipo SET nombre = :nombre, numeroSerie = :numeroSerie, idLugar = :idLugar WHERE idEquipo = :idEquipo";
-        $consulta = $this->conexion->prepare($sql);
-        $consulta->execute(['idEquipo' => $idEquipo, 'nombre' => $nombre, 'numeroSerie' => $numeroSerie, 'idLugar' => $idLugar]);
-        return $consulta->rowCount() > 0;
+        $q=$this->conexion->prepare('UPDATE equipo SET nombre=:nombre,idLaboratorio=:lab,tipo=:tipo,estado=:estado WHERE idEquipo=:id');
+        $q->execute(['id'=>$id,'nombre'=>$nombre,'lab'=>$idLaboratorio,'tipo'=>$tipo,'estado'=>$estado]);
+        return $q->rowCount()>0;
     }
 
-    public function eliminar(int $idEquipo): bool
+    public function eliminar(int $id): bool
     {
-        $consulta = $this->conexion->prepare("DELETE FROM equipo WHERE idEquipo = :idEquipo AND NOT EXISTS (SELECT 1 FROM prestamo WHERE prestamo.idEquipo = equipo.idEquipo)");
-        $consulta->execute(['idEquipo' => $idEquipo]);
-        return $consulta->rowCount() > 0;
+        $q=$this->conexion->prepare('DELETE FROM equipo WHERE idEquipo=:id AND NOT EXISTS (SELECT 1 FROM prestamo WHERE prestamo.idEquipo=equipo.idEquipo)');
+        $q->execute(['id'=>$id]); return $q->rowCount()>0;
     }
 
-    public function lugares(): array
+    public function laboratorios(): array
     {
-        return $this->conexion->query('SELECT idLugar, nombre FROM lugar ORDER BY nombre')->fetchAll(PDO::FETCH_ASSOC);
+        return $this->conexion->query('SELECT idLaboratorio,nombre FROM laboratorio ORDER BY nombre')->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function equiposPorTipo(string $tipo): array
+    {
+        $q=$this->conexion->prepare("SELECT idEquipo,nombre,tipo,estado FROM equipo WHERE tipo=:tipo AND estado='Disponible' ORDER BY nombre");
+        $q->execute(['tipo'=>$tipo]); return $q->fetchAll(PDO::FETCH_ASSOC);
     }
 }

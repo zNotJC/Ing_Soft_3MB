@@ -1,32 +1,13 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JOJOLOS - Inventario</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/global.css">
-</head>
-<body data-es-administrador="<?= $esAdministrador ? 'true' : 'false' ?>">
-<?php require __DIR__ . "/partials/navbar.php"; ?>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>JOJOLOS - Inventario y laboratorios</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" href="assets/css/global.css"></head>
+<body data-es-administrador="<?= $esAdministrador ? 'true':'false' ?>">
+<?php require __DIR__ . '/partials/navbar.php'; ?>
 <main class="container py-4">
-<h1>Inventario de equipos</h1>
-<p><?= $esAdministrador ? 'Gestiona las altas, modificaciones y bajas de equipos.' : 'Consulta los equipos registrados.' ?></p>
-<?php if ($esAdministrador): ?>
-<form id="formEquipo" class="card card-body mb-4">
-<input type="hidden" id="idEquipo" name="idEquipo">
-<div class="row g-3">
-<div class="col-md-4"><label for="nombre" class="form-label">Nombre</label><input class="form-control" id="nombre" name="nombre" maxlength="100" required></div>
-<div class="col-md-4"><label for="numeroSerie" class="form-label">Número de serie</label><input class="form-control" id="numeroSerie" name="numeroSerie" maxlength="100" required></div>
-<div class="col-md-4"><label for="idLugar" class="form-label">Lugar</label><select class="form-select" id="idLugar" name="idLugar" required><option value="">Cargando lugares...</option></select></div>
-</div>
-<div class="mt-3 d-flex gap-2"><button class="btn btn-primary" type="submit" id="guardarEquipo">Registrar equipo</button><button class="btn btn-secondary" type="button" id="cancelarEdicion" hidden>Cancelar edición</button></div>
-</form>
+<h1>Inventario y laboratorios</h1><p><?= $esAdministrador ? 'Gestiona laboratorios y equipos del inventario.' : 'Consulta los laboratorios y equipos registrados.' ?></p>
+<?php if($esAdministrador): ?>
+<section class="card card-body mb-4"><h2 class="h4">Registrar o modificar laboratorio</h2><form id="formLaboratorio" class="row g-2"><input type="hidden" id="idLaboratorioEdicion"><div class="col-md-8"><label for="nombreLaboratorio" class="form-label">Nombre del laboratorio</label><input id="nombreLaboratorio" class="form-control" maxlength="50" required></div><div class="col-md-4 d-flex align-items-end gap-2"><button class="btn btn-primary" type="submit" id="guardarLaboratorio">Registrar laboratorio</button><button class="btn btn-secondary" type="button" id="cancelarLaboratorio" hidden>Cancelar</button></div></form></section>
+<section class="card card-body mb-4"><h2 class="h4">Registrar o modificar equipo</h2><form id="formEquipo"><input type="hidden" id="idEquipo" name="idEquipo"><div class="row g-3"><div class="col-md-4"><label class="form-label" for="nombre">Nombre del equipo</label><input class="form-control" id="nombre" name="nombre" maxlength="100" placeholder="PC-1, TV-3, Mouse-1" required></div><div class="col-md-4"><label class="form-label" for="tipo">Tipo de equipo</label><select class="form-select" id="tipo" name="tipo" required><option value="">Seleccione un tipo</option><option>Ordenadores</option><option>Periféricos</option><option>Televisores</option><option>Aires Acondicionados</option></select></div><div class="col-md-4"><label class="form-label" for="idLaboratorio">Laboratorio</label><select class="form-select" id="idLaboratorio" name="idLaboratorio" required><option value="">Cargando laboratorios...</option></select></div><div class="col-md-4"><label class="form-label" for="estado">Estado</label><select class="form-select" id="estado" name="estado" required><option>Disponible</option><option>No disponible</option><option>Roto</option><option>En uso</option></select></div></div><div class="mt-3 d-flex gap-2"><button class="btn btn-primary" type="submit" id="guardarEquipo">Registrar equipo</button><button class="btn btn-secondary" type="button" id="cancelarEdicion" hidden>Cancelar edición</button></div></form></section>
 <?php endif; ?>
-<div class="table-responsive"><table class="table table-striped align-middle"><thead><tr><th>ID</th><th>Nombre</th><th>Número de serie</th><th>Lugar</th><?php if ($esAdministrador): ?><th>Acciones</th><?php endif; ?></tr></thead><tbody id="tablaEquipos"><tr><td colspan="5">Cargando inventario...</td></tr></tbody></table></div>
-<p id="mensajeInventario" role="status" aria-live="polite"></p>
-</main>
-<script src="assets/js/inventario.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<section class="mb-4"><h2 class="h4">Laboratorios</h2><div class="table-responsive"><table class="table table-striped table-hover align-middle"><thead><tr><th>ID</th><th>Tipo de inventario</th><th>Nombre</th><th>Estado</th><?php if($esAdministrador):?><th>Acciones</th><?php endif;?></tr></thead><tbody id="tablaLaboratorios"><tr><td colspan="5">Cargando laboratorios...</td></tr></tbody></table></div></section>
+<section><h2 class="h4">Equipos</h2><div class="table-responsive"><table class="table table-striped table-hover align-middle"><thead><tr><th>ID</th><th>Tipo de inventario</th><th>Nombre</th><th>Tipo de equipo</th><th>Laboratorio</th><th>Estado</th><?php if($esAdministrador):?><th>Acciones</th><?php endif;?></tr></thead><tbody id="tablaEquipos"><tr><td colspan="7">Cargando equipos...</td></tr></tbody></table></div></section><p id="mensajeInventario" role="status" aria-live="polite"></p>
+</main><script src="assets/js/inventario.js"></script><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script></body></html>

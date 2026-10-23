@@ -93,9 +93,16 @@ function abrirModalModificarSolicitud(
         "modificarCantidad"
     ).value = cantidad;
 
-    document.getElementById(
-        "modificarEquipo"
-    ).value = equipo || "";
+    document.getElementById("modificarEquipo").value = equipo || "";
+    if (tipoSolicitudModificar) {
+        tipoSolicitudModificar.value = tipoSolicitud;
+        actualizarTipoModificar();
+        if (tipoSolicitud === 'Laboratorio' && selectorLabModificar) selectorLabModificar.value = equipo || '';
+        if (tipoSolicitud === 'Reparación' && selectorEquipoModificar) {
+            const encontrado = (inventarioSolicitudes.equipos || []).find(x => x.nombre === equipo);
+            if (encontrado) { if (tipoEquipoModificar) tipoEquipoModificar.value = encontrado.tipo; actualizarEquiposSolicitud(); selectorEquipoModificar.value = encontrado.nombre; }
+        }
+    }
 
     document.getElementById(
         "modificarFechaNecesaria"
@@ -183,6 +190,8 @@ function abrirModalRespuesta(
 }
 
 
+const formularioModificar = document.getElementById("formModificarSolicitud");
+
 const formularioSolicitud =
     document.getElementById(
         "solicitudForm"
@@ -199,6 +208,7 @@ if (formularioSolicitud) {
         }
         try {
             const datos = Object.fromEntries(new FormData(formularioSolicitud).entries());
+            datos.equipo = tipoSolicitudSelector?.value === 'Laboratorio' ? (selectorLaboratorioSolicitud?.value || '') : (selectorEquipoSolicitud?.value || '');
             await enviarSolicitud("POST", datos);
             formularioSolicitud.reset();
             modalSolicitud.hidden = true;
@@ -217,6 +227,8 @@ if (formularioModificar) {
         try {
             const datos = Object.fromEntries(new FormData(formularioModificar).entries());
             datos.idSolicitud = Number(datos.idSolicitud);
+            const tipoMod = document.getElementById('modificarTipoSolicitud')?.value;
+            datos.equipo = tipoMod === 'Laboratorio' ? (document.getElementById('laboratorioModificarSolicitud')?.value || '') : (document.getElementById('equipoModificarSolicitud')?.value || '');
             await enviarSolicitud("PUT", datos);
             modalModificar.hidden = true;
         } catch (error) { window.alert(error.message); }
@@ -615,3 +627,54 @@ async function cargarSolicitudes() {
 }
 
 cargarSolicitudes();
+
+const tipoSolicitudSelector = document.getElementById('tipoSolicitud');
+const grupoLaboratorio = document.getElementById('grupoLaboratorioSolicitud');
+const grupoReparacion = document.getElementById('grupoReparacionSolicitud');
+const selectorLaboratorioSolicitud = document.getElementById('laboratorioSolicitud');
+const selectorTipoEquipoSolicitud = document.getElementById('tipoEquipoSolicitud');
+const selectorEquipoSolicitud = document.getElementById('equipoSolicitud');
+const tipoSolicitudModificar = document.getElementById('modificarTipoSolicitud');
+const grupoLabModificar = document.getElementById('grupoLaboratorioModificarSolicitud');
+const grupoRepModificar = document.getElementById('grupoReparacionModificarSolicitud');
+const selectorLabModificar = document.getElementById('laboratorioModificarSolicitud');
+const tipoEquipoModificar = document.getElementById('tipoEquipoModificarSolicitud');
+const selectorEquipoModificar = document.getElementById('equipoModificarSolicitud');
+let inventarioSolicitudes = {laboratorios: [], equipos: []};
+async function cargarOpcionesSolicitud() {
+    try {
+        const r = await fetch('api/equipos.php', {headers:{Accept:'application/json'}, cache:'no-store'});
+        const j = await r.json();
+        if (!r.ok || j.status !== 'success') throw new Error(j.message || 'No se pudo cargar el inventario.');
+        inventarioSolicitudes = j.data;
+        if (selectorLaboratorioSolicitud) { selectorLaboratorioSolicitud.replaceChildren(new Option('Seleccione un laboratorio','')); (j.data.laboratorios || []).forEach(l => selectorLaboratorioSolicitud.add(new Option(l.nombre,l.nombre))); }
+        if (selectorLabModificar) { selectorLabModificar.replaceChildren(new Option('Seleccione un laboratorio','')); (j.data.laboratorios || []).forEach(l => selectorLabModificar.add(new Option(l.nombre,l.nombre))); }
+        actualizarTipoSolicitud();
+    } catch (e) { console.error(e); }
+}
+function actualizarTipoSolicitud() {
+    const tipo = tipoSolicitudSelector?.value || '';
+    if (grupoLaboratorio) grupoLaboratorio.hidden = tipo !== 'Laboratorio';
+    if (grupoReparacion) grupoReparacion.hidden = tipo !== 'Reparación';
+    if (selectorLaboratorioSolicitud) selectorLaboratorioSolicitud.required = tipo === 'Laboratorio';
+    if (selectorTipoEquipoSolicitud) selectorTipoEquipoSolicitud.required = tipo === 'Reparación';
+    if (selectorEquipoSolicitud) selectorEquipoSolicitud.required = tipo === 'Reparación';
+    actualizarEquiposSolicitud();
+}
+function actualizarEquiposSolicitud() {
+    const poblar=(select,tipo)=>{if(!select)return;select.replaceChildren(new Option('Seleccione un equipo',''));(inventarioSolicitudes.equipos||[]).filter(e=>e.tipo===tipo&&e.estado==='Disponible').forEach(e=>select.add(new Option(e.nombre,e.nombre)));};
+    poblar(selectorEquipoSolicitud,selectorTipoEquipoSolicitud?.value||'');
+    poblar(selectorEquipoModificar,tipoEquipoModificar?.value||'');
+}
+function actualizarTipoModificar(){const tipo=tipoSolicitudModificar?.value||'';if(grupoLabModificar)grupoLabModificar.hidden=tipo!=='Laboratorio';if(grupoRepModificar)grupoRepModificar.hidden=tipo!=='Reparación';if(selectorLabModificar)selectorLabModificar.required=tipo==='Laboratorio';if(tipoEquipoModificar)tipoEquipoModificar.required=tipo==='Reparación';if(selectorEquipoModificar)selectorEquipoModificar.required=tipo==='Reparación';actualizarEquiposSolicitud();}
+tipoSolicitudSelector?.addEventListener('change', actualizarTipoSolicitud);
+selectorTipoEquipoSolicitud?.addEventListener('change', actualizarEquiposSolicitud);
+tipoSolicitudModificar?.addEventListener('change', actualizarTipoModificar);
+tipoEquipoModificar?.addEventListener('change', actualizarEquiposSolicitud);
+formulario?.addEventListener('submit', function () {
+    const destino = tipoSolicitudSelector?.value === 'Laboratorio' ? selectorLaboratorioSolicitud?.value : selectorEquipoSolicitud?.value;
+    let campoEquipo = formulario.querySelector('[name="equipo"]');
+    if (!campoEquipo) { campoEquipo = document.createElement('input'); campoEquipo.type='hidden'; campoEquipo.name='equipo'; formulario.appendChild(campoEquipo); }
+    campoEquipo.value = destino || '';
+});
+cargarOpcionesSolicitud();

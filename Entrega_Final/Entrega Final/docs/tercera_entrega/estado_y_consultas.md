@@ -1,145 +1,130 @@
-# Tercera entrega: estado técnico y consultas
+# Tercera entrega — consultas, álgebra relacional y DML (v1.3)
 
-## Estado de esta versión
+## Contrato de la API
 
-La raíz web debe ser `proyecto/public`. Inicia el servidor desde `proyecto` con `php -S localhost:3000 -t public`; no uses la carpeta superior como raíz web.
-
-### Implementado en el código
-- API con contrato JSON uniforme: `status`, `message` y `data`.
-- Endpoints que delegan en controladores; no contienen consultas SQL.
-- Métodos GET, POST, PUT y DELETE para tickets, solicitudes, préstamos, usuarios, equipos y catálogos.
-- Consultas GET para dashboard e historial.
-- PDO con consultas preparadas en las operaciones que reciben datos.
-- Roles Administrador, Docente y Técnico en la lógica de inicio de sesión.
-- Registro de usuarios restringido al Administrador.
-- Renderizado de las tablas actualizado con el DOM, sin `innerHTML` ni `insertAdjacentHTML` en los scripts JavaScript revisados.
-- Vistas nuevas para gestión de usuarios, inventario y catálogos.
-
-### Pendiente de verificación funcional
-- Ejecutar la migración SQL sobre una copia de la base de datos y confirmar las claves foráneas.
-- Probar todas las operaciones con una base de datos real y cuentas de cada rol.
-- Confirmar el CRUD de punta a punta en cada pantalla y probar respuestas de error.
-- Confirmar si la versión de MySQL instalada admite las restricciones CHECK y la sintaxis de migración incluida.
-- Completar la cobertura de pruebas de seguridad y accesibilidad.
-
-## Contrato JSON
-
-Éxito:
+Las respuestas JSON de la API siguen la estructura:
 
 ```json
 {
   "status": "success",
-  "message": "Operación realizada correctamente.",
+  "message": "Operación realizada.",
   "data": {}
 }
 ```
 
-Error:
+Los errores usan `status: "error"` y un mensaje explicativo. Las rutas públicas reciben la petición y delegan en controladores; los modelos concentran el acceso a datos.
 
-```json
-{
-  "status": "error",
-  "message": "Descripción del error.",
-  "data": null
-}
-```
+## Endpoints y métodos
 
-## Endpoints
+- `GET /api/tickets.php`: consulta tickets, laboratorios y opciones de prioridad.
+- `POST /api/tickets.php`: Docente o Técnico registran un ticket, según los permisos del módulo.
+- `PUT /api/tickets.php`: solo Técnico modifica el estado o los datos permitidos.
+- `DELETE /api/tickets.php`: solo Técnico cancela un ticket no cerrado.
+- `GET /api/solicitudes.php`: Docente consulta las propias; Técnico y Administrador consultan el listado.
+- `POST /api/solicitudes.php`: solo Docente crea solicitudes.
+- `PUT /api/solicitudes.php`: Docente modifica las propias pendientes; Técnico aprueba o rechaza.
+- `DELETE /api/solicitudes.php`: Docente cancela las propias y Técnico puede cancelar según las reglas del módulo.
+- `GET /api/prestamos.php`: Administrador consulta todos; Docente consulta los propios.
+- `POST /api/prestamos.php`: solo Docente crea una solicitud de préstamo.
+- `PUT /api/prestamos.php`: solo Administrador modifica, acepta, cancela o registra devoluciones.
+- `DELETE /api/prestamos.php`: solo Administrador puede cancelar un préstamo permitido.
+- `GET /api/equipos.php`: Administrador y Técnico consultan inventario.
+- `POST`, `PUT`, `DELETE /api/equipos.php`: solo Administrador gestiona equipos.
+- `GET /api/catalogos.php?tipo=laboratorios|equipos`: Administrador y Técnico consultan catálogos.
+- `POST`, `PUT`, `DELETE /api/catalogos.php`: solo Administrador gestiona laboratorios y equipos.
+- `GET /api/usuarios.php`: solo Administrador consulta usuarios.
+- `POST`, `PUT`, `DELETE /api/usuarios.php`: solo Administrador gestiona cuentas; la eliminación definitiva se rechaza si existen registros dependientes.
+- `GET /api/dashboard.php`: Administrador y Técnico consultan métricas.
 
-- `GET /api/tickets.php`: tickets, lugares y prioridades.
-- `POST /api/tickets.php`: registrar ticket.
-- `PUT /api/tickets.php`: modificar ticket o cambiar su estado.
-- `DELETE /api/tickets.php`: cancelar ticket, conservando su registro.
-- `GET /api/solicitudes.php`: listar solicitudes; el Docente recibe las propias y el Técnico las solicitudes para gestión.
-- `POST /api/solicitudes.php`: registrar solicitud.
-- `PUT /api/solicitudes.php`: modificar una solicitud propia pendiente o cambiar su estado como Técnico.
-- `DELETE /api/solicitudes.php`: cancelar una solicitud permitida.
-- `GET /api/prestamos.php`: préstamos, equipos y estados.
-- `POST`, `PUT`, `DELETE /api/prestamos.php`: crear, actualizar o cancelar préstamos.
-- `GET`, `POST`, `PUT`, `DELETE /api/usuarios.php`: consultar, crear, modificar y desactivar cuentas; solo Administrador.
-- `GET`, `POST`, `PUT`, `DELETE /api/equipos.php`: consultar y gestionar equipos; el Técnico solo consulta.
-- `GET`, `POST`, `PUT`, `DELETE /api/catalogos.php?tipo=...`: gestionar lugares, prioridades y estados; solo Administrador.
-- `GET /api/dashboard.php`: métricas y últimos accesos; solo Administrador y Técnico.
-- `GET /api/historial.php`: consultar historial.
+## Lista punteada de consultas utilizadas
 
-Los registros de acceso se consideran auditables: se consultan y agregan desde la aplicación, pero no se editan ni borran desde la interfaz.
+1. Buscar un usuario por cédula y determinar el rol con `LEFT JOIN` a `ADMINISTRADOR`, `DOCENTE` y `TECNICO`.
+2. Listar usuarios y su rol para la pantalla de administración.
+3. Consultar tickets con el usuario solicitante y el laboratorio.
+4. Listar laboratorios para los formularios de tickets y equipos.
+5. Listar solicitudes unidas a su usuario solicitante.
+6. Consultar las solicitudes de un Docente filtrando por `cedulaUsuario`.
+7. Insertar una solicitud con estado inicial `Pendiente`.
+8. Modificar una solicitud solo si permanece `Pendiente` y pertenece al Docente cuando corresponda.
+9. Cambiar estado y respuesta de una solicitud desde el Técnico.
+10. Consultar préstamos con equipo y usuario.
+11. Listar préstamos de un Docente filtrando por su cédula.
+12. Insertar un préstamo con estado inicial `Pendiente` y prioridad inicial `Media`.
+13. Modificar equipo, fechas y prioridad de un préstamo existente.
+14. Cambiar estado de un préstamo al aceptar, cancelar o devolver.
+15. Listar equipos con su laboratorio y sus atributos de inventario.
+16. Insertar, modificar y eliminar equipos; no se elimina un equipo que tenga préstamos asociados.
+17. Consultar los últimos accesos del sistema.
+18. Contar tickets pendientes y resueltos.
+19. Contar solicitudes pendientes.
+20. Contar préstamos activos y equipos registrados.
+21. Construir el historial con `UNION ALL` de tickets, solicitudes y préstamos.
 
-## Lista de consultas utilizadas por el sistema
+## Consultas expresadas con álgebra relacional
 
-1. Buscar una cuenta por cédula, combinando `USUARIO` con `ADMINISTRADOR`, `DOCENTE` y `TECNICO`.
-2. Listar usuarios y obtener su rol mediante uniones externas con las tablas de rol.
-3. Insertar una cuenta y su subtipo de rol dentro de una transacción.
-4. Actualizar los datos de una cuenta y, cuando corresponde, su subtipo de rol.
-5. Desactivar una cuenta y marcar su sesión como inactiva.
-6. Listar tickets con lugar, prioridad, estado y solicitante.
-7. Insertar tickets y obtener su estado inicial.
-8. Actualizar datos y estado de un ticket.
-9. Listar solicitudes con el usuario solicitante; filtrar por cédula cuando consulta un Docente.
-10. Insertar, modificar, responder, cambiar estado o cancelar solicitudes.
-11. Listar préstamos con equipo, usuario y estado.
-12. Insertar, modificar, aceptar, cancelar y registrar la devolución de préstamos.
-13. Listar equipos con su lugar asociado; insertar, modificar y eliminar equipos sin préstamos activos.
-14. Listar, insertar, modificar y eliminar elementos de los catálogos permitidos.
-15. Contar tickets pendientes y resueltos.
-16. Contar solicitudes pendientes y préstamos activos.
-17. Consultar los últimos accesos, ordenados por fecha descendente.
-18. Consultar los movimientos del historial y ordenarlos por fecha.
+Notación: `σ` selección, `π` proyección, `⋈` unión/Join, `γ` agrupación y conteo.
 
-## Consultas representadas mediante álgebra relacional
+1. **Usuario y rol**  
+   `π cedula, usuario, correo, activo (USUARIO)`, complementado con `LEFT JOIN` a las tres tablas de rol.
 
-Notación: `σ` selección, `π` proyección, `⋈` reunión, `γ` agrupación/agregación.
+2. **Tickets con solicitante y laboratorio**  
+   `π idTicket, titulo, fechaRegistro, laboratorio.nombre, prioridad, estado (TICKET ⋈ USUARIO ⋈ LABORATORIO)`.
 
-1. **Tickets pendientes**
+3. **Solicitudes con solicitante**  
+   `π idSolicitud, tipoSolicitud, descripcion, cantidad, estado, usuario (SOLICITUD ⋈ USUARIO)`.
 
-   `σ nombreEstado = 'Pendiente' (TICKET ⋈ ESTADO_TICKET)`
+4. **Solicitudes propias de un Docente**  
+   `σ cedulaUsuario = :cedula (SOLICITUD)`.
 
-2. **Tickets con lugar y prioridad**
+5. **Préstamos con equipo y solicitante**  
+   `π idPrestamo, equipo.nombre, numeroSerie, usuario, fechaPrestamo, fechaDevolucion, estado, prioridad (PRESTAMO ⋈ EQUIPO ⋈ USUARIO)`.
 
-   `π idTicket, titulo, fechaRegistro, lugar, prioridad, estado (TICKET ⋈ LUGAR ⋈ PRIORIDAD ⋈ ESTADO_TICKET)`
+6. **Préstamos de un Docente**  
+   `σ PRESTAMO.cedulaUsuario = :cedula (PRESTAMO)`.
 
-3. **Solicitudes de un Docente**
+7. **Equipos con laboratorio**  
+   `π idEquipo, nombre, numeroSerie, tipo, marca, modelo, estado, laboratorio.nombre (EQUIPO ⋈ LABORATORIO)`.
 
-   `σ cedulaUsuario = cédulaSesion (SOLICITUD ⋈ USUARIO)`
+8. **Tickets pendientes**  
+   `σ estado = 'Pendiente' (TICKET)`.
 
-4. **Equipos por lugar**
+9. **Conteo de tickets por estado**  
+   `γ estado, COUNT(idTicket) (TICKET)`.
 
-   `π idEquipo, nombre, numeroSerie, nombreLugar (EQUIPO ⋈ LUGAR)`
+10. **Conteo de solicitudes por estado**  
+    `γ estado, COUNT(idSolicitud) (SOLICITUD)`.
 
-5. **Préstamos activos**
+11. **Conteo de préstamos por estado**  
+    `γ estado, COUNT(idPrestamo) (PRESTAMO)`.
 
-   `σ nombreEstado = 'Activo' (PRESTAMO ⋈ ESTADO_PRESTAMO ⋈ EQUIPO ⋈ USUARIO)`
-
-6. **Cantidad de tickets por estado**
-
-   `γ nombreEstado; COUNT(idTicket) (TICKET ⋈ ESTADO_TICKET)`
-
-7. **Últimos accesos**
-
-   `π fechaHora, usuario, rol (ACCESO_SISTEMA ⋈ USUARIO)`
-
-Estas expresiones son la representación relacional de las consultas descritas; deben contrastarse con los nombres exactos del esquema desplegado al preparar la entrega final.
+12. **Historial general**  
+    Unión de las proyecciones de tickets, solicitudes y préstamos, con campos comunes `id`, `tipo`, `detalle`, `usuario`, `estado`, `fecha`.
 
 ## Lista de DML
 
-- `INSERT INTO USUARIO`: alta de cuenta.
-- `INSERT INTO ADMINISTRADOR`, `DOCENTE` o `TECNICO`: asignación de rol dentro de una transacción.
-- `UPDATE USUARIO`: modificar datos, cambiar rol, desactivar cuenta y finalizar sesión.
-- `INSERT INTO TICKET`: alta de ticket.
-- `UPDATE TICKET`: modificación, cambio de estado o cancelación lógica.
-- `INSERT INTO solicitud`: alta de solicitud.
-- `UPDATE solicitud`: modificación, respuesta, aprobación, rechazo o cancelación.
-- `INSERT INTO prestamo`: alta de préstamo.
-- `UPDATE prestamo`: modificación, aceptación, devolución o cancelación.
-- `INSERT INTO equipo`, `UPDATE equipo`, `DELETE FROM equipo`: operaciones del inventario; la eliminación se bloquea si existen préstamos activos o pendientes.
-- `INSERT`, `UPDATE` y `DELETE` en `lugar`, `prioridad`, `estado_ticket` y `estado_prestamo`: mantenimiento de catálogos.
-- `INSERT INTO acceso_sistema`: registro de acceso.
+- `INSERT INTO USUARIO`: registrar una cuenta.
+- `INSERT INTO ADMINISTRADOR`, `DOCENTE` o `TECNICO`: asignar el subtipo de rol.
+- `UPDATE USUARIO`: modificar datos de cuenta, contraseña hash, estado activo o sesión.
+- `DELETE FROM USUARIO`: eliminación definitiva controlada; se realiza solo si no hay tickets, solicitudes o préstamos asociados.
+- `UPDATE USUARIO SET activo = FALSE/TRUE`: desactivar o reactivar cuenta.
+- `INSERT INTO SOLICITUD`: crear solicitud con estado inicial `Pendiente`.
+- `UPDATE SOLICITUD`: modificar datos, aprobar, rechazar o cancelar.
+- `INSERT INTO TICKET`: crear ticket con estado `Pendiente` y prioridad inicial.
+- `UPDATE TICKET`: cambiar estado o actualizar datos permitidos.
+- `INSERT INTO PRESTAMO`: crear solicitud de préstamo con estado `Pendiente` y prioridad `Media`.
+- `UPDATE PRESTAMO`: modificar datos y prioridad; cambiar estado a `Activo`, `Cancelado` o `Devuelto`.
+- `INSERT INTO LABORATORIO`: registrar laboratorio.
+- `UPDATE LABORATORIO`: modificar nombre.
+- `DELETE FROM LABORATORIO`: permitido únicamente si no contiene equipos.
+- `INSERT INTO EQUIPO`: registrar equipo.
+- `UPDATE EQUIPO`: modificar datos, laboratorio o estado.
+- `DELETE FROM EQUIPO`: permitido únicamente si no tiene préstamos asociados.
+- `INSERT INTO ACCESO_SISTEMA`: registrar acceso.
 
-## Seguridad
+## Seguridad y persistencia
 
-- Las consultas con datos externos usan sentencias preparadas PDO.
-- Las tablas SQL y nombres de columna dinámicos se limitan a listas permitidas.
-- Las API verifican sesión y rol en el servidor.
-- Las contraseñas se almacenan con `password_hash`.
-- Las cuentas se desactivan en lugar de borrar sus registros.
-- Los tickets, solicitudes y préstamos se cancelan conservando su registro cuando corresponde.
-- Las pantallas insertan datos mediante `textContent` y creación de nodos DOM.
+- Las operaciones con parámetros del usuario utilizan consultas preparadas.
+- Las operaciones de escritura comprueban el rol en el backend; ocultar un botón en la interfaz no sustituye el control del servidor.
+- Los datos sensibles de `.env` no deben compartirse ni subirse al repositorio.
+- La migración v1.3 copia los estados y prioridades actuales antes de eliminar los catálogos antiguos.
+- La sintaxis de PHP y JavaScript se comprobó en los archivos de esta versión. La integración con MySQL debe verificarse en la base real después de una copia de seguridad y de ejecutar la migración.

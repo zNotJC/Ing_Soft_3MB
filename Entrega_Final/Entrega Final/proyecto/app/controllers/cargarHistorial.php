@@ -1,6 +1,8 @@
 <?php
 
 require_once __DIR__ . "/../bootstrap.php";
+require_once __DIR__ . '/../models/ConectorPDO.php';
+require_once __DIR__ . '/../models/AccesoDatosHistorial.php';
 session_start();
 
 if (

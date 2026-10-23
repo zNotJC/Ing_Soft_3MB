@@ -11,65 +11,31 @@ class AccesoDatosDashboard
 
     public function obtenerTicketsPendientes(): int
     {
-        $sql = "
-            SELECT COUNT(*) AS cantidad
-            FROM ticket AS t
-            INNER JOIN estado_ticket AS et
-                ON et.idEstado = t.idEstado
-            WHERE et.nombre = 'Pendiente'
-        ";
-
-        $consulta =
-            $this->conexion->query($sql);
-
-        return (int) $consulta->fetch()["cantidad"];
+        $consulta = $this->conexion->query("SELECT COUNT(*) AS cantidad FROM ticket WHERE estado = 'Pendiente'");
+        return (int) $consulta->fetch()['cantidad'];
     }
 
     public function obtenerTicketsResueltos(): int
     {
-        $sql = "
-            SELECT COUNT(*) AS cantidad
-            FROM ticket AS t
-            INNER JOIN estado_ticket AS et
-                ON et.idEstado = t.idEstado
-            WHERE et.nombre = 'Resuelto'
-        ";
-
-        $consulta =
-            $this->conexion->query($sql);
-
-        return (int) $consulta->fetch()["cantidad"];
+        $consulta = $this->conexion->query("SELECT COUNT(*) AS cantidad FROM ticket WHERE estado = 'Resuelto'");
+        return (int) $consulta->fetch()['cantidad'];
     }
 
     public function obtenerSolicitudesActivas(): int
     {
-        $sql = "
-            SELECT COUNT(*) AS cantidad
-            FROM solicitud
-            WHERE estado = 'Pendiente'
-        ";
-
-        $consulta =
-            $this->conexion->query($sql);
-
-        return (int) $consulta->fetch()["cantidad"];
+        $consulta = $this->conexion->query("SELECT COUNT(*) AS cantidad FROM solicitud WHERE estado = 'Pendiente'");
+        return (int) $consulta->fetch()['cantidad'];
     }
 
     public function obtenerPrestamosActivos(): int
     {
-        $sql = "
-            SELECT COUNT(*) AS cantidad
-            FROM prestamo AS p
-            INNER JOIN estado_prestamo AS ep
-                ON ep.idEstado = p.idEstado
-            WHERE ep.nombre = 'Activo'
-        ";
+        $consulta = $this->conexion->query("SELECT COUNT(*) AS cantidad FROM prestamo WHERE estado = 'Activo'");
+        return (int) $consulta->fetch()['cantidad'];
+    }
 
-        $consulta =
-            $this->conexion->query($sql);
-
-        return (int) $consulta->fetch()["cantidad"];
+    public function obtenerEquiposRegistrados(): int
+    {
+        $consulta = $this->conexion->query("SELECT COUNT(*) AS cantidad FROM equipo");
+        return (int) $consulta->fetch()['cantidad'];
     }
 }
-
-?>

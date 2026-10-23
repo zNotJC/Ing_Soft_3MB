@@ -17,12 +17,8 @@ CREATE TABLE solicitud (
     CONSTRAINT chk_solicitud_tipo
         CHECK (
             tipoSolicitud IN (
-                'Equipamiento',
-                'Reparación',
-                'Acceso',
-                'Licencia',
-                'Mobiliario',
-                'Otro'
+                'Laboratorio',
+                'Reparación'
             )
         ),
 

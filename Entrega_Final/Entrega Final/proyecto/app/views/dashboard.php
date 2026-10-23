@@ -61,8 +61,8 @@
 
         <a href="tickets.php" class="acceso"><?= $esTecnico || $esDocente ? 'Gestionar Tickets' : 'Consultar Tickets' ?></a>
 
-        <?php if ($esDocente || $esTecnico): ?>
-        <a href="solicitudes.php" class="acceso"><?= $esTecnico ? 'Gestionar Solicitudes' : 'Mis Solicitudes' ?></a>
+        <?php if ($esDocente || $esTecnico || $esAdministrador): ?>
+        <a href="solicitudes.php" class="acceso"><?= $esTecnico ? 'Gestionar Solicitudes' : ($esAdministrador ? 'Consultar Solicitudes' : 'Mis Solicitudes') ?></a>
         <?php endif; ?>
 
         <?php if ($esAdministrador): ?>
@@ -122,6 +122,11 @@
                 <span id="prestamosActivos">0</span>
             </p>
 
+        </article>
+
+        <article>
+            <h2>Equipos Registrados</h2>
+            <p><span id="equiposRegistrados">0</span></p>
         </article>
 
     </section>

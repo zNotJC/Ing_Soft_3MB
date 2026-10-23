@@ -1,112 +1,29 @@
-INSERT INTO estado_prestamo
-(
-    nombre
-)
+INSERT INTO EQUIPO
+    (nombre, numeroSerie, idLaboratorio, tipo, marca, modelo, estado)
 SELECT
-    'Pendiente'
-WHERE NOT EXISTS
-(
-    SELECT 1
-    FROM estado_prestamo
-    WHERE nombre = 'Pendiente'
-);
-
-INSERT INTO estado_prestamo
-(
-    nombre
-)
-SELECT
-    'Activo'
-WHERE NOT EXISTS
-(
-    SELECT 1
-    FROM estado_prestamo
-    WHERE nombre = 'Activo'
-);
-
-INSERT INTO estado_prestamo
-(
-    nombre
-)
-SELECT
-    'Cancelado'
-WHERE NOT EXISTS
-(
-    SELECT 1
-    FROM estado_prestamo
-    WHERE nombre = 'Cancelado'
-);
-
-INSERT INTO equipo
-(
-    nombre,
-    numeroSerie,
-    idLugar
-)
-SELECT
-    'Laptop Lenovo',
-    'LEN-001',
-    idLugar
-FROM lugar
-WHERE NOT EXISTS
-(
-    SELECT 1
-    FROM equipo
-    WHERE numeroSerie = 'LEN-001'
-)
+    'Laptop Lenovo', 'LEN-001', idLaboratorio, 'Ordenador', 'Lenovo', 'No especificado', 'Activo'
+FROM LABORATORIO
+WHERE nombre = (SELECT MIN(nombre) FROM LABORATORIO)
+  AND NOT EXISTS (SELECT 1 FROM EQUIPO WHERE numeroSerie = 'LEN-001')
 LIMIT 1;
 
-INSERT INTO equipo
-(
-    nombre,
-    numeroSerie,
-    idLugar
-)
+INSERT INTO EQUIPO
+    (nombre, numeroSerie, idLaboratorio, tipo, marca, modelo, estado)
 SELECT
-    'Laptop HP',
-    'HP-001',
-    idLugar
-FROM lugar
-WHERE NOT EXISTS
-(
-    SELECT 1
-    FROM equipo
-    WHERE numeroSerie = 'HP-001'
-)
+    'Laptop HP', 'HP-001', idLaboratorio, 'Ordenador', 'HP', 'No especificado', 'Activo'
+FROM LABORATORIO
+WHERE nombre = (SELECT MIN(nombre) FROM LABORATORIO)
+  AND NOT EXISTS (SELECT 1 FROM EQUIPO WHERE numeroSerie = 'HP-001')
 LIMIT 1;
 
-INSERT INTO equipo
-(
-    nombre,
-    numeroSerie,
-    idLugar
-)
+INSERT INTO EQUIPO
+    (nombre, numeroSerie, idLaboratorio, tipo, marca, modelo, estado)
 SELECT
-    'Laptop Dell',
-    'DEL-001',
-    idLugar
-FROM lugar
-WHERE NOT EXISTS
-(
-    SELECT 1
-    FROM equipo
-    WHERE numeroSerie = 'DEL-001'
-)
+    'Laptop Dell', 'DEL-001', idLaboratorio, 'Ordenador', 'Dell', 'No especificado', 'Activo'
+FROM LABORATORIO
+WHERE nombre = (SELECT MIN(nombre) FROM LABORATORIO)
+  AND NOT EXISTS (SELECT 1 FROM EQUIPO WHERE numeroSerie = 'DEL-001')
 LIMIT 1;
 
-SELECT
-    idEstado,
-    nombre
-FROM estado_prestamo
-ORDER BY idEstado;
-
-SELECT
-    idEquipo,
-    nombre,
-    numeroSerie,
-    idLugar
-FROM equipo
-ORDER BY idEquipo;
-INSERT INTO estado_prestamo (nombre)
-SELECT 'Devuelto'
-WHERE NOT EXISTS (SELECT 1 FROM estado_prestamo WHERE nombre = 'Devuelto');
+SELECT idEquipo, nombre, numeroSerie, idLaboratorio, tipo, marca, modelo, estado
+FROM EQUIPO ORDER BY idEquipo;
