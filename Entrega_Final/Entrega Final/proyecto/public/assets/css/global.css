@@ -263,3 +263,35 @@ body.tema-oscuro .btn-preferencia { background: #334155; border-color: #64748b; 
 body.tema-oscuro .btn-preferencia:hover { background: #475569; color: #fff; }
 body.tema-oscuro .password-toggle { background: #334155; color: #fff; border-color: #64748b; }
 body.tema-oscuro .table-striped > tbody > tr:nth-of-type(odd) > * { color: #f3f4f6; background-color: #263244; }
+
+/* Fondos y texto consistentes para controles y tablas en ambos temas. */
+table:not(.table) tbody tr:nth-child(even) td { background-color: #f3f6fa; }
+table:not(.table) tbody tr:hover td { background-color: #e8f1fc; }
+.table { --bs-table-bg: #fff; --bs-table-color: #172033; --bs-table-border-color: #d8dee8; --bs-table-striped-bg: #f3f6fa; --bs-table-striped-color: #172033; --bs-table-hover-bg: #e8f1fc; --bs-table-hover-color: #172033; }
+.table th { background-color: #e9eef5; color: #172033; }
+.site-footer { margin-top: auto; }
+
+body.tema-oscuro { color-scheme: dark; }
+body.tema-oscuro .table {
+  --bs-table-bg: #1f2937;
+  --bs-table-color: #f3f4f6;
+  --bs-table-border-color: #475569;
+  --bs-table-striped-bg: #273449;
+  --bs-table-striped-color: #f3f4f6;
+  --bs-table-hover-bg: #334155;
+  --bs-table-hover-color: #fff;
+  --bs-table-active-bg: #334155;
+  --bs-table-active-color: #fff;
+}
+body.tema-oscuro table:not(.table) tbody tr:nth-child(even) td { background-color: #273449; }
+body.tema-oscuro table:not(.table) tbody tr:hover td { background-color: #334155; }
+body.tema-oscuro .table th, body.tema-oscuro .table thead th { background-color: #334155; color: #fff; }
+body.tema-oscuro .modal-contenido, body.tema-oscuro dialog { background-color: #1f2937; color: #f3f4f6; }
+body.tema-oscuro .modal-contenido :is(p, h1, h2, h3, label, strong), body.tema-oscuro dialog :is(p, h1, h2, h3, label, strong) { color: #f3f4f6; }
+body.tema-oscuro .text-dark { color: #f3f4f6 !important; }
+body.tema-oscuro .text-muted { color: #cbd5e1 !important; }
+body.tema-oscuro .bg-light, body.tema-oscuro .list-group-item { background-color: #273449 !important; color: #f3f4f6 !important; border-color: #475569; }
+body.tema-oscuro .alert-danger { background-color: #542b35; color: #ffe4e8; border-color: #8a4654; }
+body.tema-oscuro .alert-warning { background-color: #4b3a1e; color: #fff0c2; border-color: #80642d; }
+body.tema-oscuro .alert-success { background-color: #1e4739; color: #d8f8e9; border-color: #34795e; }
+body.tema-oscuro .alert-info { background-color: #193b50; color: #d8f1ff; border-color: #2e6688; }

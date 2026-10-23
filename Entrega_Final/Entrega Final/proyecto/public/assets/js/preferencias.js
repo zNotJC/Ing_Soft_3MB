@@ -39,6 +39,10 @@
 
   function traducirElemento(el, idioma) {
     if (!el || el.closest('#controlesPreferencias, #preferenciasLogin')) return;
+    if (el.dataset.i18nEs && el.dataset.i18nEn) {
+      el.textContent = idioma === 'en' ? el.dataset.i18nEn : el.dataset.i18nEs;
+      return;
+    }
     if (el.children.length === 0) {
       if (!el.dataset.textoOriginal) el.dataset.textoOriginal = el.textContent.trim();
       const original = el.dataset.textoOriginal;

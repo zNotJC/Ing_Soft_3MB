@@ -61,7 +61,7 @@ CREATE TABLE ticket (
   estado VARCHAR(20) NOT NULL DEFAULT 'En espera',
   CONSTRAINT fk_ticket_solicitante FOREIGN KEY (cedulaSolicitante) REFERENCES usuario(cedula),
   CONSTRAINT fk_ticket_laboratorio FOREIGN KEY (idLaboratorio) REFERENCES laboratorio(idLaboratorio),
-  CONSTRAINT fk_ticket_equipo FOREIGN KEY (idEquipo) REFERENCES equipo(idEquipo),
+  CONSTRAINT fk_ticket_equipo FOREIGN KEY (idEquipo) REFERENCES equipo(idEquipo) ON DELETE RESTRICT,
   CONSTRAINT chk_ticket_prioridad CHECK (prioridad IN ('-','Baja','Media','Alta')),
   CONSTRAINT chk_ticket_estado CHECK (estado IN ('En espera','Pendiente','En Proceso','Resuelto','Cancelado','Denegado'))
 ) ENGINE=InnoDB;
